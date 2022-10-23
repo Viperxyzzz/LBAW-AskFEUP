@@ -1,3 +1,7 @@
+DROP SCHEMA lbaw2221 CASCADE;
+CREATE SCHEMA lbaw2221;
+SET search_path TO lbaw2221;
+
 DROP TABLE IF EXISTS topic CASCADE;
 CREATE TABLE topic(
     topic_id INTEGER PRIMARY KEY,
@@ -32,13 +36,14 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS question CASCADE;
 CREATE TABLE question (
     question_id INTEGER PRIMARY KEY, 
+    title TEXT NOT NULL,
     full_text TEXT NOT NULL, 
     num_votes INTEGER NOT NULL CHECK (num_votes >= 0),
     num_views INTEGER NOT NULL CHECK (num_views >= 0),
     num_answers INTEGER NOT NULL CHECK (num_answers >= 0),
     date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
     was_edited BOOLEAN NOT NULL DEFAULT FALSE,
-    author_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
+    user_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 
@@ -110,7 +115,7 @@ CREATE TABLE user_badge_support
 DROP TABLE IF EXISTS question_tag CASCADE;
 CREATE TABLE question_tag
 (
-    question_id INTEGER NOT NULL PRIMARY KEY,
+    question_id INTEGER NOT NULL,
     tag_id INTEGER NOT NULL
 );
 
@@ -125,7 +130,7 @@ CREATE TABLE question_user_follower
 DROP TABLE IF EXISTS user_badge CASCADE;
 CREATE TABLE user_badge
 (
-    user_id INTEGER NOT NULL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
     badge_id INTEGER NOT NULL,
     num_supports INTEGER,
     date TIMESTAMP
@@ -180,23 +185,23 @@ INSERT INTO tag(tag_id,tag_name) VALUES (21,'quaerat');
 INSERT INTO tag(tag_id,tag_name) VALUES (22,'neque');
 INSERT INTO tag(tag_id,tag_name) VALUES (23,'labore');
 INSERT INTO tag(tag_id,tag_name) VALUES (24,'quisquam');
-INSERT INTO tag(tag_id,tag_name) VALUES (25,'tempora');
-INSERT INTO tag(tag_id,tag_name) VALUES (26,'quisquam');
+INSERT INTO tag(tag_id,tag_name) VALUES (25,'lorem');
+INSERT INTO tag(tag_id,tag_name) VALUES (26,'quisquamont');
 INSERT INTO tag(tag_id,tag_name) VALUES (27,'modi');
 INSERT INTO tag(tag_id,tag_name) VALUES (28,'aliquam');
 INSERT INTO tag(tag_id,tag_name) VALUES (29,'velit');
 INSERT INTO tag(tag_id,tag_name) VALUES (30,'magnam');
 INSERT INTO tag(tag_id,tag_name) VALUES (31,'voluptatem');
-INSERT INTO tag(tag_id,tag_name) VALUES (32,'quaerat');
-INSERT INTO tag(tag_id,tag_name) VALUES (33,'quaerat');
+INSERT INTO tag(tag_id,tag_name) VALUES (32,'quaeratus');
+INSERT INTO tag(tag_id,tag_name) VALUES (33,'quaeratis');
 INSERT INTO tag(tag_id,tag_name) VALUES (34,'dolore');
-INSERT INTO tag(tag_id,tag_name) VALUES (35,'tempora');
+INSERT INTO tag(tag_id,tag_name) VALUES (35,'temporalius');
 INSERT INTO tag(tag_id,tag_name) VALUES (36,'dolor');
 INSERT INTO tag(tag_id,tag_name) VALUES (37,'etincidunt');
 INSERT INTO tag(tag_id,tag_name) VALUES (38,'ipsum');
 INSERT INTO tag(tag_id,tag_name) VALUES (39,'eius');
 INSERT INTO tag(tag_id,tag_name) VALUES (40,'adipisci');
-INSERT INTO tag(tag_id,tag_name) VALUES (41,'quisquam');
+INSERT INTO tag(tag_id,tag_name) VALUES (41,'quisqumanos');
   
 INSERT INTO badge (badge_id,badge_name)
 VALUES
@@ -206,66 +211,67 @@ VALUES
   (4,'Helper'),
   (5,'Explainer');
 
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (1, 'How to center a div?', 'What method can I use to center a div horizontally to the middle of the screen?', 17, 282, 1, '2021-12-01 04:24:58', false, 1);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (3, 'What is the difference between git pull and git fetch?', 'I don`t understand the difference between the two.', 96, 192, 1, '2022-01-19 04:52:59', false, 3);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (4, 'fermentum donec ut mauris eget massa tempor convallis nulla', 'eu orci mauris lacinia sapien quis libero nullam sit amet', 71, 242, 1, '2022-04-14 23:56:49', false, 20);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (5, 'justo in blandit ultrices enim lorem ipsum dolor sit', 'sit amet lobortis sapien sapien non mi integer ac neque duis bibendum morbi non quam nec dui luctus rutrum', 1, 75, 1, '2022-06-08 01:57:24', false, 3);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (6, 'lorem id ligula suspendisse ornare', 'ligula vehicula consequat morbi a ipsum integer a nibh in quis justo maecenas rhoncus aliquam lacus morbi quis tortor id nulla', 55, 6, 1, '2022-01-05 07:56:14', false, 7);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (7, 'lobortis ligula sit amet eleifend pede', 'nunc viverra dapibus nulla suscipit ligula in lacus curabitur at ipsum ac tellus semper interdum', 93, 151, 1, '2021-11-18 00:14:50', true, 12);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (8, 'eu massa donec dapibus duis', 'ac enim in tempor turpis nec euismod scelerisque quam turpis adipiscing lorem vitae mattis nibh ligula nec sem duis', 79, 196, 1, '2022-02-10 15:17:03', true, 5);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (9, 'ac consequat metus sapien ut nunc vestibulum ante ipsum', 'duis aliquam convallis nunc proin at turpis a pede posuere nonummy integer non velit donec diam neque vestibulum eget vulputate ut ultrices vel augue vestibulum ante ipsum primis', 33, 199, 1, '2021-12-08 11:28:46', false, 5);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (10, 'maecenas pulvinar lobortis est phasellus sit amet erat nulla tempus', 'magna vulputate luctus cum sociis natoque penatibus et magnis dis parturient montes nascetur ridiculus mus vivamus vestibulum', 61, 177, 1, '2022-01-11 19:38:34', false, 8);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (11, 'lectus pellentesque eget nunc', 'amet consectetuer adipiscing elit proin interdum mauris non ligula pellentesque ultrices phasellus id sapien in sapien iaculis congue vivamus metus arcu adipiscing', 11, 132, 1, '2021-12-11 07:13:28', true, 3);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (12, 'eros suspendisse accumsan tortor quis turpis sed ante vivamus tortor', 'quisque erat eros viverra eget congue eget semper rutrum nulla nunc purus phasellus in felis donec semper sapien a libero nam dui proin', 89, 52, 1, '2022-10-03 13:01:49', false, 16);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (13, 'in hac habitasse platea dictumst etiam', 'faucibus accumsan odio curabitur convallis duis consequat dui nec nisi', 73, 261, 1, '2021-12-12 01:42:34', false, 6);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (14, 'ultrices mattis odio donec vitae nisi nam', 'sapien cursus vestibulum proin eu mi nulla ac enim in tempor turpis nec euismod scelerisque quam turpis adipiscing', 85, 202, 1, '2022-01-16 01:16:00', false, 11);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (15, 'luctus nec molestie sed justo', 'cras non velit nec nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel nulla eget eros elementum pellentesque quisque porta volutpat erat quisque erat eros viverra eget congue', 25, 57, 1, '2022-01-08 10:02:51', false, 8);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (16, 'tincidunt eu felis fusce posuere felis sed lacus morbi sem', 'cubilia curae donec pharetra magna vestibulum aliquet ultrices erat tortor sollicitudin mi sit amet lobortis sapien sapien non mi integer ac', 96, 142, 1, '2022-04-15 04:36:09', true, 15);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (17, 'aliquam non mauris morbi non lectus', 'etiam vel augue vestibulum rutrum rutrum neque aenean auctor gravida sem praesent id massa id nisl venenatis lacinia aenean sit amet justo morbi ut', 35, 205, 1, '2022-05-18 17:07:00', true, 5);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (18, 'donec dapibus duis at', 'massa tempor convallis nulla neque libero convallis eget eleifend luctus ultricies eu nibh quisque id justo sit amet sapien dignissim vestibulum vestibulum ante ipsum primis in', 42, 75, 1, '2022-01-14 12:32:50', true, 14);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (19, 'erat tortor sollicitudin mi sit amet lobortis sapien sapien', 'blandit non interdum in ante vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae duis faucibus', 44, 239, 1, '2022-02-03 03:32:17', true, 1);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (20, 'sodales scelerisque mauris sit amet eros suspendisse', 'sapien sapien non mi integer ac neque duis bibendum morbi non quam nec dui luctus rutrum', 9, 110, 1, '2022-02-12 14:11:22', true, 15);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (21, 'pellentesque quisque porta volutpat erat quisque erat', 'curabitur convallis duis consequat dui nec nisi volutpat eleifend donec ut dolor morbi vel lectus in quam fringilla rhoncus mauris', 51, 243, 1, '2022-04-28 12:06:26', false, 3);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (22, 'mauris non ligula pellentesque ultrices phasellus id sapien in', 'turpis eget elit sodales scelerisque mauris sit amet eros suspendisse accumsan tortor quis turpis sed ante vivamus tortor duis mattis egestas metus aenean fermentum donec ut', 32, 256, 1, '2022-07-21 06:49:22', true, 9);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (23, 'imperdiet sapien urna pretium nisl ut', 'molestie nibh in lectus pellentesque at nulla suspendisse potenti cras in purus eu magna vulputate', 35, 284, 1, '2022-09-07 05:57:16', true, 15);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (24, 'habitasse platea dictumst etiam faucibus cursus urna ut tellus', 'platea dictumst maecenas ut massa quis augue luctus tincidunt nulla mollis molestie lorem quisque ut erat curabitur gravida nisi at nibh in hac habitasse platea dictumst aliquam', 98, 116, 1, '2021-11-25 00:25:38', false, 2);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (25, 'amet turpis elementum ligula vehicula consequat morbi', 'nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel', 41, 216, 1, '2021-11-18 23:56:25', false, 4);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (26, 'porttitor lorem id ligula suspendisse ornare consequat lectus in est', 'primis in faucibus orci luctus et ultrices posuere cubilia curae nulla dapibus dolor vel est donec odio justo sollicitudin ut suscipit a feugiat et eros vestibulum ac est lacinia', 96, 172, 1, '2022-09-02 19:04:52', false, 16);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (27, 'tristique est et tempus semper est quam pharetra magna ac', 'varius nulla facilisi cras non velit nec nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel nulla', 9, 102, 1, '2021-11-19 00:10:39', true, 5);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (28, 'adipiscing elit proin risus praesent lectus vestibulum quam sapien', 'est phasellus sit amet erat nulla tempus vivamus in felis eu sapien cursus vestibulum proin eu', 42, 173, 1, '2022-07-26 03:19:55', false, 8);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (29, 'non mauris morbi non lectus aliquam sit amet', 'id ornare imperdiet sapien urna pretium nisl ut volutpat sapien arcu', 85, 201, 1, '2022-01-11 10:24:07', false, 12);
-insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, author) values (30, 'lacus at turpis donec posuere metus vitae ipsum', 'est phasellus sit amet erat nulla tempus vivamus in felis', 6, 192, 1, '2022-06-29 22:50:36', false, 7);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (1, 'jimmypage', 'jimmy@gmail.com', 'Jimmy Page', 'lbaw;2223', 62, false, true);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (2, 'dfincher', 'david@gmail.com', 'David Fincher', 'lbaw;2223', 127, true, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (3, 'torvalds', 'linus@gmail.com', 'Linus Torvalds', 'lbaw;2233', 248, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (4, 'gbertolaccini3', 'gbertolaccini3@xrea.com', 'Gilburt Bertolaccini', 'XT89prvEWa', 37, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (5, 'mdirr4', 'mdirr4@photobucket.com', 'Marrilee Dirr', '58gPXs', 233, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (6, 'rmerry5', 'rmerry5@unc.edu', 'Rainer Merry', 'KipwGTWz', 59, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (7, 'gtheyer6', 'gtheyer6@clickbank.net', 'Gibb Theyer', 'lZcgphFLr', 181, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (8, 'xcandlish7', 'xcandlish7@yellowbook.com', 'Xenos Candlish', 'b98b8HbM', 12, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (9, 'eheight8', 'eheight8@bing.com', 'Eolanda Height', 'YJaYzjpg3dRP', 243, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (10, 'bguttridge9', 'bguttridge9@vinaora.com', 'Bunni Guttridge', '2LgCIP4Ve', 124, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (11, 'ibeartupa', 'ibeartupa@netscape.com', 'Ira Beartup', 'SIZpEo', 153, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (12, 'mcallejab', 'mcallejab@pagesperso-orange.fr', 'Merilee Calleja', 'PDNywA2sCS', 103, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (13, 'mshapterc', 'mshapterc@mapquest.com', 'Meggi Shapter', 'PAnB577xA', 182, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (14, 'tgasconed', 'tgasconed@tuttocitta.it', 'Thayne Gascone', 'RIeLfTK1Axj', 101, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (15, 'kpackhame', 'kpackhame@oracle.com', 'Kipp Packham', 'ejF1kJXS', 63, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (16, 'mbedrosianf', 'mbedrosianf@google.de', 'Max Bedrosian', 'Y3LwxTa7rz9A', 67, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (17, 'rmatschkeg', 'rmatschkeg@google.it', 'Robinette Matschke', 'AkAmfr', 9, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (18, 'lbalchenh', 'lbalchenh@mapy.cz', 'Lanie Balchen', 'iAjghtEGmW', 253, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (19, 'dtromani', 'dtromani@com.com', 'Dasi Troman', 'sbAoY81vTGn5', 112, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (20, 'awattingj', 'awattingj@twitpic.com', 'Ayn Watting', 'xTUojEs', 137, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (21, 'pmcphilemyk', 'pmcphilemyk@home.pl', 'Pamella McPhilemy', 'nTxuaX', 35, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (22, 'scommonl', 'scommonl@amazon.com', 'Silvana Common', 'tEnbuXYtbvGL', 146, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (23, 'rspaduzzam', 'rspaduzzam@oaic.gov.au', 'Rebe Spaduzza', '76dXqb', 57, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (24, 'chayballn', 'chayballn@imgur.com', 'Corey Hayball', 'Z3SQrpPtl', 37, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (25, 'cfrudeo', 'cfrudeo@time.com', 'Caz Frude', 'PxDYfqXe', 88, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (26, 'rsimmonsp', 'rsimmonsp@about.com', 'Rozina Simmons', 'QdM9N3Ni', 123, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (27, 'dtrevnaq', 'dtrevnaq@dagondesign.com', 'Dalt Trevna', 'n5r8U8', 179, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (28, 'lhryniewiczr', 'lhryniewiczr@discovery.com', 'Lazaro Hryniewicz', 'Qf3YRI0glk', 74, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (29, 'mshepherdsons', 'mshepherdsons@census.gov', 'Muriel Shepherdson', '3fEYLEfn8Yw', 49, false, false);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (30, 'jbasellit', 'jbasellit@diigo.com', 'Jeannine Baselli', '8gl3KBL4xkk', 95, false, false);
 
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (1, 'jimmypage', 'jimmy@gmail.com', 'Jimmy Page', 'lbaw;2223', 62, 0, 1);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (2, 'dfincher', 'david@gmail.com', 'David Fincher', 'lbaw;2223', 127, 1, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (3, 'torvalds', 'linus@gmail.com', 'Linus Torvalds', 'lbaw;2233', 248, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (4, 'shubbins3', 'shubbins3@vkontakte.ru', 'Sophia Hubbins', '7eMQiw', 275, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (5, 'cberget4', 'cberget4@bizjournals.com', 'Cchaddie Berget', 'TBg5ZJzcLqW', 99, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (6, 'csaintpierre5', 'csaintpierre5@ihg.com', 'Cortney Saintpierre', 'ciG0hlL2Fb', 204, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (7, 'jmahoney6', 'jmahoney6@bigcartel.com', 'Jamaal Mahoney', 'JcqQaFQ5Og', 159, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (8, 'nraithby7', 'nraithby7@pinterest.com', 'Nicolais Raithby', 'b5xFuON', 136, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (9, 'btorrijos8', 'btorrijos8@scientificamerican.com', 'Binny Torrijos', 'HgTfznwvJqTb', 192, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (10, 'scurror9', 'scurror9@moonfruit.com', 'Susi Curror', 'nT4ZH8zu1', 122, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (11, 'fsallinga', 'fsallinga@google.com.br', 'Freddi Salling', 'uyzYGWCoZHb', 164, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (12, 'cbedderb', 'cbedderb@ycombinator.com', 'Clerissa Bedder', 'awkSrrvpexC6', 4, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (13, 'gpavlenkoc', 'gpavlenkoc@gov.uk', 'Garner Pavlenko', 'DHJghLgqV', 271, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (14, 'pmigueld', 'pmigueld@foxnews.com', 'Pammi Miguel', '1NMljtqnwHn', 274, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (15, 'sfideluse', 'sfideluse@google.pl', 'Shalne Fidelus', '2ovJCqXcQS8n', 28, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (16, 'abraidenf', 'abraidenf@over-blog.com', 'Alberik Braiden', 'OCFCej', 120, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (17, 'dmaudling', 'dmaudling@irs.gov', 'Deeann Maudlin', 'ilwxBQxD9mQ', 260, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (18, 'fpersichh', 'fpersichh@reuters.com', 'Franky Persich', 'Btsm9oRdbbH', 127, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (19, 'smabboti', 'smabboti@nbcnews.com', 'Skelly Mabbot', 'AWuQelZ', 67, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (20, 'fdeverej', 'fdeverej@howstuffworks.com', 'Franciska De''Vere - Hunt', 'llBlf0', 195, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (21, 'cdirkink', 'cdirkink@wired.com', 'Cicely Dirkin', 'i62ASJi', 181, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (22, 'tawcockl', 'tawcockl@freewebs.com', 'Temple Awcock', 'dUyv2oy', 241, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (23, 'jashmolem', 'jashmolem@indiatimes.com', 'Jewell Ashmole', 'p038Lbo', 67, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (24, 'hpennaccin', 'hpennaccin@canalblog.com', 'Hortensia Pennacci', 'GrQJNF9eI', 85, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (25, 'dsiggerso', 'dsiggerso@sciencedirect.com', 'Delmer Siggers', 'aV8bOKsDTe', 143, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (26, 'ecannopp', 'ecannopp@phoca.cz', 'Emmeline Cannop', 'ng33HKgbw5Lk', 236, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (27, 'pcarlensq', 'pcarlensq@harvard.edu', 'Penny Carlens', '38uw2voWdqU', 103, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (28, 'nillesr', 'nillesr@geocities.jp', 'Nariko Illes', 'tljmcJ7NxZ', 69, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (29, 'ecoverdills', 'ecoverdills@slideshare.net', 'Elaine Coverdill', 'C9rCnuV0', 218, 0, 0);
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (30, 'tmethringhamt', 'tmethringhamt@samsung.com', 'Tanny Methringham', 'JFDEQU', 173, 0, 0);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (1, 'How to center a div?', 'What method can I use to center a div horizontally to the middle of the screen?', 17, 282, 1, '2021-12-01 04:24:58', false, 1);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (2, 'How do I add multi-line comments in Python?', '# works for single line comments but Im wondering how to comment multiple lines of code', 5, 100, 0, '2021-01-01 05:26:58', false, 1);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (3, 'What is the difference between git pull and git fetch?', 'I don`t understand the difference between the two.', 96, 192, 1, '2022-01-19 04:52:59', false, 3);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (4, 'fermentum donec ut mauris eget massa tempor convallis nulla', 'eu orci mauris lacinia sapien quis libero nullam sit amet', 71, 242, 1, '2022-04-14 23:56:49', false, 20);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (5, 'justo in blandit ultrices enim lorem ipsum dolor sit', 'sit amet lobortis sapien sapien non mi integer ac neque duis bibendum morbi non quam nec dui luctus rutrum', 1, 75, 1, '2022-06-08 01:57:24', false, 3);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (6, 'lorem id ligula suspendisse ornare', 'ligula vehicula consequat morbi a ipsum integer a nibh in quis justo maecenas rhoncus aliquam lacus morbi quis tortor id nulla', 55, 6, 1, '2022-01-05 07:56:14', false, 7);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (7, 'lobortis ligula sit amet eleifend pede', 'nunc viverra dapibus nulla suscipit ligula in lacus curabitur at ipsum ac tellus semper interdum', 93, 151, 1, '2021-11-18 00:14:50', true, 12);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (8, 'eu massa donec dapibus duis', 'ac enim in tempor turpis nec euismod scelerisque quam turpis adipiscing lorem vitae mattis nibh ligula nec sem duis', 79, 196, 1, '2022-02-10 15:17:03', true, 5);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (9, 'ac consequat metus sapien ut nunc vestibulum ante ipsum', 'duis aliquam convallis nunc proin at turpis a pede posuere nonummy integer non velit donec diam neque vestibulum eget vulputate ut ultrices vel augue vestibulum ante ipsum primis', 33, 199, 1, '2021-12-08 11:28:46', false, 5);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (10, 'maecenas pulvinar lobortis est phasellus sit amet erat nulla tempus', 'magna vulputate luctus cum sociis natoque penatibus et magnis dis parturient montes nascetur ridiculus mus vivamus vestibulum', 61, 177, 1, '2022-01-11 19:38:34', false, 8);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (11, 'lectus pellentesque eget nunc', 'amet consectetuer adipiscing elit proin interdum mauris non ligula pellentesque ultrices phasellus id sapien in sapien iaculis congue vivamus metus arcu adipiscing', 11, 132, 1, '2021-12-11 07:13:28', true, 3);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (12, 'eros suspendisse accumsan tortor quis turpis sed ante vivamus tortor', 'quisque erat eros viverra eget congue eget semper rutrum nulla nunc purus phasellus in felis donec semper sapien a libero nam dui proin', 89, 52, 1, '2022-10-03 13:01:49', false, 16);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (13, 'in hac habitasse platea dictumst etiam', 'faucibus accumsan odio curabitur convallis duis consequat dui nec nisi', 73, 261, 1, '2021-12-12 01:42:34', false, 6);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (14, 'ultrices mattis odio donec vitae nisi nam', 'sapien cursus vestibulum proin eu mi nulla ac enim in tempor turpis nec euismod scelerisque quam turpis adipiscing', 85, 202, 1, '2022-01-16 01:16:00', false, 11);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (15, 'luctus nec molestie sed justo', 'cras non velit nec nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel nulla eget eros elementum pellentesque quisque porta volutpat erat quisque erat eros viverra eget congue', 25, 57, 1, '2022-01-08 10:02:51', false, 8);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (16, 'tincidunt eu felis fusce posuere felis sed lacus morbi sem', 'cubilia curae donec pharetra magna vestibulum aliquet ultrices erat tortor sollicitudin mi sit amet lobortis sapien sapien non mi integer ac', 96, 142, 1, '2022-04-15 04:36:09', true, 15);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (17, 'aliquam non mauris morbi non lectus', 'etiam vel augue vestibulum rutrum rutrum neque aenean auctor gravida sem praesent id massa id nisl venenatis lacinia aenean sit amet justo morbi ut', 35, 205, 1, '2022-05-18 17:07:00', true, 5);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (18, 'donec dapibus duis at', 'massa tempor convallis nulla neque libero convallis eget eleifend luctus ultricies eu nibh quisque id justo sit amet sapien dignissim vestibulum vestibulum ante ipsum primis in', 42, 75, 1, '2022-01-14 12:32:50', true, 14);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (19, 'erat tortor sollicitudin mi sit amet lobortis sapien sapien', 'blandit non interdum in ante vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae duis faucibus', 44, 239, 1, '2022-02-03 03:32:17', true, 1);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (20, 'sodales scelerisque mauris sit amet eros suspendisse', 'sapien sapien non mi integer ac neque duis bibendum morbi non quam nec dui luctus rutrum', 9, 110, 1, '2022-02-12 14:11:22', true, 15);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (21, 'pellentesque quisque porta volutpat erat quisque erat', 'curabitur convallis duis consequat dui nec nisi volutpat eleifend donec ut dolor morbi vel lectus in quam fringilla rhoncus mauris', 51, 243, 1, '2022-04-28 12:06:26', false, 3);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (22, 'mauris non ligula pellentesque ultrices phasellus id sapien in', 'turpis eget elit sodales scelerisque mauris sit amet eros suspendisse accumsan tortor quis turpis sed ante vivamus tortor duis mattis egestas metus aenean fermentum donec ut', 32, 256, 1, '2022-07-21 06:49:22', true, 9);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (23, 'imperdiet sapien urna pretium nisl ut', 'molestie nibh in lectus pellentesque at nulla suspendisse potenti cras in purus eu magna vulputate', 35, 284, 1, '2022-09-07 05:57:16', true, 15);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (24, 'habitasse platea dictumst etiam faucibus cursus urna ut tellus', 'platea dictumst maecenas ut massa quis augue luctus tincidunt nulla mollis molestie lorem quisque ut erat curabitur gravida nisi at nibh in hac habitasse platea dictumst aliquam', 98, 116, 1, '2021-11-25 00:25:38', false, 2);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (25, 'amet turpis elementum ligula vehicula consequat morbi', 'nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel', 41, 216, 1, '2021-11-18 23:56:25', false, 4);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (26, 'porttitor lorem id ligula suspendisse ornare consequat lectus in est', 'primis in faucibus orci luctus et ultrices posuere cubilia curae nulla dapibus dolor vel est donec odio justo sollicitudin ut suscipit a feugiat et eros vestibulum ac est lacinia', 96, 172, 1, '2022-09-02 19:04:52', false, 16);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (27, 'tristique est et tempus semper est quam pharetra magna ac', 'varius nulla facilisi cras non velit nec nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel nulla', 9, 102, 1, '2021-11-19 00:10:39', true, 5);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (28, 'adipiscing elit proin risus praesent lectus vestibulum quam sapien', 'est phasellus sit amet erat nulla tempus vivamus in felis eu sapien cursus vestibulum proin eu', 42, 173, 1, '2022-07-26 03:19:55', false, 8);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (29, 'non mauris morbi non lectus aliquam sit amet', 'id ornare imperdiet sapien urna pretium nisl ut volutpat sapien arcu', 85, 201, 1, '2022-01-11 10:24:07', false, 12);
+insert into question (question_id, title, full_text, num_votes, num_views, num_answers, date, was_edited, user_id) values (30, 'lacus at turpis donec posuere metus vitae ipsum', 'est phasellus sit amet erat nulla tempus vivamus in felis', 6, 192, 1, '2022-06-29 22:50:36', false, 7);
 
 insert into answer (answer_id, full_text, num_votes, is_correct, date, question_id, user_id) values (1, 'You can use the `text-align` property with the value `center`.', 31, true, '2022-05-18 00:01:14', 1, 2);
 insert into answer (answer_id, full_text, num_votes, is_correct, date, question_id, user_id) values (2, 'Best way to do this is to use the `margin` property and set it to `0 auto`. This will make the horizontal margin equally divided', 41, true, '2021-11-08 13:01:18', 1, 3);
@@ -423,28 +429,28 @@ insert into topic_tag (topic_id, tag_id) values (1, 15);
 insert into topic_tag (topic_id, tag_id) values (1, 16);
 insert into topic_tag (topic_id, tag_id) values (1, 17);
 insert into topic_tag (topic_id, tag_id) values (1, 18);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (2,19);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (3,20);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (4,21);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (5,22);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (6,23);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (7,24);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (8,25);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (9,26);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (10,27);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (11,28);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (12,29);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (13,30);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (14,31);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (15,32);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (16,33);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (17,34);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (18,35);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (19,36);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (20,37);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (21,38);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (22,39);
-INSERT INTO topic_tag(tag_id,tag_name) VALUES (23,40);
+INSERT INTO topic_tag (topic_id, tag_id) VALUES (2,19);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (3,20);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (4,21);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (5,22);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (6,23);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (7,24);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (8,25);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (9,26);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (10,27);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (11,28);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (12,29);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (13,30);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (14,31);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (15,32);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (16,33);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (17,34);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (18,35);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (19,36);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (20,37);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (21,38);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (22,39);
+INSERT INTO topic_tag(topic_id,tag_id) VALUES (23,40);
 
 insert into user_tag (user_id, tag_id) values (3, 19);
 insert into user_tag (user_id, tag_id) values (25, 34);
@@ -541,11 +547,11 @@ insert into question_user_follower (question_id, user_id) values (24, 9);
 insert into question_user_follower (question_id, user_id) values (16, 12);
 insert into question_user_follower (question_id, user_id) values (22, 15);
 insert into question_user_follower (question_id, user_id) values (9, 27);
-insert into question_user_follower (question_id, user_id) values (8, 12);
+insert into question_user_follower (question_id, user_id) values (8, 13);
 insert into question_user_follower (question_id, user_id) values (15, 21);
 insert into question_user_follower (question_id, user_id) values (9, 21);
 insert into question_user_follower (question_id, user_id) values (13, 19);
-insert into question_user_follower (question_id, user_id) values (7, 6);
+insert into question_user_follower (question_id, user_id) values (7, 7);
 insert into question_user_follower (question_id, user_id) values (2, 5);
 insert into question_user_follower (question_id, user_id) values (9, 4);
 insert into question_user_follower (question_id, user_id) values (25, 30);
