@@ -366,3 +366,40 @@ DROP TRIGGER IF EXISTS was_edited ON question CASCADE;
 CREATE TRIGGER was_edited
     AFTER UPDATE ON question
     FOR EACH ROW EXECUTE FUNCTION was_edited();
+--INDEX
+DROP INDEX IF EXISTS numVotesComment_idx CASCADE;
+CREATE INDEX numVotesComment_idx ON comment USING btree(num_votes);
+DROP INDEX IF EXISTS numVotesQuestion_idx CASCADE;
+CREATE INDEX numVotesQuestion_idx ON comment USING btree(num_votes);
+	
+ALTER TABLE question
+ADD COLUMN tsvectors TSVECTOR;
+
+
+CREATE FUNCTION question_search_update() RETURNS TRIGGER AS $$
+BEGIN
+ IF TG_OP = 'INSERT' THEN
+        NEW.tsvectors = (
+         setweight(to_tsvector('english', NEW.title), 'A') ||
+         setweight(to_tsvector('english', NEW.fulltext), 'B')
+        );
+ END IF;
+ IF TG_OP = 'UPDATE' THEN
+         IF (NEW.title <> OLD.title OR NEW.fulltext <> OLD.fulltext) THEN
+           NEW.tsvectors = (
+             setweight(to_tsvector('english', NEW.title), 'A') ||
+             setweight(to_tsvector('english', NEW.fulltext), 'B')
+           );
+         END IF;
+ END IF;
+ RETURN NEW;
+END $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER question_update
+ BEFORE INSERT OR UPDATE ON question
+ FOR EACH ROW
+ EXECUTE PROCEDURE question_search_update();
+
+DROP INDEX IF EXISTS search_idx CASCADE;
+CREATE INDEX search_idx ON question USING gist(tsvectors);
