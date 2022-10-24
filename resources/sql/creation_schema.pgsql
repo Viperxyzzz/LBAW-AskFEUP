@@ -366,7 +366,10 @@ DROP TRIGGER IF EXISTS was_edited ON question CASCADE;
 CREATE TRIGGER was_edited
     AFTER UPDATE ON question
     FOR EACH ROW EXECUTE FUNCTION was_edited();
---INDEX
+
+
+--INDEXES
+
 DROP INDEX IF EXISTS numVotesComment_idx CASCADE;
 CREATE INDEX numVotesComment_idx ON comment USING btree(num_votes);
 DROP INDEX IF EXISTS numVotesQuestion_idx CASCADE;
@@ -376,19 +379,19 @@ ALTER TABLE question
 ADD COLUMN tsvectors TSVECTOR;
 
 
-CREATE FUNCTION question_search_update() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION question_search_update() RETURNS TRIGGER AS $$
 BEGIN
  IF TG_OP = 'INSERT' THEN
         NEW.tsvectors = (
          setweight(to_tsvector('english', NEW.title), 'A') ||
-         setweight(to_tsvector('english', NEW.fulltext), 'B')
+         setweight(to_tsvector('english', NEW.full_text), 'B')
         );
  END IF;
  IF TG_OP = 'UPDATE' THEN
-         IF (NEW.title <> OLD.title OR NEW.fulltext <> OLD.fulltext) THEN
+         IF (NEW.title <> OLD.title OR NEW.full_text <> OLD.full_text) THEN
            NEW.tsvectors = (
              setweight(to_tsvector('english', NEW.title), 'A') ||
-             setweight(to_tsvector('english', NEW.fulltext), 'B')
+             setweight(to_tsvector('english', NEW.full_text), 'B')
            );
          END IF;
  END IF;
@@ -396,6 +399,7 @@ BEGIN
 END $$
 LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS question_update ON question CASCADE;
 CREATE TRIGGER question_update
  BEFORE INSERT OR UPDATE ON question
  FOR EACH ROW
