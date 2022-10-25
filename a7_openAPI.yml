@@ -27,7 +27,7 @@ paths:
       summary: 'R101: Login Form'
       description: 'Provide login form. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile Authentication'
+        - 'M01: Authentication and Individual Profile'
       responses:
         '200':
           description: 'Ok. Show log-in UI'
@@ -36,7 +36,7 @@ paths:
       summary: 'R102: Login Action'
       description: 'Processes the login form submission. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile Authentication and Individual Profile'
+        - 'M01: Authentication and Individual Profile'
  
       requestBody:
         required: true
@@ -75,7 +75,7 @@ paths:
       summary: 'R103: Logout Action'
       description: 'Logout the current authenticated user. Access: USR, ADM, OWN, MOD'
       tags:
-        - 'M01: Authentication and Individual Profile Authentication'
+        - 'M01: Authentication and Individual Profile'
       responses:
         '302':
           description: 'Redirects to login page after processing logout.'
@@ -94,7 +94,7 @@ paths:
       summary: 'R104: Register Form'
       description: 'Provides new user registration form. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile Authentication'
+        - 'M01: Authentication and Individual Profile'
       responses:
         '200':
           description: 'Ok. Show sign-up UI'
@@ -104,7 +104,7 @@ paths:
       summary: 'R105: Register Action'
       description: 'Processes the new user registration form submission. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile Authentication'
+        - 'M01: Authentication and Individual Profile'
 
       requestBody:
         required: true
