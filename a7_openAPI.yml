@@ -14,7 +14,7 @@ externalDocs:
   url: https://web.fe.up.pt/~ssn/wiki/teach/lbaw/medialib/a07   # MUDAR 
 
 tags:
-  - name: 'M01: Authentication and Individual Profile Authentication and Individual Profile'
+  - name: 'M01: Authentication and Individual Profile'
   - name: 'M02: Questions'
   - name: 'M03: User administration'
   - name: 'M04: Static pages'
