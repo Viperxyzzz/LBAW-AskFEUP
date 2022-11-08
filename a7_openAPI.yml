@@ -55,7 +55,7 @@ paths:
  
       responses:
         '302':
-          description: 'Redirect after processing the login credentials.'
+          description: 'Redirects after processing the login credentials.'
           headers:
             Location:
               schema:
