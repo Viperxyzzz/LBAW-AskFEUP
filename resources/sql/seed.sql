@@ -30,7 +30,8 @@ CREATE TABLE users (
     password TEXT NOT NULL, 
     score INTEGER NOT NULL,
     is_moderator BOOLEAN NOT NULL,
-    is_admin BOOLEAN NOT NULL
+    is_admin BOOLEAN NOT NULL,
+    remember_token VARCHAR
 );
 
 DROP TABLE IF EXISTS question CASCADE;
