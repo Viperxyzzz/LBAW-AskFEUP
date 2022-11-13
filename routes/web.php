@@ -13,8 +13,12 @@
 // Home
 Route::get('/', 'Auth\LoginController@home');
 
-// Cards
+// User specific
 Route::get('feed', 'FeedController@home');
+Route::get('profile', 'ProfileController@home');
+
+// Questions
+Route::get('question/{id}', 'QuestionController@home')->name('question');
 
 // API
 

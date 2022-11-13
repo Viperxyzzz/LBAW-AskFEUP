@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Topic extends Model
+class Answer extends Model
 {
     use HasFactory;
 
@@ -17,12 +17,12 @@ class Topic extends Model
      *
      * @var string
      */
-    protected $table = 'topic';
+    protected $table = 'answer';
 
     /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = 'topic_id';
+    protected $primaryKey = 'answer_id';
 }

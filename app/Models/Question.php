@@ -11,6 +11,18 @@ class Question extends Model
 
     // Don't add create and update timestamps in database.
     public $timestamps  = false;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'question';
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
     protected $primaryKey = 'question_id';
 }

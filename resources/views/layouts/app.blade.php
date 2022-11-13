@@ -25,12 +25,16 @@
       <header>
         <h1><a href="{{ url('/') }}">AskFeup</a></h1>
         @if (Auth::check())
-        <a class="button" href="{{ url('/logout') }}"> Logout </a> <span>{{ Auth::user()->name }}</span>
+        <a class="button" href="{{ url('/logout') }}"> Logout </a>
+        <a href="{{ url('/profile') }}">{{ Auth::user()->name }}</a>
         @endif
       </header>
       <section id="content">
         @yield('content')
       </section>
     </main>
+    <footer>
+      <p>I am the footer</p>
+    </footer>
   </body>
 </html>

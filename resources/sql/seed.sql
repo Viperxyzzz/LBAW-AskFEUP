@@ -484,7 +484,7 @@ VALUES
   (5, 'Expert'),
   (6, 'Master');
 
-insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (1, 'jimmypage', 'jimmy@gmail.com', 'Jimmy Page', ' $2a$12$H6SDm.PuH3ldg6D.OK5NFeTu1ZRD35maYmt3OOg2r20owwn2flzZa', 62, false, true);
+insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (1, 'jimmypage', 'jimmy@gmail.com', 'Jimmy Page', '$2a$10$Mo8xt4RxzVLU3JYiX8Z/oekMnV4lBs4Ftk/1M183CbYHzul9nIw2G', 62, false, true);
 insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (2, 'dfincher', 'david@gmail.com', 'David Fincher', 'lbaw;2223', 127, true, false);
 insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (3, 'torvalds', 'linus@gmail.com', 'Linus Torvalds', 'lbaw;2233', 248, false, false);
 insert into users (user_id, username, email, name, password, score, is_moderator, is_admin) values (4, 'gbertolaccini3', 'gbertolaccini3@xrea.com', 'Gilburt Bertolaccini', 'XT89prvEWa', 37, false, false);
