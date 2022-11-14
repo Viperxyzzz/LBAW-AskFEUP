@@ -1,0 +1,15 @@
+i {
+    vertical-align:sub;
+}
+
+.card .question-stats {
+    float: right;
+}
+
+.nav-link {
+    color: #606c76;
+}
+
+.nav-link.active {
+    color: #9b4dca;
+}
