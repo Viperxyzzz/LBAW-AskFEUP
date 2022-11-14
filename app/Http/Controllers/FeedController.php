@@ -20,8 +20,8 @@ class FeedController extends Controller
     {
       if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
-      //$cards = Auth::user()->cards()->orderBy('id')->get();
-      return view('pages.feed');
+      $questions = Question::orderBy('question_id')->get();
+      return view('pages.feed', ['questions' => $questions ]);
     }
 
 }
