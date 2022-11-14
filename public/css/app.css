@@ -1,3 +1,7 @@
 i {
     vertical-align:sub;
 }
+
+.card .question-stats {
+    float: right;
+}

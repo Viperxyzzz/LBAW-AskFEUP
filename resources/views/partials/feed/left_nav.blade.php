@@ -1,4 +1,4 @@
-<nav class="col-sm-4">
+<nav class="col-sm-4 mt-5">
     <ul class="navbar-nav">
         <li class="nav-item">
             <a class="nav-link active">

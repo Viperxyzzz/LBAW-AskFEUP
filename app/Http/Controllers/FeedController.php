@@ -21,6 +21,9 @@ class FeedController extends Controller
       if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
       $questions = Question::orderBy('question_id')->get();
+      /*foreach ($questions as $question) {
+        $question->$tags = $question->tags();
+      }*/
       return view('pages.feed', ['questions' => $questions ]);
     }
 
