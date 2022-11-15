@@ -25,4 +25,8 @@ class Answer extends Model
      * @var string
      */
     protected $primaryKey = 'answer_id';
+
+    public function author() {
+        return $this->hasOne(User::class, 'user_id', 'user_id');
+    }
 }

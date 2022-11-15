@@ -21,7 +21,9 @@ class QuestionController extends Controller
       if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
       $question = Question::find($question_id);
-      return view('pages.question', ['question' => $question]);
+      $answers = $question->answers();
+      return view('pages.question', ['question' => $question,'answers' => $answers]);
     }
+  
 
 }
