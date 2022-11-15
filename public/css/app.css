@@ -1,9 +1,11 @@
 :root {
     --primary-color: #3f72af;
+    --secondary-color: #606c76;
+    --accent-color: #FDBE34;
 }
 
 body {
-    color: #606c76;
+    color: var(--secondary-color);
     font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
 
@@ -16,7 +18,7 @@ i {
 }
 
 .nav-link {
-    color: #606c76;
+    color: var(--secondary-color);
 }
 
 .nav-link.active {
@@ -24,7 +26,7 @@ i {
 }
 
 .link-dark {
-    color:#606c76;
+    color:var(--secondary-color);
 }
 
 .btn {
@@ -33,4 +35,8 @@ i {
 
 .dropdown-item {
     font-size: 1.5rem;
+}
+
+.badge {
+    background-color: var(--accent-color);
 }
