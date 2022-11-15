@@ -18,9 +18,11 @@ Route::get('feed', 'FeedController@home');
 Route::get('profile', 'ProfileController@home');
 
 // Questions
+Route::get('question/create', 'QuestionController@create_view')->name('question_create');
 Route::get('question/{id}', 'QuestionController@home')->name('question');
 
 // API
+Route::put('api/question', 'QuestionController@create');
 
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
