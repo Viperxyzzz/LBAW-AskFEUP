@@ -2,7 +2,7 @@
 <link href='https://css.gg/check-o.css' rel='stylesheet'>
 <div class="card my-5">
     <div class="card-body d-flex justify-content-between">
-        <div>
+        <div style="font-size: 2rem">
             <p class="card-text">{{ $answer->full_text }}</p>
         </div>
         <div class="ml-5">
@@ -28,8 +28,8 @@
             <a href="#"> {{ $answer->author->name }}</a>
         </p>
     </div>
-    @foreach ($answer->comments()->orderBy('comment_id')->get() as $comment)
+    @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
                 @include('partials.question_page.comment_card', ['comment' => $comment])
-        @endforeach
+    @endforeach
 
 </div>
