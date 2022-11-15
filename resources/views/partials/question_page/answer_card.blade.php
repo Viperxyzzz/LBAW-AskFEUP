@@ -6,8 +6,12 @@
         <div class="ml-5">
             <aside class="question-stats">
                 <p class="m-0 text-nowrap">{{ $answer->num_votes }} votes</p>
-                <p class="m-0 text-nowrap">{{ $answer->is_correct }}</p>
-                <p class="m-0 text-nowrap">{{ $answer->was_edited }}</p>
+                @if ($answer->is_correct == 1)
+                <p class="m-0 text-nowrap">correct answer</p>
+                @endif
+                @if($answer->was_edited == 1)
+                <p class="m-0 text-nowrap">edited</p>
+                @endif
             </aside>
         </div>
     </div>
