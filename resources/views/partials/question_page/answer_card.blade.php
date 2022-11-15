@@ -12,7 +12,11 @@
         </div>
     </div>
     <div class="card-footer d-flex justify-content-between">
-        <p class="m-0">{{ $answer->date}}</p>
+
+
+ 
+
+        <p class="m-0">{{ \Carbon\Carbon::parse($answer->date)->format('d/m/Y')}}</p>
         <p class="m-0">
             <em>by</em>
             <a href="#"> {{ $answer->author->name }}</a>

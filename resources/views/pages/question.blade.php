@@ -4,7 +4,7 @@
 <!-- <h2>This is a question page</h2>  --> 
 <div data-id="{{$question->question_id}}" class="container">
     <h2>{{$question->title}}</h2>
-    <div class="card">
+    <div class="card" style="border: none;">
         <div class="card-body">
             {{$question->full_text}}
         </div>

@@ -1,4 +1,4 @@
-<div class="card my-5">
+<div class="card my-5" style="width: 90%;">
     <div class="card-body d-flex justify-content-between">
         <div>
             <p class="card-text">{{ $comment->full_text }}</p>
@@ -10,10 +10,10 @@
         </div>
     </div>
     <div class="card-footer d-flex justify-content-between">
-        <p class="m-0">{{ $answer->date}}</p>
+        <p class="m-0">{{ \Carbon\Carbon::parse($comment->date)->format('d/m/Y')}}</p>
         <p class="m-0">
             <em>by</em>
-            <a href="#"> {{ $answer->author->name }}</a>
+            <a href="#"> {{ $comment->author->name }}</a>
         </p>
     </div>
 
