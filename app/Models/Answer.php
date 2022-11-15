@@ -29,4 +29,9 @@ class Answer extends Model
     public function author() {
         return $this->hasOne(User::class, 'user_id', 'user_id');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'answer_id', 'answer_id');
+    }
 }

@@ -11,6 +11,7 @@
         @foreach ($answers->orderBy('answer_id')->get() as $answer)
                 @include('partials.question_page.answer_card', ['answer' => $answer])
         @endforeach
+
     </div>
 </div>
 @endsection

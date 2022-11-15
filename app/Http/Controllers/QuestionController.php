@@ -22,7 +22,8 @@ class QuestionController extends Controller
       //$this->authorize('list', Question::class);
       $question = Question::find($question_id);
       $answers = $question->answers();
-      return view('pages.question', ['question' => $question,'answers' => $answers]);
+      $comments = $question->comments();
+      return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments]);
     }
   
 
