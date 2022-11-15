@@ -1,13 +1,27 @@
 <header>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container-fluid">
-            <h1><a class="navbar-brand h1" href="{{ url('/') }}">AskFeup</a></h1>
-            @if (Auth::check())
-            <div class="d-flex">
-                <a class="button nav-item d-flex" href="{{ url('/logout') }}"> Logout </a>
-                <a class="nav-item p-2" href="{{ url('/profile') }}">{{ Auth::user()->name }}</a>
-                @endif
+    <div class="d-flex bg-light border-bottom pt-3 pl-3">
+        <nav class="d-flex align-items-center">
+            <h3><a class="mx-2" href="{{ url('/') }}">AskFeup</a></h3>
+            <h5><a class="link-dark mx-2" href="{{ url('/') }}">Home</a></h5>
+            <h5><a class="link-dark mx-2" href="#">FAQ</a></h5>
+            <h5><a class="link-dark mx-2" href="#">About</a></h5>
+        </nav>
+        @if (Auth::check())
+        <div class="dropdown mr-3 ml-auto">
+            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ Auth::user()->name }}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="{{ url('/profile') }}">
+                    <i width="16" height="16" class="material-symbols-outlined ">person</i>
+                    Profile
+                </a>
+                <a class="dropdown-item" href="{{ url('/logout') }}">
+                    <i width="16" height="16" class="material-symbols-outlined ">logout</i>
+                    Logout
+                </a>
             </div>
         </div>
-    </nav>
+        @endif
+    </div>
 </header>

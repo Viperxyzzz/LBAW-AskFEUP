@@ -1,3 +1,12 @@
+:root {
+    --primary-color: #3f72af;
+}
+
+body {
+    color: #606c76;
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+}
+
 i {
     vertical-align:sub;
 }
@@ -11,5 +20,17 @@ i {
 }
 
 .nav-link.active {
-    color: #9b4dca;
+    color: var(--primary-color);
+}
+
+.link-dark {
+    color:#606c76;
+}
+
+.btn {
+    font-size: 1.6rem;
+}
+
+.dropdown-item {
+    font-size: 1.5rem;
 }
