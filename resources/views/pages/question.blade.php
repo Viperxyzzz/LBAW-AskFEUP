@@ -1,11 +1,11 @@
 @extends('layouts.app')
-
 @section('content')
 <!-- <h2>This is a question page</h2>  --> 
+
 <div data-id="{{$question->question_id}}" class="container">
     <h2>{{$question->title}}</h2>
     <div class="card" style="border: none;">
-        <div class="card-body">
+        <div class="card-body;" style="font-size: 2.5rem">
             {{$question->full_text}}
         </div>
         @foreach ($answers->orderBy('num_votes', 'DESC')->get() as $answer)

@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='https://css.gg/check-o.css' rel='stylesheet'>
 <div class="card my-5">
     <div class="card-body d-flex justify-content-between">
         <div>
@@ -5,10 +7,10 @@
         </div>
         <div class="ml-5">
             <aside class="question-stats">
-                <p class="m-0 text-nowrap">{{ $answer->num_votes }} votes</p>
                 @if ($answer->is_correct == 1)
-                <p class="m-0 text-nowrap">correct answer</p>
+                <i class="gg-check-o" style="color: green"></i>
                 @endif
+                <p class="m-0 text-nowrap">{{ $answer->num_votes }} votes</p>
                 @if($answer->was_edited == 1)
                 <p class="m-0 text-nowrap">edited</p>
                 @endif
