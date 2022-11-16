@@ -9,7 +9,7 @@
             <p class="card-text">{{ $question->full_text }}</p>
             <div class="flex">
                 @foreach($question->tags()->orderBy('tag_id')->get() as $tag)
-                    <span class="badge text-light bg-info">{{ $tag->tag_name }}</span>
+                    <span class="badge p-2">{{ $tag->tag_name }}</span>
                 @endforeach
             </div>
         </div>

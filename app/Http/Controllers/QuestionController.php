@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
+use App\Models\QuestionTag;
 use App\Models\Tag;
 
 class QuestionController extends Controller
@@ -19,7 +20,6 @@ class QuestionController extends Controller
      */
     public function home($question_id)
     {
-      if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
       $question = Question::find($question_id);
       return view('pages.question', ['question' => $question]);
@@ -39,10 +39,18 @@ class QuestionController extends Controller
 
       $question->date = date('Y-m-d H:i:s');
 
-
-
       $question->save();
+
+      $tags = $request->tags;
+      for($i = 0; $i < count($tags); $i++){
+        $question_tag = new QuestionTag;
+        $question_tag->question_id = $question->question_id;
+        $question_tag->tag_id = $tags[$i];
+        $question_tag->save();
+      }
+
       return redirect('/question/'.$question->question_id);
+      //return $question;
     }
 
     public function create_view()

@@ -1,3 +1,14 @@
+:root {
+    --primary-color: #3f72af;
+    --secondary-color: #606c76;
+    --accent-color: #FDBE34;
+}
+
+body {
+    color: var(--secondary-color);
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+}
+
 i {
     vertical-align:sub;
 }
@@ -7,9 +18,33 @@ i {
 }
 
 .nav-link {
-    color: #606c76;
+    color: var(--secondary-color);
 }
 
 .nav-link.active {
-    color: #9b4dca;
+    color: var(--primary-color);
+}
+
+.link-dark {
+    color:var(--secondary-color);
+}
+
+.btn {
+    font-size: 1.6rem;
+}
+
+.dropdown-item {
+    font-size: 1.5rem;
+}
+
+.badge {
+    background-color: var(--accent-color);
+}
+
+.title-blue {
+    color: var(--primary-color);
+}
+
+#tags option{
+    font-size: 1.3rem;
 }
