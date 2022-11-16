@@ -13,3 +13,7 @@ i {
 .nav-link.active {
     color: #9b4dca;
 }
+
+textarea {
+    resize: none;
+}

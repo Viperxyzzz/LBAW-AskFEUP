@@ -19,6 +19,7 @@ Route::get('profile', 'ProfileController@home');
 
 // Questions
 Route::get('question/{id}', 'QuestionController@home')->name('question');
+Route::post('answer/{question_id}', 'QuestionController@answer');
 
 // API
 

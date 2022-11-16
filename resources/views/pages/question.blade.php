@@ -8,6 +8,7 @@
         <div class="card-body;" style="font-size: 2.5rem">
             {{$question->full_text}}
         </div>
+        @include('partials.question_page.add_answer_card', ['question_id' => $question->question_id])
         @foreach ($answers->orderBy('num_votes', 'DESC')->get() as $answer)
                 @include('partials.question_page.answer_card', ['answer' => $answer])
         @endforeach

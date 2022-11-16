@@ -25,6 +25,20 @@ class QuestionController extends Controller
       $comments = $question->comments();
       return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments]);
     }
-  
 
+    /**
+     * Post an answer to a question.
+     * 
+     * @return TODO
+     */
+    public function answer(array $data) {
+      if (!Auth::check()) return redirect('/login');
+      return Answer::create([
+          'full_text' => $data['answer'],
+          'num_votes' => 0,
+          'is_correct' => False,
+          'question_id' => $data['question_id'],
+          'user_id' => Auth::id()
+      ]);
+    }
 }
