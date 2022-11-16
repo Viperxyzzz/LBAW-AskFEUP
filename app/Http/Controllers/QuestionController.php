@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
+use App\Models\Answer;
 
 class QuestionController extends Controller
 {
@@ -31,14 +32,19 @@ class QuestionController extends Controller
      * 
      * @return TODO
      */
-    public function answer(array $data) {
-      if (!Auth::check()) return redirect('/login');
-      return Answer::create([
-          'full_text' => $data['answer'],
-          'num_votes' => 0,
-          'is_correct' => False,
-          'question_id' => $data['question_id'],
-          'user_id' => Auth::id()
-      ]);
+    public function answer(Request $request, $question_id) {
+      //if (!Auth::check()) return redirect('/login');
+      $answer = new Answer();
+      $answer->answer_id = 302;
+      $answer->full_text = $request->input('answer');
+      $answer->num_votes = 0;
+      $answer->is_correct = false;
+      $answer->question_id = $question_id;
+      $answer->user_id = auth::id();
+      $answer->save();
+
+      //return json_encode($answer);
+      //return response()->json(json_encode($answer), 200);
+      return $answer;
     }
 }

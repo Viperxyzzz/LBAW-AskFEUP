@@ -1,4 +1,9 @@
 function addEventListeners() {
+  let cardCreator = document.querySelector('#add-answer-button');
+  if (cardCreator != null)
+    cardCreator.addEventListener('click', sendCreateAnswerRequest);
+  
+  /*
   let itemCheckers = document.querySelectorAll('article.card li.item input[type=checkbox]');
   [].forEach.call(itemCheckers, function(checker) {
     checker.addEventListener('change', sendItemUpdateRequest);
@@ -22,6 +27,7 @@ function addEventListeners() {
   let cardCreator = document.querySelector('article.card form.new_card');
   if (cardCreator != null)
     cardCreator.addEventListener('submit', sendCreateCardRequest);
+    */
 }
 
 function encodeForAjax(data) {
@@ -40,6 +46,62 @@ function sendAjaxRequest(method, url, data, handler) {
   request.addEventListener('load', handler);
   request.send(encodeForAjax(data));
 }
+
+function sendCreateAnswerRequest(event) {
+  let question_id = document.querySelector('#question_id').value;
+  let answer = document.querySelector('#answer').value;
+
+  if (answer != '')
+    sendAjaxRequest('put', '/api/answer/' + question_id, {answer: answer}, cardAddedHandler);
+
+  event.preventDefault();
+}
+
+function cardAddedHandler() {
+  if (this.status != 201) window.location = '/';
+  let answer = JSON.parse(this.responseText);
+
+  // Create the new answer
+  let new_answer = createAnswer(card);
+
+
+  // Insert the new answer
+  section.insertBefore(new_card, new_answer);
+}
+
+function createAnswer() {
+  let answer = JSON.parse(this.responseText);
+  console.log(answer)
+  let element = document.querySelector('li.item[data-id="' + item.id + '"]');
+
+  let new_answer = document.createElement('div');
+  new_answer.className = 'card'
+  new_answer.classList.add('my-5')
+  new_answer.classList.add('answer')
+  new_answer.innerHTML = `
+    <div class="card-body d-flex justify-content-between">
+        <div style="font-size: 2rem">
+            <p class="card-text"> ${$answer.answer }</p>
+        </div>
+        <div class="ml-5">
+            <aside class="question-stats">
+                <p class="m-0 text-nowrap">0 votes</p>
+            </aside>
+        </div>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+        <p class="m-0">${'d/m/Y'}</p>
+        <p class="m-0">
+            <em>by</em>
+            <a href="#"> {{ $answer->author->name }}</a>
+        </p>
+    </div>`;
+  return new_answer;
+}
+
+
+/************************************************************************ */
+/** thingy js - to be deleted */
 
 function sendItemUpdateRequest() {
   let item = this.closest('li.item');

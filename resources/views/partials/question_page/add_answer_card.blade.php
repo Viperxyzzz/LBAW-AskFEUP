@@ -12,7 +12,7 @@
         @endif
     </form>
     <div class="card-footer text-right">
-        <button type="submit" class="m-0">
+        <button id="add-answer-button" type="submit" class="m-0">
             Answer
         </button>
     </div>

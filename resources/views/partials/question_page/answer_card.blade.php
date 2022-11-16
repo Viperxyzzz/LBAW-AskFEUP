@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href='https://css.gg/check-o.css' rel='stylesheet'>
-<div class="card my-5">
+<div class="card my-5 answer">
     <div class="card-body d-flex justify-content-between">
         <div style="font-size: 2rem">
             <p class="card-text">{{ $answer->full_text }}</p>
