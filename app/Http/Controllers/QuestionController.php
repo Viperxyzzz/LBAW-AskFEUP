@@ -19,7 +19,6 @@ class QuestionController extends Controller
      */
     public function home($question_id)
     {
-      if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
       $question = Question::find($question_id);
       $answers = $question->answers();
@@ -35,7 +34,6 @@ class QuestionController extends Controller
     public function answer(Request $request, $question_id) {
       //if (!Auth::check()) return redirect('/login');
       $answer = new Answer();
-      $answer->answer_id = 302;
       $answer->full_text = $request->input('answer');
       $answer->num_votes = 0;
       $answer->is_correct = false;
@@ -43,8 +41,8 @@ class QuestionController extends Controller
       $answer->user_id = auth::id();
       $answer->save();
 
-      //return json_encode($answer);
-      //return response()->json(json_encode($answer), 200);
-      return $answer;
+      $answer['author'] = Auth::user()->name;
+      $answer['date'] = date("d-m-Y");
+      return json_encode($answer);
     }
 }
