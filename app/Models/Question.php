@@ -45,8 +45,24 @@ class Question extends Model
         return $this->hasOne(User::class, 'user_id', 'author_id');
     }
 
-    public function date_distance() {
-        return Carbon::parse($this->date)->diffForHumans(); 
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class, 'question_id', 'question_id');
     }
-    
+
+    public function comments()
+    {
+        return $this->hasMany(Answer::class, 'question_id', 'question_id');
+    }
+
+    public function date_distance() {
+        return Carbon::parse($this->date)->diffForHumans();
+    }
+
+
+    /**
+     */
+    public function __construct() {
+    }
 }
