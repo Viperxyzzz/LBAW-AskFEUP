@@ -24,6 +24,27 @@ class QuestionController extends Controller
       $question = Question::find($question_id);
       return view('pages.question', ['question' => $question]);
     }
+
+    public function create(Request $request)
+    {
+      if(!Auth::check()) return redirect('/login');
+      $question = new Question;
+      $question->title = $request->title;
+      $question->full_text = $request->full_text;
+      $question->author_id = Auth::user()->user_id;
+
+      $question->num_votes = 0;
+      $question->num_views = 0;
+      $question->num_answers = 0;
+
+      $question->date = date('Y-m-d H:i:s');
+
+
+
+      $question->save();
+      return redirect('/question/'.$question->question_id);
+    }
+
     public function create_view()
     {
       if (!Auth::check()) return redirect('/login');

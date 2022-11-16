@@ -22,7 +22,7 @@ Route::get('question/create', 'QuestionController@create_view')->name('question_
 Route::get('question/{id}', 'QuestionController@home')->name('question');
 
 // API
-Route::put('api/question', 'QuestionController@create');
+Route::post('api/question', 'QuestionController@create')->name('question_create_api');
 
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
