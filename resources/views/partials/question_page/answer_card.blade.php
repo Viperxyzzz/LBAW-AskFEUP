@@ -1,4 +1,4 @@
-<div class="card my-5">
+<div class="card my-5 answer">
     <div class="card-body d-flex justify-content-between">
         <div style="font-size: 2rem">
             <p class="card-text">{{ $answer->full_text }}</p>
