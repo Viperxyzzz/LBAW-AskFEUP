@@ -8,7 +8,13 @@ function addEventListeners() {
     orderRadio.forEach(orderButton => {
       orderButton.addEventListener('change', sendOrderQuestionsRequest);
     });
+  }
 
+  let directionRadio = document.querySelectorAll('input[name=direction]');
+  if (directionRadio != null) {
+    directionRadio.forEach(directionButton => {
+      directionButton.addEventListener('change', sendOrderQuestionsRequest);
+    });
   }
 }
 
@@ -84,12 +90,11 @@ function createAnswer(answer) {
 /*********** filter questions ***********/
 
 function sendOrderQuestionsRequest(event) {
-  let order = this.id;
-  console.log(order)
-  document.getElementById(this.id).checked = true;
+  let order = document.querySelector('input[name="order"]:checked').id;
+  let direction = document.querySelector('input[name="direction"]:checked').id;
 
   if (order != '')
-    sendAjaxRequest('get', `/api/browse/?order=${order}`, {}, orderedQuestionsHandler);
+    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}`, {}, orderedQuestionsHandler);
 
   event.preventDefault();
 }

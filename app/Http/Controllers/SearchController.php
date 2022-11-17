@@ -17,13 +17,11 @@ class SearchController extends Controller
      * @return Array Array of questions.
      */
     public function get_questions(Request $request) {
-      if (is_null($request->input('order'))) {
-        $order = 'date';
-      } else {
-        $order = $request->input('order');
-      }
+      $direction =  $request->input('direction') ?? 'desc';
+      $order = $request->input('order') ?? 'date';
+
       // TODO if search
-      $questions = Question::orderBy($order, 'desc')->get();
+      $questions = Question::orderBy($order, $direction)->get();
       foreach($questions as $question) {
         $question['author_name'] = $question->author->name;
         $question['date_distance'] = $question->date_distance();
