@@ -2,6 +2,7 @@
     --primary-color: #3f72af;
     --secondary-color: #606c76;
     --accent-color: #FDBE34;
+    --light-color: #c7c7c7;
 }
 
 body {
@@ -43,4 +44,11 @@ i {
 
 textarea {
     resize: none;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    margin: 1rem;
+    background-color: var(--light-color);
 }

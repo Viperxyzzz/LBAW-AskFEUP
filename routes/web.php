@@ -22,7 +22,9 @@ Route::get('settings', 'ProfileSettingsController@show');
 Route::get('question/{id}', 'QuestionController@home')->name('question');
 Route::put('api/answer/{id}', 'QuestionController@answer');
 
-// API
+// Search
+Route::get('browse', 'SearchController@home');
+Route::get('api/browse', 'SearchController@browse');
 
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');

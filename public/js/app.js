@@ -2,6 +2,14 @@ function addEventListeners() {
   let answerCreator = document.querySelector('#add-answer-button');
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
+
+  let orderRadio = document.querySelectorAll('input[name=order]');
+  if (orderRadio != null) {
+    orderRadio.forEach(orderButton => {
+      orderButton.addEventListener('change', sendOrderQuestionsRequest);
+    });
+
+  }
 }
 
 function encodeForAjax(data) {
@@ -71,6 +79,83 @@ function createAnswer(answer) {
         </p>
     </div>`;
   return new_answer;
+}
+
+/*********** filter questions ***********/
+
+function sendOrderQuestionsRequest(event) {
+  let order = this.id;
+  console.log(order)
+  document.getElementById(this.id).checked = true;
+
+  if (order != '')
+    sendAjaxRequest('get', `/api/browse/?order=${order}`, {}, orderedQuestionsHandler);
+
+  event.preventDefault();
+}
+
+function orderedQuestionsHandler() {
+  let questions = JSON.parse(this.responseText);
+
+  // Create the new answer
+  let newQuestions = createQuestions(questions);
+
+  // Insert the new answer
+  let parent = document.querySelector('#questions');
+  let child = document.querySelector('#questions-list');
+  parent.removeChild(child);
+  parent.appendChild(newQuestions);
+}
+
+function createQuestions(questions) {
+  let parent = document.createElement('div');
+  parent.id = "questions-list";
+  Object.keys(questions).forEach(idx => {
+   parent.appendChild(createQuestion(questions[idx]))
+  });
+  return parent;
+}
+
+function createQuestion(question) {
+  let new_question = document.createElement('div');
+  new_question.className = 'card'
+  new_question.classList.add('my-5')
+
+  let tags = "";
+  question.tags.forEach(tag => {
+    tags += `<span class="badge p-2">${tag.tag_name}</span>\n`
+  })
+  new_question.innerHTML = 
+  `
+  <div class="card-body d-flex justify-content-between">
+      <div>
+          <a
+          class="card-title font-weight-bold" 
+          href="question/${question.question_id}">
+          ${question.title}
+          </a>
+          <p class="card-text">${question.full_text}</p>
+          <div class="flex">
+            ${tags}
+          </div>
+      </div>
+      <div class="ml-5">
+          <aside class="question-stats">
+              <p class="m-0 text-nowrap">${question.num_votes} votes</p>
+              <p class="m-0 text-nowrap">${question.num_views} views</p>
+              <p class="m-0 text-nowrap">${question.num_answers} answers</p>
+          </aside>
+      </div>
+  </div>
+  <div class="card-footer d-flex justify-content-between">
+      <p class="m-0">${question.date_distance}</p>
+      <p class="m-0">
+          <em>by</em>
+          <a href="#"> ${question.author_name}</a>
+      </p>
+  </div>`;
+
+  return new_question;
 }
 
 addEventListeners();
