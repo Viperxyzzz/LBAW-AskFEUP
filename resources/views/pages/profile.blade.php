@@ -53,7 +53,7 @@
         </div>
       </div>
 
-      <div class="col-lg-8 container py-5 bg-secondary">
+      <div class="col-lg-8">
         <div class="card">
           <div class="card-body">
 
