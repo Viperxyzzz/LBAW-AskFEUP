@@ -43,6 +43,14 @@ i {
     background-color: var(--accent-color);
 }
 
+.title-blue {
+    color: var(--primary-color);
+}
+
+#tags option{
+    font-size: 1.3rem;
+}
+
 textarea {
     resize: none;
 }
