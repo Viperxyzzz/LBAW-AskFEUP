@@ -19,6 +19,8 @@ Route::get('profile', 'ProfileController@home');
 Route::get('settings', 'ProfileSettingsController@show');
 
 Route::get('users', 'UserController@home');
+Route::get('api/users/', 'UserController@all');
+Route::get('api/users/{search}', 'UserController@search');
 
 // Questions
 Route::get('question/create', 'QuestionController@create_view')->name('question_create');
