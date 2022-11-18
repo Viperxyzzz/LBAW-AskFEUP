@@ -66,27 +66,27 @@ function createAnswer(answer) {
         <div style="font-size: 2rem">
             <p class="card-text"> ${answer.full_text }</p>
         </div>
-        <div class="ml-5">
+        <div class="ml-5 d-flex">
             <aside class="question-stats">
                 <p class="m-0 text-nowrap">0 votes</p>
             </aside>
+            <div class="dropdown">
+                <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                    <i class="material-symbols-outlined">more_vert</i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                    <data class="answer_id" hidden> ${answer.answer_id }</data>
+                    <button class="dropdown-item edit_answer">
+                        <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                        Edit
+                    </button>
+                    <button class="dropdown-item delete_answer">
+                        <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                        Delete
+                    </button>
+                </div>
+            </div>
         </div>
-      <div class="dropdown">
-          <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
-              <i class="material-symbols-outlined">more_vert</i>
-          </button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-              <data class="answer_id" hidden> ${answer.answer_id }</data>
-              <button class="dropdown-item edit_answer">
-                  <i width="16" height="16" class="material-symbols-outlined ">edit</i>
-                  Edit
-              </button>
-              <button class="dropdown-item delete_answer">
-                  <i width="16" height="16" class="material-symbols-outlined ">delete</i>
-                  Delete
-              </button>
-          </div>
-      </div>
     </div>
     <div class="card-footer d-flex justify-content-between">
         <p class="m-0">${answer.date}</p>
