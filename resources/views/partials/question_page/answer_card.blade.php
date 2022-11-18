@@ -16,6 +16,23 @@
                 @endif
             </aside>
         </div>
+        @if (Auth::user()->user_id === $answer->user_id)
+        <div class="dropdown">
+            <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                <i class="material-symbols-outlined">more_vert</i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                <button class="dropdown-item">
+                    <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                    Edit
+                </button>
+                <button class="dropdown-item">
+                    <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                    Delete
+                </button>
+            </div>
+        </div>
+        @endif
     </div>
     <div class="card-footer d-flex justify-content-between">
 
