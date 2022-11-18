@@ -3,6 +3,13 @@ function addEventListeners() {
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
+  let answerDelete = document.querySelectorAll('.delete_answer');
+  if (answerDelete != null) {
+    answerDelete.forEach(
+      btn => btn.addEventListener('click', sendDeleteAnswerRequest)
+      );
+  }
+
   let orderRadio = document.querySelectorAll('input[name=order]');
   if (orderRadio != null) {
     orderRadio.forEach(orderButton => {
@@ -59,6 +66,7 @@ function answerAddedHandler() {
   // Insert the new answer
   let first_answer = document.querySelector('.answer');
   first_answer.parentElement.insertBefore(new_answer, first_answer);
+  addEventListeners();
 }
 
 function createAnswer(answer) {
@@ -66,15 +74,32 @@ function createAnswer(answer) {
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
   new_answer.classList.add('answer')
-  new_answer.innerHTML = `
+  new_answer.id = 'answer_' + answer.answer_id;
+  new_answer.innerHTML = ` 
     <div class="card-body d-flex justify-content-between">
         <div style="font-size: 2rem">
             <p class="card-text"> ${answer.full_text }</p>
         </div>
-        <div class="ml-5">
+        <div class="ml-5 d-flex">
             <aside class="question-stats">
                 <p class="m-0 text-nowrap">0 votes</p>
             </aside>
+            <div class="dropdown">
+                <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                    <i class="material-symbols-outlined">more_vert</i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                    <data class="answer_id" hidden> ${answer.answer_id }</data>
+                    <button class="dropdown-item edit_answer">
+                        <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                        Edit
+                    </button>
+                    <button class="dropdown-item delete_answer">
+                        <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                        Delete
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card-footer d-flex justify-content-between">
@@ -87,6 +112,17 @@ function createAnswer(answer) {
   return new_answer;
 }
 
+/*********** delete an answer ***********/
+
+function sendDeleteAnswerRequest(event) {
+  let answer_id = event.target.parentElement.children[0].innerHTML;
+  console.log(answer_id)
+
+  if (answer != '')
+    sendAjaxRequest('delete', '/api/answer/delete/' + answer_id, {}, answerDeletedHandler);
+  event.preventDefault();
+}
+
 /*********** filter questions ***********/
 
 function sendOrderQuestionsRequest(event) {
@@ -95,9 +131,20 @@ function sendOrderQuestionsRequest(event) {
 
   if (order != '')
     sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}`, {}, orderedQuestionsHandler);
-
+    
   event.preventDefault();
 }
+
+function answerDeletedHandler() {
+  //if (this.status != 202) window.location = '/';
+  let deletedAnswer = JSON.parse(this.responseText);
+
+  document.querySelector('#answer').value="";
+
+  let deletedAnswerElement = document.getElementById("answer_" + deletedAnswer.answer_id)
+  deletedAnswerElement.remove();
+}
+
 
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);

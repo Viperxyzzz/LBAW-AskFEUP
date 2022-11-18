@@ -30,6 +30,10 @@ Route::get('api/browse', 'SearchController@browse');
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
 
+// Answers
+Route::put('api/answer/{id}', 'AnswerController@create');
+Route::delete('api/answer/delete/{id}', 'AnswerController@delete');
+
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login');
