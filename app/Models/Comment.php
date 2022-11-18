@@ -25,4 +25,8 @@ class Comment extends Model
      * @var string
      */
     protected $primaryKey = 'comment_id';
+    
+    public function author() {
+        return $this->hasOne(User::class, 'user_id', 'user_id');
+    }
 }

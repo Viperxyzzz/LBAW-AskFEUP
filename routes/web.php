@@ -16,10 +16,12 @@ Route::get('/', 'Auth\LoginController@home');
 // User specific
 Route::get('feed', 'FeedController@home');
 Route::get('profile', 'ProfileController@home');
+Route::get('settings', 'ProfileSettingsController@show');
 
 // Questions
 Route::get('question/create', 'QuestionController@create_view')->name('question_create');
 Route::get('question/{id}', 'QuestionController@home')->name('question');
+Route::put('api/answer/{id}', 'QuestionController@answer');
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
