@@ -210,4 +210,8 @@ function createQuestion(question) {
   return new_question;
 }
 
+function editPass(){
+  console.log("Passei aqui")
+}
+
 addEventListeners();
