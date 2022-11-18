@@ -48,7 +48,7 @@ class ProfileController extends Controller
       if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
       $user = User::find(Auth::id());
-      $questions = $user->questions()->get();
+      $questions = $user->questions()->orderBy('question_id', 'DESC')->get();
       return view('pages.my_questions', ['user' => $user, 'questions' => $questions]);
     }
 
@@ -62,7 +62,7 @@ class ProfileController extends Controller
       if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
       $user = User::find(Auth::id());
-      $answers = $user->answers()->get();
+      $answers = $user->answers()->orderBy('answer_id', 'DESC')->get();
       return view('pages.my_answers', ['user' => $user, 'answers' => $answers]);
     }
 

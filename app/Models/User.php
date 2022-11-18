@@ -105,6 +105,11 @@ class User extends Authenticatable
 
     public function answers()
     {
-        return $this->hasMany(Question::class, 'user_id', 'user_id');
+        return $this->hasMany(Answer::class, 'user_id', 'user_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'user_id', 'user_id');
     }
 }
