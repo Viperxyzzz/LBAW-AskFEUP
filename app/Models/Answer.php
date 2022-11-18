@@ -26,6 +26,19 @@ class Answer extends Model
      */
     protected $primaryKey = 'answer_id';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'full_text', 'num_votes', 'is_correct', 'was_edited', 'date', 'question_id', 'user_id'
+    ];
+
+    public function question(){
+        return $this->hasOne(Question::class, 'question_id', 'question_id');
+    }
+
     public function author() {
         return $this->hasOne(User::class, 'user_id', 'user_id');
     }

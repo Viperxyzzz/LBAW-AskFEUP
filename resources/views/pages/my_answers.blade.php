@@ -15,8 +15,15 @@
       @include('partials.profile.left_nav')
 
       <div class="col-lg-8">
-        @foreach ($answers as $answers)
-         
+
+        @foreach ($answers as $answer)
+          <h3>
+            <strong>Question:</strong>
+            <a href="{{route('question', array('id' => $answer->question()->get()->value('question_id'))) }}">
+              {{$answer->question()->get()->value('title')}}
+            </a>
+          </h3>
+          @include('partials.question_page.answer_card', ['answer' => $answer])
         @endforeach
     </div>
 </div>

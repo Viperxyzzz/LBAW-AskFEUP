@@ -1,4 +1,5 @@
 <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+    <strong class="ml-4 mb-0">Answer:</strong>
     <div class="card-body d-flex justify-content-between">
         <div style="font-size: 2rem">
             <p class="card-text">{{ $answer->full_text }}</p>
@@ -43,7 +44,8 @@
         </p>
     </div>
     @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
-                @include('partials.question_page.comment_card', ['comment' => $comment])
+        <strong class="ml-4 mt-2">Comment:</strong>
+        @include('partials.question_page.comment_card', ['comment' => $comment])
     @endforeach
 
 </div>
