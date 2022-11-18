@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
+use App\Models\QuestionTag;
+use App\Models\Tag;
 use App\Models\Answer;
 
 class QuestionController extends Controller
@@ -26,23 +28,39 @@ class QuestionController extends Controller
       return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments]);
     }
 
-    /**
-     * Post an answer to a question.
-     * 
-     * @return TODO
-     */
-    public function answer(Request $request, $question_id) {
-      //if (!Auth::check()) return redirect('/login');
-      $answer = new Answer();
-      $answer->full_text = $request->input('answer');
-      $answer->num_votes = 0;
-      $answer->is_correct = false;
-      $answer->question_id = $question_id;
-      $answer->user_id = auth::id();
-      $answer->save();
+    public function create(Request $request)
+    {
+      if(!Auth::check()) return redirect('/login');
+      $question = new Question;
+      $question->title = $request->title;
+      $question->full_text = $request->full_text;
+      $question->author_id = Auth::user()->user_id;
 
-      $answer['author'] = Auth::user()->name;
-      $answer['date'] = date("d-m-Y");
-      return json_encode($answer);
+      $question->num_votes = 0;
+      $question->num_views = 0;
+      $question->num_answers = 0;
+
+      $question->date = date('Y-m-d H:i:s');
+
+      $question->save();
+
+      $tags = $request->tags;
+      for($i = 0; $i < count($tags); $i++){
+        $question_tag = new QuestionTag;
+        $question_tag->question_id = $question->question_id;
+        $question_tag->tag_id = $tags[$i];
+        $question_tag->save();
+      }
+
+      return redirect('/question/'.$question->question_id);
+      //return $question;
     }
+
+    public function create_view()
+    {
+      if (!Auth::check()) return redirect('/login');
+      $tags = Tag::all();
+      return view('pages.create_question',['tags' => $tags]);
+    }
+
 }

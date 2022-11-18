@@ -7,6 +7,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="{{ url('/browse') }}">
+                <i width="16" height="16" class="material-symbols-outlined ">search</i>
+                Questions
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="#">
                 <i width="16" height="16" class="material-symbols-outlined ">sell</i>
                 Tags
