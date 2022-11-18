@@ -73,4 +73,8 @@ function createAnswer(answer) {
   return new_answer;
 }
 
+function editPass(){
+  console.log("Passei aqui")
+}
+
 addEventListeners();

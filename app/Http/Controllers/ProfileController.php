@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
+use App\Models\Question;
 
 class ProfileController extends Controller
 {
@@ -22,6 +23,47 @@ class ProfileController extends Controller
       //$this->authorize('list', Question::class);
       $user = User::find(Auth::id());
       return view('pages.profile', ['user' => $user]);
+    }
+
+    /**
+     * Display the personal profile.
+     *
+     * @return Response
+     */
+    public function settings()
+    {
+      if (!Auth::check()) return redirect('/login');
+      //$this->authorize('list', Question::class);
+      $user = User::find(Auth::id());
+      return view('pages.settings', ['user' => $user]);
+    }
+
+    /**
+     * Display the personal profile.
+     *
+     * @return Response
+     */
+    public function myQuestions()
+    {
+      if (!Auth::check()) return redirect('/login');
+      //$this->authorize('list', Question::class);
+      $user = User::find(Auth::id());
+      $questions = $user->questions()->get();
+      return view('pages.my_questions', ['user' => $user, 'questions' => $questions]);
+    }
+
+    /**
+     * Display the personal profile.
+     *
+     * @return Response
+     */
+    public function myAnswers()
+    {
+      if (!Auth::check()) return redirect('/login');
+      //$this->authorize('list', Question::class);
+      $user = User::find(Auth::id());
+      $answers = $user->answers()->get();
+      return view('pages.my_answers', ['user' => $user, 'answers' => $answers]);
     }
 
 }

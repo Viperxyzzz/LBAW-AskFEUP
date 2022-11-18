@@ -16,7 +16,9 @@ Route::get('/', 'Auth\LoginController@home');
 // User specific
 Route::get('feed', 'FeedController@home');
 Route::get('profile', 'ProfileController@home');
-Route::get('settings', 'ProfileSettingsController@show');
+Route::get('settings', 'ProfileController@settings');
+Route::get('my_questions', 'ProfileController@myQuestions');
+Route::get('my_answers', 'ProfileController@myAnswers');
 
 // Questions
 Route::get('question/{id}', 'QuestionController@home')->name('question');

@@ -7,6 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable
 {
@@ -90,5 +92,19 @@ class User extends Authenticatable
                     ->pluck('badge.badge_name');
       return $badge_names3;
     }
+  
+    /**
+     * Get all of the comments for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function questions()
+    {
+        return $this->hasMany(Question::class, 'author_id', 'user_id');
+    }
 
+    public function answers()
+    {
+        return $this->hasMany(Question::class, 'user_id', 'user_id');
+    }
 }

@@ -3,55 +3,16 @@
 @section('content')
   <div class="container py-5">
     <div class="row">
-      <div class="col-lg-3">
-        <div class="card mb-4 border-0">
-          <div class="card-body text-center">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
-              class="rounded-circle img-fluid" style="width: 200px;">
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-8 m-0 p-0">
-        <div class="card mb-4 border-0">
-          <div class="card-body text-center">
-            <h1>{{$user->name}}</h1>
-            <h3>Score in the community: <strong>{{$user->score}}</strong></h3>
-          </div>
-        </div>
-        <div class="d-flex justify-content-between pt-5 ml-5 pl-5">
-          <h2 class="m-0">Summary</h2>
-          <h3 class="m-0">{{$user->email}}</h3>
-        </div>
-      </div>
-
+      @include('partials.profile.image')
+      @include('partials.profile.header', ['user' => $user])
       <div class="col-lg-1 mt-4">
-      <a class="nav-item p-2" href="{{ url('/settings') }}"> <button>Edit Profile</button></a>
+        <a class="nav-item p-2" href="{{ url('/settings') }}"> <button>Edit Profile</button></a>
       </div>
     </div>
 
 
     <div class="row pr-0">
-      <div class="col-lg-3 container py-5 bg-light m-3">
-        <div class="card mb-4 mb-lg-0">
-          <div class="card-body p-0">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item p-3">
-                <p class="mb-0">My Questions</p>
-              </li>
-              <li class="list-group-item p-3">
-                <p class="mb-0">My Answers</p>
-              </li>
-              <li class="list-group-item p-3">
-                <p class="mb-0">My Badges</p>
-              </li>
-              <li class="list-group-item p-3">
-                <p class="mb-0">Following Tags</p>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      @include('partials.profile.left_nav')
 
       <div class="col-lg-8">
         <div class="card">
