@@ -18,6 +18,8 @@ Route::get('feed', 'FeedController@home');
 Route::get('profile', 'ProfileController@home');
 Route::get('settings', 'ProfileSettingsController@show');
 
+Route::get('users', 'UserController@home');
+
 // Questions
 Route::get('question/create', 'QuestionController@create_view')->name('question_create');
 Route::get('question/{id}', 'QuestionController@home')->name('question');
