@@ -211,7 +211,29 @@ function createQuestion(question) {
 }
 
 function editPass(){
-  console.log("Passei aqui")
+  let editButton = document.getElementById('edit-pass')
+  editButton.setAttribute("class", "hide")
+
+  let divPass = document.getElementById("edit-pass-div")
+  divPass.setAttribute("class", "form-gorup")
+  divPass.innerHTML =
+  `
+    <label>New Password</label>
+    <input type="password" name="new_password">
+  `
+
+  let divPassConfirm = document.getElementById("edit-pass-div-conf")
+  divPassConfirm.setAttribute("class", "form-gorup")
+  divPassConfirm.innerHTML =
+  `
+    <label>Confirm Password</label>
+    <input type="password" name="confirm_pass">
+  `
 }
+
+function submitSettings(){
+  document.getElementById("edit-user-form").submit();
+}
+
 
 addEventListeners();
