@@ -37,6 +37,13 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    /**
+     * Perform an exact search match for usernames.
+     */
+    public static function search(string $query) {
+      return User::where('username', 'like', "%$query%")->orderBy('username')->get();
+    }
+
     public function get_n_answered()
     {
       if (!Auth::check()) return redirect('/login');
