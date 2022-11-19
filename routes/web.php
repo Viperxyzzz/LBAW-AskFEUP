@@ -30,7 +30,7 @@ Route::get('question/{id}', 'QuestionController@home')->name('question');
 Route::put('api/answer/{id}', 'QuestionController@answer');
 
 // Search
-Route::get('browse', 'SearchController@home');
+Route::get('browse', 'SearchController@home')->name('browse');
 Route::get('api/browse', 'SearchController@browse');
 
 // API
