@@ -31,6 +31,7 @@ Route::get('api/browse', 'SearchController@browse');
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
+Route::delete('api/question/{id}', 'QuestionController@delete')->name('question_delete_api');
 
 // Answers
 Route::put('api/answer/{id}', 'AnswerController@create');
