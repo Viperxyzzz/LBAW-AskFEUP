@@ -10,10 +10,10 @@
             <a href="/my_answers">My Answers</a>
             </li>
             <li class="list-group-item p-3">
-            My Badges
+            <a href="">My Badges</a>
             </li>
             <li class="list-group-item p-3">
-            Following Tags
+            <a href="">Following Tags</a>
             </li>
         </ul>
         </div>
