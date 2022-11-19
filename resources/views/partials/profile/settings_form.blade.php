@@ -39,4 +39,4 @@
 </form>
 <button class="ml-5" id="edit-pass" onclick="editPass()">Edit Password</button>
 <button class="ml-5" id="save-settings" onclick="submitSettings()">Save</button>
-<a class="ml-5" id="cancel-settings" href="/profile"><button class="btn-danger">Cancel</button></a>
+<a class="ml-5" id="cancel-settings" href="{{ route('users', array('id' => $user->user_id)) }}"><button class="btn-danger">Cancel</button></a>

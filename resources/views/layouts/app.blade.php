@@ -32,7 +32,7 @@
     <script type="text/javascript" src={{ asset('js/app.js') }} defer>
     </script>
   </head>
-  <body class="min-vh-100">
+  <body class="min-vh-100" data-spy="scroll" data-target="#feed-nav" data-offset="0"  data-bs-smooth-scroll="true">
     <main>
       @include('layouts.header')
       <section id="content" class="min-vh-100">

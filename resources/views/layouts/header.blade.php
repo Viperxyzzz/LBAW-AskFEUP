@@ -14,7 +14,7 @@
                     {{ Auth::user()->name }}
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="{{ url('/profile') }}">
+                    <a class="dropdown-item" href="{{ url('/users/'.Auth::id()) }}">
                         <i width="16" height="16" class="material-symbols-outlined ">person</i>
                         Profile
                     </a>
