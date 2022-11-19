@@ -3,15 +3,30 @@
 @section('content')
 <div class="row">
     @include('partials.feed.left_nav')
-    <div class="col-lg-6">
+    <div class="col-lg-6 " >
         <div class="flex align-content-between mt-5">
             <a class="button float-right" href="{{ route('question_create') }}">Ask a question</a>
-            <h2>Leading Questions</h2>
         </div>
-        @foreach ($questions as $question)
-            @include('partials.feed.question_card', ['question' => $question])
-        @endforeach
+        <div id="last_questions">
+            <h2>Last Questions</h2>
+            @foreach ($questions['last'] as $question)
+                @include('partials.feed.question_card', ['question' => $question])
+            @endforeach
+        </div>
+        <div id="my_questions">
+            <h2>My Questions</h2>
+            @foreach ($questions['authored'] as $question)
+                @include('partials.feed.question_card', ['question' => $question])
+            @endforeach
+        </div>
+        <div id="following_questions">
+            <h2>Questions following</h2>
+            @foreach ($questions['following'] as $question)
+                @include('partials.feed.question_card', ['question' => $question])
+            @endforeach
+        </div>
     </div>
+    @include('partials.feed.index')
 </div>
 @endsection
 

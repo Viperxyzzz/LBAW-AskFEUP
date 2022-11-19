@@ -1,4 +1,4 @@
-<nav class="col-lg-2 mt-5 pl-5 ">
+<nav class="col-lg-2 p-5 border-right">
     <h3>Order by</h3>
     <form class="ml-2 mt-4">
         <div class="d-flex m-2 justify-content-center">

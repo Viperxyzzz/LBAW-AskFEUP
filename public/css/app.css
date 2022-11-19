@@ -25,6 +25,16 @@ i {
 
 .nav-link.active {
     color: var(--primary-color);
+    background-color: var(--background-color);
+}
+
+.nav-link:hover {
+    background-color: var(--background-color);
+}
+
+.nav-pills .nav-link.active {
+    color: #fff !important;
+    background-color: var(--primary-color) !important;
 }
 
 .link-dark {
@@ -94,6 +104,8 @@ input[type=radio]:checked + label {
 #questions-list {
     animation: fadeIn 0.8s;
 }
+
+.sticky-top { top: 3rem; }
 
 @keyframes fadeIn {
   0% { opacity: 0; }
