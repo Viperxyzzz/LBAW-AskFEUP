@@ -8,6 +8,20 @@ function addEventListeners() {
     userSearch.addEventListener('input', sendSearchUsersRequest);
   }
 
+  let orderUserRadio = document.querySelectorAll('input[name=order-users]');
+  if (orderUserRadio != null) {
+    orderUserRadio.forEach(orderUserButton => {
+      orderUserButton.addEventListener('change', sendSearchUsersRequest);
+    });
+  }
+
+  let directionUsersRadio = document.querySelectorAll('input[name=direction-users]');
+  if (directionUsersRadio != null) {
+    directionUsersRadio.forEach(directionUsersButton => {
+      directionUsersButton.addEventListener('change', sendSearchUsersRequest);
+    });
+  }
+
   let answerDelete = document.querySelectorAll('.delete_answer');
   if (answerDelete != null) {
     answerDelete.forEach(
@@ -15,17 +29,17 @@ function addEventListeners() {
       );
   }
 
-  let orderRadio = document.querySelectorAll('input[name=order]');
-  if (orderRadio != null) {
-    orderRadio.forEach(orderButton => {
-      orderButton.addEventListener('change', sendOrderQuestionsRequest);
+  let orderQuestionsRadio = document.querySelectorAll('input[name=order-questions]');
+  if (orderQuestionsRadio != null) {
+    orderQuestionsRadio.forEach(orderQuestionsButton => {
+      orderQuestionsButton.addEventListener('change', sendOrderQuestionsRequest);
     });
   }
 
-  let directionRadio = document.querySelectorAll('input[name=direction]');
-  if (directionRadio != null) {
-    directionRadio.forEach(directionButton => {
-      directionButton.addEventListener('change', sendOrderQuestionsRequest);
+  let directionQuestionsRadio = document.querySelectorAll('input[name=direction-questions]');
+  if (directionQuestionsRadio != null) {
+    directionQuestionsRadio.forEach(directionQuestionsButton => {
+      directionQuestionsButton.addEventListener('change', sendOrderQuestionsRequest);
     });
   }
 }
@@ -120,9 +134,11 @@ function createAnswer(answer) {
 /*********** search for users ***********/
 
 function sendSearchUsersRequest(event) {
+  let order = document.querySelector('input[name="order-users"]:checked').id;
+  let direction = document.querySelector('input[name="direction-users"]:checked').id;
   let search = document.querySelector('#user-search').value;
 
-  sendAjaxRequest('get', '/api/users/' + search, {}, userSearchHandler);
+  sendAjaxRequest('get', `/api/users/?search=${search}&order=${order}&direction=${direction}`, {}, userSearchHandler);
 
   event.preventDefault();
 }
@@ -189,18 +205,6 @@ function sendDeleteAnswerRequest(event) {
   event.preventDefault();
 }
 
-/*********** filter questions ***********/
-
-function sendOrderQuestionsRequest(event) {
-  let order = document.querySelector('input[name="order"]:checked').id;
-  let direction = document.querySelector('input[name="direction"]:checked').id;
-
-  if (order != '')
-    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}`, {}, orderedQuestionsHandler);
-    
-  event.preventDefault();
-}
-
 function answerDeletedHandler() {
   //if (this.status != 202) window.location = '/';
   let deletedAnswer = JSON.parse(this.responseText);
@@ -211,6 +215,17 @@ function answerDeletedHandler() {
   deletedAnswerElement.remove();
 }
 
+/*********** filter questions ***********/
+
+function sendOrderQuestionsRequest(event) {
+  let order = document.querySelector('input[name="order-questions"]:checked').id;
+  let direction = document.querySelector('input[name="direction-questions"]:checked').id;
+
+  if (order != '')
+    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}`, {}, orderedQuestionsHandler);
+    
+  event.preventDefault();
+}
 
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);
@@ -276,6 +291,7 @@ function createQuestion(question) {
   return new_question;
 }
 
+/***********  ***********/
 function editPass(){
   let editButton = document.getElementById('edit-pass')
   editButton.setAttribute("class", "hide")

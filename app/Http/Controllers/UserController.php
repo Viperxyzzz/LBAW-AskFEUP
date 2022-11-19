@@ -18,7 +18,7 @@ class UserController extends Controller
      */
     public function home()
     {
-      $users = User::all();
+      $users = User::all()->sortBy('username');
       return view('pages.users', ['users' => $users]);
     }
 
@@ -27,18 +27,28 @@ class UserController extends Controller
      *
      * @return Response
      */
-    public function all()
+    public function search(Request $request)
     {
-      return User::all();
+      $search =  $request->input('search') ?? '';
+      $users = User::search($search);
+      return $this->sort_users($users, $request);
     }
 
-    /**
-     * Display all the users that match an exact search.
-     *
-     * @return Response
+    /** 
+     * Sort users according to an HTTP request.
+     * 
+     * @return Array Users' array.
      */
-    public function search($search)
-    {
-      return User::search($search);
+    public function sort_users($users, Request $request) {
+      $direction =  $request->input('direction') ?? 'asc';
+      $order = $request->input('order') ?? 'username';
+      
+      if ($direction == 'asc') {
+        $users = $users->sortBy($order)->values()->all();
+      }
+      else {
+        $users = $users->sortByDesc($order)->values()->all();
+      }
+      return $users;
     }
 }
