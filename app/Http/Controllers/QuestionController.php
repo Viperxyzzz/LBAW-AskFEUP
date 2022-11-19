@@ -45,6 +45,8 @@ class QuestionController extends Controller
       $question->save();
 
       $tags = $request->tags;
+      if($tags === null)
+        return redirect('/question/'.$question->question_id);
       for($i = 0; $i < count($tags); $i++){
         $question_tag = new QuestionTag;
         $question_tag->question_id = $question->question_id;
