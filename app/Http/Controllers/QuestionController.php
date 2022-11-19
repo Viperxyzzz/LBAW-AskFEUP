@@ -45,6 +45,8 @@ class QuestionController extends Controller
       $question->save();
 
       $tags = $request->tags;
+      if($tags === null)
+        return redirect('/question/'.$question->question_id);
       for($i = 0; $i < count($tags); $i++){
         $question_tag = new QuestionTag;
         $question_tag->question_id = $question->question_id;
@@ -53,7 +55,16 @@ class QuestionController extends Controller
       }
 
       return redirect('/question/'.$question->question_id);
-      //return $question;
+    }
+
+    public function delete(Request $request)
+    {
+      if(!Auth::check()) return redirect('/login');
+      $question = Question::find($request->question_id);
+      $this->authorize('delete', $question);
+      $question->delete();
+      
+      return redirect('/feed');
     }
 
     public function create_view()
