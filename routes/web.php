@@ -19,7 +19,7 @@ Route::get('settings', 'ProfileController@settings');
 
 // Users
 Route::get('users', 'UserController@home');
-Route::get('users/{id}', 'ProfileController@home');
+Route::get('users/{id}', 'ProfileController@home')->name('users');
 Route::get('api/users/', 'UserController@search');
 
 // Questions
