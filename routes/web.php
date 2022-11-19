@@ -16,7 +16,9 @@ Route::get('/', 'Auth\LoginController@home');
 // User specific
 Route::get('feed', 'FeedController@home');
 Route::get('profile', 'ProfileController@home');
-Route::get('settings', 'ProfileSettingsController@show');
+Route::get('settings', 'ProfileController@settings');
+Route::get('my_questions', 'ProfileController@myQuestions');
+Route::get('my_answers', 'ProfileController@myAnswers');
 
 Route::get('users', 'UserController@home');
 Route::get('api/users/', 'UserController@all');
@@ -27,8 +29,17 @@ Route::get('question/create', 'QuestionController@create_view')->name('question_
 Route::get('question/{id}', 'QuestionController@home')->name('question');
 Route::put('api/answer/{id}', 'QuestionController@answer');
 
+// Search
+Route::get('browse', 'SearchController@home');
+Route::get('api/browse', 'SearchController@browse');
+
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
+Route::post('api/settings', 'ProfileController@updateUser')->name('update_user_api');
+
+// Answers
+Route::put('api/answer/{id}', 'AnswerController@create');
+Route::delete('api/answer/delete/{id}', 'AnswerController@delete');
 
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
