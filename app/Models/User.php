@@ -103,6 +103,18 @@ class User extends Authenticatable
         return $this->hasMany(Question::class, 'author_id', 'user_id');
     }
 
+    public function questions_following()
+    {
+        return $this->hasManyThrough(
+          Question::class,
+          QuestionUser::class,
+          'user_id',
+          'question_id',
+          'user_id',
+          'question_id'
+        );
+    }
+
     public function answers()
     {
         return $this->hasMany(Answer::class, 'user_id', 'user_id');

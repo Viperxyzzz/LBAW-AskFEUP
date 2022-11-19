@@ -20,10 +20,9 @@ class FeedController extends Controller
     {
       if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
-      $questions = Question::orderBy('question_id')->get();
-      /*foreach ($questions as $question) {
-        $question->$tags = $question->tags();
-      }*/
+      $questions['last'] = Question::orderBy('date', 'desc')->take(3)->get();
+      $questions['authored'] = User::questions()->get();
+      $questions['following'] = User::questions()->get();
       return view('pages.feed', ['questions' => $questions ]);
     }
 
