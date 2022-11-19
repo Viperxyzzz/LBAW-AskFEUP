@@ -75,6 +75,18 @@ class ProfileController extends Controller
         return back()->with("error", "Passwords didn' match!");
       }
 
+      if(DB::table('users')->where('username', $request->username)->count() !== 0 && 
+        auth()->user()->username !== $request->username
+      ){
+        return back()->with("error", "This username already exists!");
+      }
+
+      if(DB::table('users')->where('email', $request->email)->count() !== 0 &&
+         auth()->user()->email !== $request->email
+        ){
+        return back()->with("error", "This email already exists!");
+      }
+
       if($new_password === NULL){
         auth()->user()->update([
           'name' => $request->name,
