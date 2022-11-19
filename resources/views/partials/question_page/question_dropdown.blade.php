@@ -1,5 +1,5 @@
 @if (Auth::user()->user_id === $question->author_id)
-<div class="dropdown ml-auto p-2">
+<div class="dropdown">
     <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
         <i class="material-symbols-outlined">more_vert</i>
     </button>
