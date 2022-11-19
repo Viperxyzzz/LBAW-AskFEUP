@@ -23,10 +23,12 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                     <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
-                    <button class="dropdown-item edit_answer">
-                        <i width="16" height="16" class="material-symbols-outlined ">edit</i>
-                        Edit
-                    </button>
+                    <a href="{{ route('edit_answer', array('id' => $answer->answer_id)) }}">
+                        <button class="dropdown-item edit_answer" id="edit-answer-button" >
+                            <i width="16" height="16" class="material-symbols-outlined">edit</i>
+                            Edit
+                        </button>
+                    </a>
                     <button class="dropdown-item delete_answer">
                         <i width="16" height="16" class="material-symbols-outlined ">delete</i>
                         Delete
@@ -49,3 +51,9 @@
     @endforeach
 
 </div>
+
+<script>
+$(document).on('click', 'edit_answer', function () {
+    alert("test");
+});
+</script>

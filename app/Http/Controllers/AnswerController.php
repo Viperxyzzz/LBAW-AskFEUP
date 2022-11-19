@@ -13,6 +13,7 @@ use App\Models\Answer;
 
 class AnswerController extends Controller
 {
+
     /**
      * Post an answer to a question.
      * 
@@ -42,4 +43,8 @@ class AnswerController extends Controller
       $answer->delete();
       return $answer;
     }
+    public function edit(Request $request, $answer_id) {
+      $answer = Answer::find($answer_id);
+      return view('partials.question_page.edit_answer_card', ['answer' => $answer ]);
+  }
 }

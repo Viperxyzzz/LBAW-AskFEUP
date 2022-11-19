@@ -36,6 +36,7 @@ Route::post('api/settings', 'ProfileController@updateUser')->name('update_user_a
 // Answers
 Route::put('api/answer/{id}', 'AnswerController@create');
 Route::delete('api/answer/delete/{id}', 'AnswerController@delete');
+Route::get('api/answer/{id}/edit', 'AnswerController@edit')->name('edit_answer');
 
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
