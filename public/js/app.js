@@ -42,6 +42,30 @@ function addEventListeners() {
       directionQuestionsButton.addEventListener('change', sendOrderQuestionsRequest);
     });
   }
+
+  let profileTabs = document.querySelectorAll('.profile-nav')
+  profileTabs.forEach(
+    button => {
+      button.addEventListener('click', function(){
+        toggleProfileTab(button.id + '-tab')
+        button.classList.add('active');
+      })
+    }
+  )
+}
+
+function closeProfileTabs() {
+  let buttons = document.querySelectorAll('.profile-nav');
+  buttons.forEach(button => button.classList.remove('active'))
+  let tabs = document.querySelectorAll('.profile-tab');
+  tabs.forEach(tab => {tab.classList.remove('profile-tab-open')});
+}
+
+function toggleProfileTab(tab) {
+  closeProfileTabs();
+  let open = document.getElementById(tab);
+  if (open != null)
+    open.classList.add('profile-tab-open');
 }
 
 function encodeForAjax(data) {

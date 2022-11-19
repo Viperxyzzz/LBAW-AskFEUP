@@ -4,7 +4,7 @@
     </div>
     <div class="card-body mx-2 p-2">
         <h4 class="card-title m-0 p-0">
-            <a href="#">{{ $user->username }}</a>
+            <a href="{{ url("/users/$user->user_id") }}">{{ $user->username }}</a>
         </h4>
         <p class="card-body m-0 p-0">{{ $user->name }}</p>
         <p class="card-body m-0 p-0">{{ $user->score }} points</p>

@@ -25,7 +25,7 @@
         <p class="m-0">{{ $question->date_distance() }}</p>
         <p class="m-0">
             <em>by</em>
-            <a href="#"> {{ $question->author->name }}</a>
+            <a href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
         </p>
     </div>
 
