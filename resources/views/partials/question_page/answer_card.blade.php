@@ -42,7 +42,7 @@
         <p class="m-0">{{ \Carbon\Carbon::parse($answer->date)->format('d/m/Y')}}</p>
         <p class="m-0">
             <em>by</em>
-            <a href="#"> {{ $answer->author->name }}</a>
+            <a href="{{url("/users/$answer->user_id")}}"> {{ $answer->author->name }}</a>
         </p>
     </div>
     @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
