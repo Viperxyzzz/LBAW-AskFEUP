@@ -13,7 +13,7 @@
         <p class="m-0" style="font-size: 1.2rem">{{ \Carbon\Carbon::parse($comment->date)->format('d/m/Y')}}</p>
         <p class="m-0" style="font-size: 1.2rem; margin: 0">
             <em>by</em>
-            <a href="#"> {{ $comment->author->name }}</a>
+            <a href="{{ url("/users/$comment->user_id") }}"> {{ $comment->author->name }}</a>
         </p>
     </div>
 
