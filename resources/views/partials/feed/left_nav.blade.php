@@ -19,7 +19,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link rounded p-2" href="#">
+            <a class="nav-link rounded p-2" href="{{ url('/users') }}">
                 <i width="16" height="16" class="material-symbols-outlined ">person</i>
                 Users
             </a>

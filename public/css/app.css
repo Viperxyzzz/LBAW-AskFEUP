@@ -72,13 +72,13 @@ hr {
     background-color: var(--light-color);
 }
 
-input[name="direction"] + label {
+input.direction + label {
     width: 5rem;
     text-align: center;
     padding: 0.7rem;
 }
 
-input[name="direction"]:checked + label {
+input.direction:checked + label {
     background-color: var(--background-color);
     border-radius: 1rem;
 }
