@@ -1,34 +1,35 @@
-<div class="col-lg-8">
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-sm-3">
-                <p class="mb-0">Username</p>
-                </div>
-                <div class="col-sm-9">
-                <p class="text-muted mb-0">{{$user->username}}</p>
-                </div>
+<form id="edit-user-form" action="{{ route('update_user_api') }}" method="POST">
+    @csrf
+    <div class="card m-5 p-5">
+        @if (session('status'))
+            <div class="alert alert-success" role="alert">
+                {{ session('status') }}
             </div>
-            <hr>
-            <div class="row">
-                <div class="col-sm-3">
-                <p class="mb-0">Full Name</p>
-                </div>
-                <div class="col-sm-9">
-                <p class="text-muted mb-0">{{$user->name}}</p>
-                </div>
+        @elseif (session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
             </div>
-            <hr>
-            <div class="row">
-                <div class="col-sm-3">
-                <p class="mb-0">Email</p>
-                </div>
-                <div class="col-sm-9">
-                <p class="text-muted mb-0">{{$user->email}}</p>
-                </div>
-            </div>
+        @endif
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" value="{{$user->name}}">
         </div>
-    </div>
-</div>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" value="{{$user->username}}">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value="{{$user->email}}">
+        </div>
 
-<button class="ml-4" onclick="editPass()">Edit Password</button>
+        <div id="edit-pass-div"></div>
+        @error('new_password')
+            <span class="text-danger">{{ $message }}</span>
+        @enderror
+        <div id="edit-pass-div-conf"></div>
+    </div>
+</form>
+<button class="ml-5" id="edit-pass" onclick="editPass()">Edit Password</button>
+<button class="ml-5" id="save-settings" onclick="submitSettings()">Save</button>
+<a class="ml-5" id="cancel-settings" href="/profile"><button class="btn-danger">Cancel</button></a>

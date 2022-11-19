@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -36,6 +36,13 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * Perform an exact search match for usernames.
+     */
+    public static function search(string $query) {
+      return User::where('username', 'like', "%$query%")->orderBy('username')->get();
+    }
 
     public function get_n_answered()
     {
@@ -105,6 +112,11 @@ class User extends Authenticatable
 
     public function answers()
     {
-        return $this->hasMany(Question::class, 'user_id', 'user_id');
+        return $this->hasMany(Answer::class, 'user_id', 'user_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'user_id', 'user_id');
     }
 }

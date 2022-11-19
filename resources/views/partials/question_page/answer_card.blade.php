@@ -1,4 +1,5 @@
 <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+    <strong class="ml-4 mb-0">Answer:</strong>
     <div class="card-body d-flex justify-content-between">
         <div style="font-size: 2rem">
             <p class="card-text">{{ $answer->full_text }}</p>
@@ -15,23 +16,25 @@
                 <p class="m-0 text-nowrap">edited</p>
                 @endif
             </aside>
-            @if (Auth::user()->user_id === $answer->user_id)
-            <div class="dropdown">
-                <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
-                    <i class="material-symbols-outlined">more_vert</i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                    <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
-                    <button class="dropdown-item edit_answer">
-                        <i width="16" height="16" class="material-symbols-outlined ">edit</i>
-                        Edit
+            @if (Auth::check())
+                @if (Auth::user()->user_id === $answer->user_id)
+                <div class="dropdown">
+                    <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                        <i class="material-symbols-outlined">more_vert</i>
                     </button>
-                    <button class="dropdown-item delete_answer">
-                        <i width="16" height="16" class="material-symbols-outlined ">delete</i>
-                        Delete
-                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
+                        <button class="dropdown-item edit_answer">
+                            <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                            Edit
+                        </button>
+                        <button class="dropdown-item delete_answer">
+                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                            Delete
+                        </button>
+                    </div>
                 </div>
-            </div>
+                @endif
             @endif
         </div>
     </div>
@@ -43,7 +46,8 @@
         </p>
     </div>
     @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
-                @include('partials.question_page.comment_card', ['comment' => $comment])
+        <strong class="ml-4 mt-2">Comment:</strong>
+        @include('partials.question_page.comment_card', ['comment' => $comment])
     @endforeach
 
 </div>
