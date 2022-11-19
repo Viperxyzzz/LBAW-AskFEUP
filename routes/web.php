@@ -20,6 +20,10 @@ Route::get('settings', 'ProfileController@settings');
 Route::get('my_questions', 'ProfileController@myQuestions');
 Route::get('my_answers', 'ProfileController@myAnswers');
 
+// Users
+Route::get('users', 'UserController@home');
+Route::get('api/users/', 'UserController@search');
+
 // Questions
 Route::get('question/create', 'QuestionController@create_view')->name('question_create');
 Route::get('question/{id}', 'QuestionController@home')->name('question');
