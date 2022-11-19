@@ -1,3 +1,13 @@
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <form id="edit-user-form" action="{{ route('update_user_api') }}" method="POST">
     @csrf
     <div class="card m-5 p-5">
@@ -24,12 +34,9 @@
         </div>
 
         <div id="edit-pass-div"></div>
-        @error('new_password')
-            <span class="text-danger">{{ $message }}</span>
-        @enderror
         <div id="edit-pass-div-conf"></div>
     </div>
 </form>
 <button class="ml-5" id="edit-pass" onclick="editPass()">Edit Password</button>
 <button class="ml-5" id="save-settings" onclick="submitSettings()">Save</button>
-<a class="ml-5" id="cancel-settings" href="/profile"><button class="btn-danger">Cancel</button></a>
+<a class="ml-5" id="cancel-settings" href="{{ route('users', array('id' => $user->user_id)) }}"><button class="btn-danger">Cancel</button></a>

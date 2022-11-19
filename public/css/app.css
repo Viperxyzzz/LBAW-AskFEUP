@@ -15,6 +15,10 @@ i {
     vertical-align:sub;
 }
 
+a {
+    cursor: pointer;
+}
+
 .card .question-stats {
     float: right;
 }
@@ -25,6 +29,16 @@ i {
 
 .nav-link.active {
     color: var(--primary-color);
+    background-color: var(--background-color);
+}
+
+.nav-link:hover {
+    background-color: var(--background-color);
+}
+
+.nav-pills .nav-link.active {
+    color: #fff !important;
+    background-color: var(--primary-color) !important;
 }
 
 .link-dark {
@@ -62,13 +76,13 @@ hr {
     background-color: var(--light-color);
 }
 
-input[name="direction"] + label {
+input.direction + label {
     width: 5rem;
     text-align: center;
     padding: 0.7rem;
 }
 
-input[name="direction"]:checked + label {
+input.direction:checked + label {
     background-color: var(--background-color);
     border-radius: 1rem;
 }
@@ -93,6 +107,21 @@ input[type=radio]:checked + label {
 
 #questions-list {
     animation: fadeIn 0.8s;
+}
+
+.sticky-top { top: 3rem; }
+
+.profile-tab {
+    display: none;
+    animation: fadeIn 0.8s;
+}
+
+.profile-tab-open {
+    display: block;
+}
+
+.profile-nav {
+    width: 25rem;
 }
 
 @keyframes fadeIn {

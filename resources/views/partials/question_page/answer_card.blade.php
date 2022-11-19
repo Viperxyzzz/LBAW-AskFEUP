@@ -16,6 +16,7 @@
                 <p class="m-0 text-nowrap">edited</p>
                 @endif
             </aside>
+<<<<<<< HEAD
             @if (Auth::user()->user_id === $answer->user_id)
             <div class="dropdown">
                 <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
@@ -32,9 +33,27 @@
                     <button class="dropdown-item delete_answer">
                         <i width="16" height="16" class="material-symbols-outlined ">delete</i>
                         Delete
+=======
+            @if (Auth::check())
+                @if (Auth::user()->user_id === $answer->user_id)
+                <div class="dropdown">
+                    <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                        <i class="material-symbols-outlined">more_vert</i>
+>>>>>>> 5ddf31a768adf948827d179171cf3659cae2dff4
                     </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
+                        <button class="dropdown-item edit_answer">
+                            <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                            Edit
+                        </button>
+                        <button class="dropdown-item delete_answer">
+                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                            Delete
+                        </button>
+                    </div>
                 </div>
-            </div>
+                @endif
             @endif
         </div>
     </div>
@@ -42,7 +61,7 @@
         <p class="m-0">{{ \Carbon\Carbon::parse($answer->date)->format('d/m/Y')}}</p>
         <p class="m-0">
             <em>by</em>
-            <a href="#"> {{ $answer->author->name }}</a>
+            <a href="{{url("/users/$answer->user_id")}}"> {{ $answer->author->name }}</a>
         </p>
     </div>
     @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)

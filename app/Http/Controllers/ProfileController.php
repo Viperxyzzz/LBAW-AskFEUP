@@ -18,12 +18,14 @@ class ProfileController extends Controller
      *
      * @return Response
      */
-    public function home()
+    public function home($user_id)
     {
       if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
-      $user = User::find(Auth::id());
-      return view('pages.profile', ['user' => $user]);
+      $user = User::find($user_id);
+      $questions = $user->questions()->orderBy('question_id', 'DESC')->get();
+      $answers = $user->answers()->orderBy('answer_id', 'DESC')->get();
+      return view('pages.profile', ['user' => $user, 'questions' => $questions, 'answers' => $answers]);
     }
 
     /**
@@ -39,40 +41,30 @@ class ProfileController extends Controller
       return view('pages.settings', ['user' => $user]);
     }
 
-    /**
-     * Display the personal profile.
-     *
-     * @return Response
-     */
-    public function myQuestions()
-    {
-      if (!Auth::check()) return redirect('/login');
-      //$this->authorize('list', Question::class);
-      $user = User::find(Auth::id());
-      $questions = $user->questions()->orderBy('question_id', 'DESC')->get();
-      return view('pages.my_questions', ['user' => $user, 'questions' => $questions]);
-    }
-
-    /**
-     * Display the personal profile.
-     *
-     * @return Response
-     */
-    public function myAnswers()
-    {
-      if (!Auth::check()) return redirect('/login');
-      //$this->authorize('list', Question::class);
-      $user = User::find(Auth::id());
-      $answers = $user->answers()->orderBy('answer_id', 'DESC')->get();
-      return view('pages.my_answers', ['user' => $user, 'answers' => $answers]);
-    }
-    
     public function updateUser(Request $request){
+
+      $valid_settings = $request->validate([
+        'username' => 'required|string|max:255',
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255',
+        'new_password' => 'string|min:6',
+        'confirm_pass' => 'same:new_password',
+      ]);
+
       $new_password = $request->new_password;
       $confirm_pass = $request->confirm_pass;
 
-      if($new_password !== $confirm_pass){
-        return back()->with("error", "Passwords didn' match!");
+
+      if(DB::table('users')->where('username', $request->username)->count() !== 0 && 
+        auth()->user()->username !== $request->username
+      ){
+        return back()->with("error", "This username already exists!");
+      }
+
+      if(DB::table('users')->where('email', $request->email)->count() !== 0 &&
+         auth()->user()->email !== $request->email
+        ){
+        return back()->with("error", "This email already exists!");
       }
 
       if($new_password === NULL){

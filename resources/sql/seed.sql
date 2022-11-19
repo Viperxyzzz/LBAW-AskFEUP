@@ -31,6 +31,7 @@ CREATE TABLE users (
     score INTEGER NOT NULL,
     is_moderator BOOLEAN NOT NULL,
     is_admin BOOLEAN NOT NULL,
+    picture_path TEXT DEFAULT 'guest' NOT NULL,
     remember_token VARCHAR
 );
 
@@ -198,7 +199,11 @@ CREATE TRIGGER num_supports_update
 CREATE OR REPLACE FUNCTION first_question() RETURNS TRIGGER AS
 $FUNC3$
 BEGIN
-        IF NOT EXISTS (SELECT * FROM question WHERE author_id = NEW.author_id) THEN
+        IF NOT EXISTS (SELECT * FROM question WHERE author_id = NEW.author_id) AND
+         NOT EXISTS (SELECT * FROM user_badge FULL OUTER JOIN badge USING(badge_id) 
+         WHERE user_id = NEW.author_id AND badge_name = 'First question')
+
+         THEN
                 INSERT INTO user_badge 
                     SELECT
                         NEW.author_id,
@@ -223,7 +228,10 @@ CREATE TRIGGER first_question
 CREATE OR REPLACE FUNCTION first_answer() RETURNS TRIGGER AS
 $FUNC4$
 BEGIN
-        IF NOT EXISTS (SELECT * FROM answer WHERE user_id = NEW.user_id) THEN
+        IF NOT EXISTS (SELECT * FROM answer WHERE user_id = NEW.user_id) AND
+        NOT EXISTS (SELECT * FROM user_badge FULL OUTER JOIN badge USING(badge_id) 
+         WHERE user_id = NEW.user_id AND badge_name = 'First answer')
+        THEN
                 INSERT INTO user_badge (user_id, badge_id, num_supports, date) 
                 	VALUES (
                                 NEW.user_id,
@@ -485,36 +493,36 @@ VALUES
   ('Expert'),
   ('Master');
 
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('jimmypage','jimmy@gmail.com','Jimmy Page','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',62,false,true);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('dfincher','david@gmail.com','David Fincher','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',127,true,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('torvalds','linus@gmail.com','Linus Torvalds','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',248,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('gbertolaccini3','gbertolaccini3@xrea.com','Gilburt Bertolaccini','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',37,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('mdirr4','mdirr4@photobucket.com','Marrilee Dirr','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',233,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('rmerry5','rmerry5@unc.edu','Rainer Merry','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',59,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('gtheyer6','gtheyer6@clickbank.net','Gibb Theyer','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',181,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('xcandlish7','xcandlish7@yellowbook.com','Xenos Candlish','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',12,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('eheight8','eheight8@bing.com','Eolanda Height','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',243,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('bguttridge9','bguttridge9@vinaora.com','Bunni Guttridge','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',124,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('ibeartupa','ibeartupa@netscape.com','Ira Beartup','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',153,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('mcallejab','mcallejab@pagesperso-orange.fr','Merilee Calleja','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',103,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('mshapterc','mshapterc@mapquest.com','Meggi Shapter','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',182,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('tgasconed','tgasconed@tuttocitta.it','Thayne Gascone','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',101,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('kpackhame','kpackhame@oracle.com','Kipp Packham','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',63,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('mbedrosianf','mbedrosianf@google.de','Max Bedrosian','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',67,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('rmatschkeg','rmatschkeg@google.it','Robinette Matschke','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',9,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('lbalchenh','lbalchenh@mapy.cz','Lanie Balchen','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',253,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('dtromani','dtromani@com.com','Dasi Troman','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',112,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('awattingj','awattingj@twitpic.com','Ayn Watting','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',137,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('pmcphilemyk','pmcphilemyk@home.pl','Pamella McPhilemy','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',35,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('scommonl','scommonl@amazon.com','Silvana Common','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',146,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('rspaduzzam','rspaduzzam@oaic.gov.au','Rebe Spaduzza','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',57,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('chayballn','chayballn@imgur.com','Corey Hayball','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',37,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('cfrudeo','cfrudeo@time.com','Caz Frude','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',88,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('rsimmonsp','rsimmonsp@about.com','Rozina Simmons','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',123,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('dtrevnaq','dtrevnaq@dagondesign.com','Dalt Trevna','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',179,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('lhryniewiczr','lhryniewiczr@discovery.com','Lazaro Hryniewicz','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',74,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('mshepherdsons','mshepherdsons@census.gov','Muriel Shepherdson','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',49,false,false);
-INSERT INTO users(username,email,name,password,score,is_moderator,is_admin) VALUES ('jbasellit','jbasellit@diigo.com','Jeannine Baselli','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',95,false,false);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('jimmypage','jimmy@gmail.com','Jimmy Page','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',62,false,true, 'man1');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('dfincher','david@gmail.com','David Fincher','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',127,true,false, 'man2');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('torvalds','linus@gmail.com','Linus Torvalds','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',248,false,false, 'man3');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('gbertolaccini3','gbertolaccini3@xrea.com','Gilburt Bertolaccini','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',37,false,false, 'man4');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('mdirr4','mdirr4@photobucket.com','Marrilee Dirr','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',233,false,false, 'woman1');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('rmerry5','rmerry5@unc.edu','Rainer Merry','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',59,false,false, 'man5');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('gtheyer6','gtheyer6@clickbank.net','Gibb Theyer','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',181,false,false, 'man6');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('xcandlish7','xcandlish7@yellowbook.com','Xenos Candlish','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',12,false,false, 'woman2');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('eheight8','eheight8@bing.com','Eolanda Height','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',243,false,false, 'woman3');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('bguttridge9','bguttridge9@vinaora.com','Bunni Guttridge','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',124,false,false, 'woman4');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('ibeartupa','ibeartupa@netscape.com','Ira Beartup','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',153,false,false, 'woman5');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('mcallejab','mcallejab@pagesperso-orange.fr','Merilee Calleja','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',103,false,false, 'woman6');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('mshapterc','mshapterc@mapquest.com','Meggi Shapter','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',182,false,false, 'woman7');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('tgasconed','tgasconed@tuttocitta.it','Thayne Gascone','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',101,false,false, 'woman8');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('kpackhame','kpackhame@oracle.com','Kipp Packham','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',63,false,false, 'man7');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('mbedrosianf','mbedrosianf@google.de','Max Bedrosian','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',67,false,false, 'man8');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('rmatschkeg','rmatschkeg@google.it','Robinette Matschke','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',9,false,false, 'man9');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('lbalchenh','lbalchenh@mapy.cz','Lanie Balchen','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',253,false,false, 'woman9');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('dtromani','dtromani@com.com','Dasi Troman','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',112,false,false, 'woman10');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('awattingj','awattingj@twitpic.com','Ayn Watting','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',137,false,false, 'man10');
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('pmcphilemyk','pmcphilemyk@home.pl','Pamella McPhilemy','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',35,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('scommonl','scommonl@amazon.com','Silvana Common','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',146,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('rspaduzzam','rspaduzzam@oaic.gov.au','Rebe Spaduzza','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',57,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('chayballn','chayballn@imgur.com','Corey Hayball','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',37,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('cfrudeo','cfrudeo@time.com','Caz Frude','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',88,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('rsimmonsp','rsimmonsp@about.com','Rozina Simmons','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',123,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('dtrevnaq','dtrevnaq@dagondesign.com','Dalt Trevna','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',179,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('lhryniewiczr','lhryniewiczr@discovery.com','Lazaro Hryniewicz','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',74,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('mshepherdsons','mshepherdsons@census.gov','Muriel Shepherdson','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',49,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('jbasellit','jbasellit@diigo.com','Jeannine Baselli','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',95,false,false, DEFAULT);
 
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How to center a div?', 'What method can I use to center a div horizontally to the middle of the screen?', 17, 282, 1, '2021-12-01 04:24:58', false, 1);
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How do I add multi-line comments in Python?', '# works for single line comments but Im wondering how to comment multiple lines of code', 5, 100, 0, '2021-01-01 05:26:58', false, 1);

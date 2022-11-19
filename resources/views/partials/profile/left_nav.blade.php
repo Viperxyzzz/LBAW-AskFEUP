@@ -1,21 +1,18 @@
-
-<div class="col-lg-3 container py-5 bg-light m-3">
-    <div class="card mb-4 mb-lg-0">
-        <div class="card-body p-0">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item p-3">
-            <a href="/my_questions">My Questions</a>
-            </li>
-            <li class="list-group-item p-3">    
-            <a href="/my_answers">My Answers</a>
-            </li>
-            <li class="list-group-item p-3">
-            <a href="">My Badges</a>
-            </li>
-            <li class="list-group-item p-3">
-            <a href="">Following Tags</a>
-            </li>
-        </ul>
-        </div>
-    </div>
-</div>
+<nav class="col-lg-3 border-right">
+    <ul class="nav nav-pills flex-column align-items-start">
+        <li class="nav-item">
+            <a class="nav-link active profile-nav" id="user-overview">Overview</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link profile-nav" id="user-questions">Questions</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link profile-nav" id="user-answers">Answers</a>
+        </li>
+        @if (Auth::id() === $user->user_id)
+        <li class="nav-item ">
+            <a class="nav-link profile-nav">Following Tags</a>
+        </li>
+        @endif
+    </ul>
+</nav>
