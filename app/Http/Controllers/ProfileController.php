@@ -68,12 +68,18 @@ class ProfileController extends Controller
     }
     
     public function updateUser(Request $request){
+
+      $valid_settings = $request->validate([
+        'username' => 'required|string|max:255',
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255',
+        'new_password' => 'string|min:6',
+        'confirm_pass' => 'same:new_password',
+      ]);
+
       $new_password = $request->new_password;
       $confirm_pass = $request->confirm_pass;
 
-      if($new_password !== $confirm_pass){
-        return back()->with("error", "Passwords didn' match!");
-      }
 
       if(DB::table('users')->where('username', $request->username)->count() !== 0 && 
         auth()->user()->username !== $request->username
