@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
+use App\Models\User;
 
 class FeedController extends Controller
 {
@@ -21,8 +22,8 @@ class FeedController extends Controller
       if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
       $questions['last'] = Question::orderBy('date', 'desc')->take(3)->get();
-      $questions['authored'] = User::questions()->get();
-      $questions['following'] = User::questions()->get();
+      $questions['authored'] = Auth::user()->questions()->get();
+      $questions['following'] = Auth::user()->questions_following()->get();
       return view('pages.feed', ['questions' => $questions ]);
     }
 
