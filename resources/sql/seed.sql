@@ -198,7 +198,11 @@ CREATE TRIGGER num_supports_update
 CREATE OR REPLACE FUNCTION first_question() RETURNS TRIGGER AS
 $FUNC3$
 BEGIN
-        IF NOT EXISTS (SELECT * FROM question WHERE author_id = NEW.author_id) THEN
+        IF NOT EXISTS (SELECT * FROM question WHERE author_id = NEW.author_id) AND
+         NOT EXISTS (SELECT * FROM user_badge FULL OUTER JOIN badge USING(badge_id) 
+         WHERE user_id = NEW.author_id AND badge_name = 'First question')
+
+         THEN
                 INSERT INTO user_badge 
                     SELECT
                         NEW.author_id,
@@ -223,7 +227,10 @@ CREATE TRIGGER first_question
 CREATE OR REPLACE FUNCTION first_answer() RETURNS TRIGGER AS
 $FUNC4$
 BEGIN
-        IF NOT EXISTS (SELECT * FROM answer WHERE user_id = NEW.user_id) THEN
+        IF NOT EXISTS (SELECT * FROM answer WHERE user_id = NEW.user_id) AND
+        NOT EXISTS (SELECT * FROM user_badge FULL OUTER JOIN badge USING(badge_id) 
+         WHERE user_id = NEW.user_id AND badge_name = 'First answer')
+        THEN
                 INSERT INTO user_badge (user_id, badge_id, num_supports, date) 
                 	VALUES (
                                 NEW.user_id,
