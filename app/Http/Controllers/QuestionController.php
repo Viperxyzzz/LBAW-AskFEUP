@@ -55,7 +55,16 @@ class QuestionController extends Controller
       }
 
       return redirect('/question/'.$question->question_id);
-      //return $question;
+    }
+
+    public function delete(Request $request)
+    {
+      if(!Auth::check()) return redirect('/login');
+      $question = Question::find($request->question_id);
+      $this->authorize('delete', $question);
+      $question->delete();
+      
+      return redirect('/feed');
     }
 
     public function create_view()
