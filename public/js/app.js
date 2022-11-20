@@ -244,9 +244,11 @@ function answerDeletedHandler() {
 function sendOrderQuestionsRequest(event) {
   let order = document.querySelector('input[name="order-questions"]:checked').id;
   let direction = document.querySelector('input[name="direction-questions"]:checked').id;
+  const urlParams = new URLSearchParams(window.location.search);
+  const search = urlParams.get('searchText');
 
   if (order != '')
-    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}`, {}, orderedQuestionsHandler);
+    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}&searchText=${search}`, {}, orderedQuestionsHandler);
     
   event.preventDefault();
 }
@@ -254,14 +256,14 @@ function sendOrderQuestionsRequest(event) {
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);
 
-  // Create the new answer
-  let newQuestions = createQuestions(questions);
+  if (questions.length > 0) {
+    let newQuestions = createQuestions(questions);
 
-  // Insert the new answer
-  let parent = document.querySelector('#questions');
-  let child = document.querySelector('#questions-list');
-  parent.removeChild(child);
-  parent.appendChild(newQuestions);
+    let parent = document.querySelector('#questions');
+    let child = document.querySelector('#questions-list');
+    parent.removeChild(child);
+    parent.appendChild(newQuestions);
+  }
 }
 
 function createQuestions(questions) {
