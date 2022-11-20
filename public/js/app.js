@@ -232,14 +232,14 @@ function sendOrderQuestionsRequest(event) {
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);
 
-  // Create the new answer
-  let newQuestions = createQuestions(questions);
+  if (newQuestions.length > 0) {
+    let newQuestions = createQuestions(questions);
 
-  // Insert the new answer
-  let parent = document.querySelector('#questions');
-  let child = document.querySelector('#questions-list');
-  parent.removeChild(child);
-  parent.appendChild(newQuestions);
+    let parent = document.querySelector('#questions');
+    let child = document.querySelector('#questions-list');
+    parent.removeChild(child);
+    parent.appendChild(newQuestions);
+  }
 }
 
 function createQuestions(questions) {
