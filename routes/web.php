@@ -27,7 +27,8 @@ Route::get('question/create', 'QuestionController@create_view')->name('question_
 Route::get('question/{id}', 'QuestionController@home')->name('question');
 Route::put('api/answer/{id}', 'QuestionController@answer');
 Route::get('question/{id}/edit', 'QuestionController@edit_view')->name('edit_question');
-Route::post('api/question/update', 'QuestionController@update')->name('update_question');
+Route::match(['put', 'patch'], 'api/question/update/{id}','QuestionController@update')->name('update_question');
+//Route::post('api/question/update', 'QuestionController@update')->name('update_question');
 
 // Search
 Route::get('browse', 'SearchController@home');

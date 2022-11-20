@@ -57,22 +57,24 @@ class QuestionController extends Controller
       return redirect('/question/'.$question->question_id);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
       if(!Auth::check()) return redirect('/login');
-      $question = Question::find($request->question_id);
-      $question->title = $request->title;
+    
+      $request->validate([
+        'title' => 'required',
+        'full_text' => 'required',
+      ]);
+      
+      $question = Question::find($id);
+      $question->title = $request->get('title');
       $question->full_text = $request->full_text;
-
-      $question->num_votes = $request->num_votes;
-      $question->num_views = $request->num_views;
-      $question->num_answers = $request->num_answers;
 
       $question->date = date('Y-m-d H:i:s');
       $question->was_edited = true;
 
       $question->save();
-
+      /*
       $tags = $request->tags;
       if($tags === null)
         return redirect('/question/'.$question->question_id);
@@ -82,7 +84,7 @@ class QuestionController extends Controller
         $question_tag->tag_id = $tags[$i];
         $question_tag->save();
       }
-
+      */
       return redirect('/question/'.$question->question_id);
     }
 
