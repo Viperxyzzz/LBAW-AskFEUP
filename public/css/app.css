@@ -9,6 +9,7 @@
 body {
     color: var(--secondary-color);
     font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    overflow-x: hidden;
 }
 
 i {

@@ -138,8 +138,8 @@ CREATE TABLE question_tag
 DROP TABLE IF EXISTS question_user_follower CASCADE;
 CREATE TABLE question_user_follower
 (
-    question_id INTEGER REFERENCES question (question_id) ON UPDATE CASCADE,
-    user_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE,
+    question_id INTEGER REFERENCES question (question_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
     PRIMARY KEY (question_id, user_id)
 );
 
