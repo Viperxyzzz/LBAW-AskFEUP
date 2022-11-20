@@ -63,8 +63,7 @@ class QuestionController extends Controller
       $question = Question::find($request->question_id);
       $this->authorize('delete', $question);
       $question->delete();
-      
-      return back()->with("status", "Question deleted successfully!");
+      return redirect('/feed');
     }
 
     public function create_view()
