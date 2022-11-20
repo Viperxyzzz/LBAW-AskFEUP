@@ -40,6 +40,6 @@ class AnswerController extends Controller
       $this->authorize('delete', $answer);
 
       $answer->delete();
-      return $answer;
+      return back()->with("status", "Answer deleted successfully!");
     }
 }

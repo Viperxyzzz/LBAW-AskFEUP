@@ -20,6 +20,7 @@
                 <p class="m-0 text-nowrap">{{ $question->num_answers }} answers</p>
             </aside>
         </div>
+        @include('partials.question_page.question_dropdown', ['user' => Auth::user()])
     </div>
     <div class="card-footer d-flex justify-content-between">
         <p class="m-0">{{ $question->date_distance() }}</p>
@@ -28,5 +29,4 @@
             <a href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
         </p>
     </div>
-
 </div>

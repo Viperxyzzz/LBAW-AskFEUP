@@ -64,7 +64,7 @@ class QuestionController extends Controller
       $this->authorize('delete', $question);
       $question->delete();
       
-      return redirect('/feed');
+      return back()->with("status", "Question deleted successfully!");
     }
 
     public function create_view()

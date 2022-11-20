@@ -38,7 +38,7 @@ Route::delete('api/question/{id}', 'QuestionController@delete')->name('question_
 
 // Answers
 Route::put('api/answer/{id}', 'AnswerController@create');
-Route::delete('api/answer/delete/{id}', 'AnswerController@delete');
+Route::delete('api/answer/delete/{id}', 'AnswerController@delete')->name('answer_delete_api');
 
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
