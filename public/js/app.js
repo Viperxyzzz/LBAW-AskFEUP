@@ -232,7 +232,7 @@ function sendOrderQuestionsRequest(event) {
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);
 
-  if (newQuestions.length > 0) {
+  if (questions.length > 0) {
     let newQuestions = createQuestions(questions);
 
     let parent = document.querySelector('#questions');
