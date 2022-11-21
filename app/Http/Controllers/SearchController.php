@@ -19,9 +19,16 @@ class SearchController extends Controller
     public function get_questions(Request $request) {
       $direction =  $request->input('direction') ?? 'desc';
       $order = $request->input('order') ?? 'date';
-
-      // TODO if search
-      $questions = Question::orderBy($order, $direction)->get();
+      if($request->has('searchText')){
+        $questions = Question::where('title', 'like', '%' . $request->input('searchText') . '%')
+          ->orWhere('full_text', 'like', '%' . $request->input('searchText') . '%')
+          ->orWhere('tsvectors', 'like', '%' . $request->input('searchText') . '%')
+          ->orderBy($order, $direction)
+          ->get();
+      }
+      else{
+        $questions = Question::orderBy($order, $direction)->get();
+      }
       foreach($questions as $question) {
         $question['author_name'] = $question->author->name;
         $question['date_distance'] = $question->date_distance();
@@ -51,5 +58,4 @@ class SearchController extends Controller
       $questions = $this->get_questions($request);
       return json_encode($questions);
     }
-
 }

@@ -31,7 +31,7 @@ Route::match(['put', 'patch'], 'api/question/update/{id}','QuestionController@up
 //Route::post('api/question/update', 'QuestionController@update')->name('update_question');
 
 // Search
-Route::get('browse', 'SearchController@home');
+Route::get('browse', 'SearchController@home')->name('browse');
 Route::get('api/browse', 'SearchController@browse');
 
 // API
@@ -41,7 +41,7 @@ Route::delete('api/question/{id}', 'QuestionController@delete')->name('question_
 
 // Answers
 Route::put('api/answer/{id}', 'AnswerController@create');
-Route::delete('api/answer/delete/{id}', 'AnswerController@delete');
+Route::delete('api/answer/delete/{id}', 'AnswerController@delete')->name('answer_delete_api');
 Route::get('api/answer/{id}/edit', 'AnswerController@edit')->name('edit_answer');
 
 // Authentication

@@ -98,7 +98,7 @@ function sendCreateAnswerRequest(event) {
 }
 
 function answerAddedHandler() {
-  //if (this.status != 201) window.location = '/';
+  if (this.status != 200) window.location = '/login';
   let answer = JSON.parse(this.responseText);
 
   document.querySelector('#answer').value = "";
@@ -107,8 +107,8 @@ function answerAddedHandler() {
   let new_answer = createAnswer(answer);
 
   // Insert the new answer
-  let first_answer = document.querySelector('.answer');
-  first_answer.parentElement.insertBefore(new_answer, first_answer);
+  let answers = document.querySelector('#answers');
+  answers.prepend(new_answer);
   addEventListeners();
 }
 
@@ -205,11 +205,11 @@ function createUser(user) {
   new_user.innerHTML = `
   <div class="card d-flex flex-row m-3 p-2 bg-light" style="width: 250px;">
       <div class="align-self-center">
-        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="img-fluid rounded-start" alt="user image" width="60px">
+        <img src="/storage/${user.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="60px">
       </div>
       <div class="card-body mx-2 p-2">
           <h4 class="card-title m-0 p-0">
-              <a href="#">${user.username}</a>
+              <a href="/users/${user.user_id}">${user.username}</a>
           </h4>
           <p class="card-body m-0 p-0">${user.name}</p>
           <p class="card-body m-0 p-0">${user.score} points</p>
@@ -244,9 +244,11 @@ function answerDeletedHandler() {
 function sendOrderQuestionsRequest(event) {
   let order = document.querySelector('input[name="order-questions"]:checked').id;
   let direction = document.querySelector('input[name="direction-questions"]:checked').id;
+  const urlParams = new URLSearchParams(window.location.search);
+  const search = urlParams.get('searchText');
 
   if (order != '')
-    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}`, {}, orderedQuestionsHandler);
+    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}&searchText=${search}`, {}, orderedQuestionsHandler);
     
   event.preventDefault();
 }
@@ -254,14 +256,14 @@ function sendOrderQuestionsRequest(event) {
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);
 
-  // Create the new answer
-  let newQuestions = createQuestions(questions);
+  if (questions.length > 0) {
+    let newQuestions = createQuestions(questions);
 
-  // Insert the new answer
-  let parent = document.querySelector('#questions');
-  let child = document.querySelector('#questions-list');
-  parent.removeChild(child);
-  parent.appendChild(newQuestions);
+    let parent = document.querySelector('#questions');
+    let child = document.querySelector('#questions-list');
+    parent.removeChild(child);
+    parent.appendChild(newQuestions);
+  }
 }
 
 function createQuestions(questions) {

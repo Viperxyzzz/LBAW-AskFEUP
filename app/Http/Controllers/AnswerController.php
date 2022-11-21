@@ -41,7 +41,7 @@ class AnswerController extends Controller
       $this->authorize('delete', $answer);
 
       $answer->delete();
-      return $answer;
+      return back()->with("status", "Answer deleted successfully!");
     }
     public function edit(Request $request, $answer_id) {
       $answer = Answer::find($answer_id);

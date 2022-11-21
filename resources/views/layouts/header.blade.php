@@ -1,12 +1,17 @@
 <header>
-    <div class="d-flex bg-light border-bottom pt-3 pl-3 align-items-start">
-        <nav class="d-flex align-items-center">
+    <div class="d-flex flex-wrap bg-light border-bottom pt-3 pl-3 align-items-start">
+        <nav class="d-flex align-items-center mr-3">
             <h3><a class="mx-2" href="{{ url('/') }}">AskFeup</a></h3>
             <h5><a class="link-dark mx-2" href="{{ url('/') }}">Home</a></h5>
-            <h5><a class="link-dark mx-2" href="#">FAQ</a></h5>
-            <h5><a class="link-dark mx-2" href="#">About</a></h5>
+            <h5><a class="link-dark mx-2" href="{{ url('/browse') }}">Browse</a></h5>
+            <h5><a class="link-dark mx-2" href="{{ url('/users') }}">Users</a></h5>
         </nav>
-        <input type="text" placeholder="Search..." class="ml-4 col-lg-3"></input>
+        <form class="col-lg-6 m-0 p-0 d-flex align-items-top flex-nowrap" method="GET" action="{{ route('browse') }}">
+            <input id="searchText" name="searchText" type="text" placeholder="Search..." class="col-lg-5"></input>
+            <button type="submit" class="button button-clear p-2">
+                <i width="4" height="4" class="material-symbols-outlined ">search</i>
+            </button>
+        </form>
         <nav class="d-flex align-items-center ml-auto">
             @if (Auth::check())
             <div class="dropdown mr-3">
@@ -23,6 +28,9 @@
                         Logout
                     </a>
                 </div>
+            @else
+                <a class="button button-outline" href="{{ route('login') }}">Login</a>
+                <a class="button mx-2" href="{{ route('register') }}">Register</a>
             @endif
         </nav>
     </div>

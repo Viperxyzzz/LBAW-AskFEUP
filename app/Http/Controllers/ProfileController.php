@@ -20,7 +20,6 @@ class ProfileController extends Controller
      */
     public function home($user_id)
     {
-      if (!Auth::check()) return redirect('/login');
       //$this->authorize('list', Question::class);
       $user = User::find($user_id);
       $questions = $user->questions()->orderBy('question_id', 'DESC')->get();

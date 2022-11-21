@@ -9,6 +9,16 @@
     <div class="row pr-0 mt-5">
       @include('partials.profile.left_nav')
       <div class="col-lg-9">
+        @if (session('status'))
+            <div class="alert alert-success" role="alert">
+                {{ session('status') }}
+            </div>
+        @elseif (session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="profile-tab profile-tab-open" id="user-overview-tab">
           @include('partials.profile.overview', ['user' => $user])
         </div>
