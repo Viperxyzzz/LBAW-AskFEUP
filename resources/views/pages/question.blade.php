@@ -8,6 +8,7 @@
         <h2>{{$question->title}}</h2>
         @include('partials.question_page.question_dropdown')
     </div>
+    
     <div class="card" style="border: none;">
         <div class="card-body;" style="font-size: 2.5rem">
             {{$question->full_text}}

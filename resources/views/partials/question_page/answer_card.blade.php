@@ -25,7 +25,6 @@
                 <p class="m-0 text-nowrap">edited</p>
                 @endif
             </aside>
-
             @if (Auth::check())
                 @if (Auth::user()->user_id === $answer->user_id)
                 <div class="dropdown">
