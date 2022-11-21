@@ -42,4 +42,25 @@ class AnswerController extends Controller
       $answer->delete();
       return back()->with("status", "Answer deleted successfully!");
     }
+    public function edit_view(Request $request, $answer_id) {
+      if (!Auth::check()) return redirect('/login');
+      $answer = Answer::find($answer_id);
+      $this->authorize('edit', $answer);
+
+      return $answer;
+    }
+
+    public function update(Request $request, $answer_id) {
+      if (!Auth::check()) return redirect('/login');
+      $answer = Answer::find($answer_id);
+      $this->authorize('update', $answer);
+
+      $answer->full_text = $request->full_text;
+
+      $answer->date = date('Y-m-d H:i:s');
+      $answer->was_edited = true;
+
+      $answer->save();
+      return redirect('/question/'.$answer->question_id);
+    }
 }

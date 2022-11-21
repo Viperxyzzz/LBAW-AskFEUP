@@ -22,6 +22,18 @@ function addEventListeners() {
     });
   }
 
+  let answerEdit = document.querySelectorAll('.edit_answer');
+  if (answerEdit != null) {
+    answerEdit.forEach(
+      btn => btn.addEventListener('click', sendCreateAnswerEditRequest)
+      );
+  }
+
+  let answerUpdater = document.querySelector('.update_answer');
+  if (answerUpdater != null) {
+    answerUpdater.addEventListener('change', function() {alert('hey')});
+  }
+
   let answerDelete = document.querySelectorAll('.delete_answer');
   if (answerDelete != null) {
     answerDelete.forEach(
@@ -343,5 +355,38 @@ function submitSettings(){
   document.getElementById("edit-user-form").submit();
 }
 
+/*********** create an edit answer card ***********/
+
+function sendCreateAnswerEditRequest(event) {
+  let answer_id = event.target.parentElement.children[1].value;
+
+  let answer = document.querySelector('#answer_' + answer_id);
+  let text = answer.querySelector('.card-text').innerText;
+  let comments = answer.querySelector('.answer-comments').innerHTML;
+  answer.insertAdjacentElement("afterend", createAnswerForm(answer_id, text, comments));
+  answer.remove();
+
+}
+
+
+function createAnswerForm(answer_id, text, comments) {
+  let answer_form = document.createElement('div');
+  let answer = document.getElementById(answer_id);
+  answer_form.className = 'card'
+  answer_form.classList.add('mt-5')
+  answer_form.classList.add('answer')
+  answer_form.id = `answer_${answer_id}`
+
+  answer_form.innerHTML = `
+  <strong class="ml-4 mb-0">Edit Answer:</strong>
+        <div class="card p-3 my-5">
+          <div class="form-group">
+            <input id="full_text" type="text" name="full_text" class="form-control-lg" value="${text}" required/>
+          </div>
+        </div>
+      <button class="my-5 update_answer" type="button" class="btn btn-primary">Save Changes</button>
+    ${comments}`;
+  return answer_form;
+}
 
 addEventListeners();

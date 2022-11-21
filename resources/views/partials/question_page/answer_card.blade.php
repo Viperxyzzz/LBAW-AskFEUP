@@ -33,10 +33,11 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                         <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
-                        <button class="dropdown-item edit_answer">
-                            <i width="16" height="16" class="material-symbols-outlined ">edit</i>
-                            Edit
-                        </button>
+                            <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                            <button class="dropdown-item edit_answer" type="button">
+                                <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                                Edit
+                            </button>
                         <form method="POST" action="{{ route('answer_delete_api', $answer->answer_id) }}">
                             @method('delete')
                             @csrf
@@ -59,9 +60,10 @@
             <a href="{{url("/users/$answer->user_id")}}"> {{ $answer->author->name }}</a>
         </p>
     </div>
-    @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
-        <strong class="ml-4 mt-2">Comment:</strong>
-        @include('partials.question_page.comment_card', ['comment' => $comment])
-    @endforeach
-
+    <div class="answer-comments">
+        @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
+            <strong class="ml-4 mt-2">Comment:</strong>
+            @include('partials.question_page.comment_card', ['comment' => $comment])
+        @endforeach
+    </div>
 </div>

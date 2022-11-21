@@ -5,7 +5,7 @@
             <i class="material-symbols-outlined">more_vert</i>
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <button class="dropdown-item edit_answer">
+            <button class="dropdown-item edit_question">
                 <i width="16" height="16" class="material-symbols-outlined ">edit</i>
                 Edit
             </button>
