@@ -61,6 +61,6 @@ class AnswerController extends Controller
       $answer->was_edited = true;
 
       $answer->save();
-      return redirect('/question/'.$answer->question_id);
+      return $answer;
     }
 }

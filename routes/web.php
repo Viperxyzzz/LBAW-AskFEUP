@@ -40,7 +40,7 @@ Route::delete('api/question/{id}', 'QuestionController@delete')->name('question_
 Route::put('api/answer/{id}', 'AnswerController@create');
 Route::delete('api/answer/delete/{id}', 'AnswerController@delete')->name('answer_delete_api');
 Route::get('api/answer/edit/{id}', 'AnswerController@edit_view')->name('edit_answer_form');
-Route::match(['put', 'patch'], 'api/answer/update/{id}','AnswerController@update')->name('update_answer');
+Route::post('api/answer/update/{id}','AnswerController@update')->name('update_answer');
 
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');

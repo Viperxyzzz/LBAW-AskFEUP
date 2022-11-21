@@ -29,10 +29,10 @@ function addEventListeners() {
       );
   }
 
-  let answerUpdater = document.querySelector('.update_answer');
-  if (answerUpdater != null) {
-    answerUpdater.addEventListener('change', function() {alert('hey')});
-  }
+  let answerUpdater = document.querySelector('#update-answer-button');
+  console.log(answerUpdater);
+  if (answerUpdater != null)
+    answerUpdater.addEventListener('click', function() {alert("hey")});
 
   let answerDelete = document.querySelectorAll('.delete_answer');
   if (answerDelete != null) {
@@ -296,12 +296,12 @@ function createQuestion(question) {
   question.tags.forEach(tag => {
     tags += `<span class="badge p-2">${tag.tag_name}</span>\n`
   })
-  new_question.innerHTML = 
+  new_question.innerHTML =
   `
   <div class="card-body d-flex justify-content-between">
       <div>
           <a
-          class="card-title font-weight-bold" 
+          class="card-title font-weight-bold"
           href="question/${question.question_id}">
           ${question.title}
           </a>
@@ -372,21 +372,49 @@ function sendCreateAnswerEditRequest(event) {
 function createAnswerForm(answer_id, text, comments) {
   let answer_form = document.createElement('div');
   let answer = document.getElementById(answer_id);
+  console.log(answer);
   answer_form.className = 'card'
   answer_form.classList.add('mt-5')
   answer_form.classList.add('answer')
-  answer_form.id = `answer_${answer_id}`
+  answer_form.id = `answer_form_${answer_id}`
 
   answer_form.innerHTML = `
   <strong class="ml-4 mb-0">Edit Answer:</strong>
-        <div class="card p-3 my-5">
-          <div class="form-group">
-            <input id="full_text" type="text" name="full_text" class="form-control-lg" value="${text}" required/>
-          </div>
-        </div>
-      <button class="my-5 update_answer" type="button" class="btn btn-primary">Save Changes</button>
+  <form method="POST" class="card-body m-0 p-0">
+    <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
+    <input type="hidden" name="answer" id="answer" value="${answer}"></input>
+      <div class="form-group">
+          <input id="full_text" type="text" name="full_text" class="form-control-lg" value="${text}"required/>
+      </div>
+  </form>
+  <div class="card-footer text-right">
+      <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
+          Save Changes
+      </button>
+  </div>
     ${comments}`;
   return answer_form;
 }
 
+function answerUpdater() {
+  let new_text = document.querySelector('#full_text').value;
+  let answer_id = document.querySelector('#answer_id').value;
+  sendAjaxRequest('post', 'update_answer' + answer_id, {full_text: new_text, was_edited: true }, sendCreateAnswerUpdateRequest);
+}
+
+
+function sendCreateAnswerUpdateRequest() {
+  console.log(JSON.parse(this.responseText));
+  console.log("test");
+  /*
+  let answer_id = event.target.parentElement.children[1].value;
+
+  let answer = document.querySelector('#answer_' + answer_id);
+  let text = answer.querySelector('.card-text').innerText;
+  let comments = answer.querySelector('.answer-comments').innerHTML;
+  answer.insertAdjacentElement("afterend", createAnswerForm(answer_id, text, comments));
+  answer.remove();
+  
+  */
+}
 addEventListeners();
