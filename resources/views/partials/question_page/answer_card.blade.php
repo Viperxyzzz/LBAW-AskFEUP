@@ -10,7 +10,7 @@
 <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
     <strong class="ml-4 mb-0">Answer:</strong>
     <div class="card-body d-flex justify-content-between">
-        <div style="font-size: 2rem">
+        <div style="font-size: 2rem" class="answer-full-text">
             <p class="card-text">{{ $answer->full_text }}</p>
         </div>
         <div class="ml-5 d-flex">
@@ -34,12 +34,11 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                         <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
-                        <a href="{{ route('edit_answer', array('id' => $answer->answer_id)) }}">
-                            <button class="dropdown-item edit_answer" id="edit-answer-button" >
-                                <i width="16" height="16" class="material-symbols-outlined">edit</i>
+                            <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                            <button class="dropdown-item edit_answer" type="button">
+                                <i width="16" height="16" class="material-symbols-outlined ">edit</i>
                                 Edit
                             </button>
-                        </a>
                         <form method="POST" action="{{ route('answer_delete_api', $answer->answer_id) }}">
                             @method('delete')
                             @csrf
@@ -62,15 +61,10 @@
             <a href="{{url("/users/$answer->user_id")}}"> {{ $answer->author->name }}</a>
         </p>
     </div>
-    @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
-        <strong class="ml-4 mt-2">Comment:</strong>
-        @include('partials.question_page.comment_card', ['comment' => $comment])
-    @endforeach
-
+    <div class="answer-comments">
+        @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
+            <strong class="ml-4 mt-2">Comment:</strong>
+            @include('partials.question_page.comment_card', ['comment' => $comment])
+        @endforeach
+    </div>
 </div>
-
-<script>
-$(document).on('click', 'edit_answer', function () {
-    alert("test");
-});
-</script>

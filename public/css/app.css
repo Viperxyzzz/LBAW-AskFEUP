@@ -133,3 +133,9 @@ input[type=radio]:checked + label {
 .hide{
     display: none;
 }
+
+.edit-text{
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    color: var(--secondary-color);
+    height: 200px;
+}
