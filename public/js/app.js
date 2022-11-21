@@ -373,16 +373,17 @@ function createAnswerForm(answer_id, text) {
   let answer_form = document.createElement('div');
   let answer = document.getElementById(answer_id);
   console.log(answer);
-  answer_form.classList.add('mt-5')
+  //answer_form.classList.add('mt-5')
   answer_form.classList.add('answer-form')
+  answer_form.style.width = "100%"
   answer_form.id = `answer_form_${answer_id}`
 
   answer_form.innerHTML = `
   <form method="POST" class="m-0 p-0">
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
-    <input type="hidden" name="answer" id="answer" value="${answer}"></input>
-      <div class="form-group">
-          <input id="full_text" type="text" name="full_text" class="form-control-lg" value="${text}"required/>
+    <input type="hidden" name="answer" id="answer" value="${answer}" style="height:200px"></input>
+      <div class="form-group" style="margin: 0">
+          <input id="full_text" type="text" name="full_text" class="form-control-lg edit-text" value="${text}"required/>
       </div>
   </form>
   <div class="text-right">
