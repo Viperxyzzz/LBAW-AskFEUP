@@ -22,6 +22,18 @@ function addEventListeners() {
     });
   }
 
+  let answerEdit = document.querySelectorAll('.edit_answer');
+  if (answerEdit != null) {
+    answerEdit.forEach(
+      btn => btn.addEventListener('click', editAnswer)
+      );
+  }
+
+  let answerUpdater = document.querySelector('#update-answer-button');
+  console.log(answerUpdater);
+  if (answerUpdater != null)
+    answerUpdater.addEventListener('click', function() {alert("hey")});
+
   let answerDelete = document.querySelectorAll('.delete_answer');
   if (answerDelete != null) {
     answerDelete.forEach(
@@ -284,12 +296,12 @@ function createQuestion(question) {
   question.tags.forEach(tag => {
     tags += `<span class="badge p-2">${tag.tag_name}</span>\n`
   })
-  new_question.innerHTML = 
+  new_question.innerHTML =
   `
   <div class="card-body d-flex justify-content-between">
       <div>
           <a
-          class="card-title font-weight-bold" 
+          class="card-title font-weight-bold"
           href="question/${question.question_id}">
           ${question.title}
           </a>
@@ -343,5 +355,62 @@ function submitSettings(){
   document.getElementById("edit-user-form").submit();
 }
 
+/*********** create an edit answer card ***********/
 
+function editAnswer(event) {
+  let answer_id = event.target.parentElement.children[1].value;
+
+  let answer = document.querySelector('#answer_' + answer_id);
+  let text = answer.querySelector('.card-text').innerText;
+  let full_text = answer.querySelector('.answer-full-text');
+  full_text.insertAdjacentElement("afterend", createAnswerForm(answer_id, text));
+  full_text.remove();
+
+}
+
+
+function createAnswerForm(answer_id, text) {
+  let answer_form = document.createElement('div');
+  let answer = document.getElementById(answer_id);
+  console.log(answer);
+  //answer_form.classList.add('mt-5')
+  answer_form.classList.add('answer-form')
+  answer_form.style.width = "100%"
+  answer_form.id = `answer_form_${answer_id}`
+
+  answer_form.innerHTML = `
+  <form method="POST" class="m-0 p-0">
+    <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
+    <input type="hidden" name="answer" id="answer" value="${answer}" style="height:200px"></input>
+      <div class="form-group" style="margin: 0">
+          <input id="full_text" type="text" name="full_text" class="form-control-lg edit-text" value="${text}"required/>
+      </div>
+  </form>
+  <div class="text-right">
+      <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
+          Save Changes
+      </button>
+  </div>`;
+  return answer_form;
+}
+
+function answerUpdater() {
+  let new_text = document.querySelector('#full_text').value;
+  let answer_id = document.querySelector('#answer_id').value;
+  sendAjaxRequest('post', '/api/answer/update/' + answer_id, {full_text: new_text, was_edited: true }, sendCreateAnswerUpdateRequest);
+}
+
+
+function sendCreateAnswerUpdateRequest() {
+  let answer = JSON.parse(this.responseText);
+  
+  let p = document.createElement('p');
+  p.innerText = answer.full_text;
+  
+  let answer_element = document.querySelector('#answer_' + answer.answer_id);
+  let answer_form = answer_element.querySelector('.answer-form');
+  answer_form.insertAdjacentElement("afterend", p);
+  answer_form.remove();
+
+}
 addEventListeners();

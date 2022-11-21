@@ -23,4 +23,15 @@ class AnswerPolicy
       // Only an answer's author can delete it
       return $user->user_id == $answer->user_id;
     }
+    public function edit(User $user, Answer $answer)
+    {
+      // Only an answer's author can edit it
+      return $user->user_id == $answer->user_id;
+    }
+
+    public function update(User $user, Answer $answer)
+    {
+      // Only an answer's author can update it
+      return $user->user_id == $answer->user_id;
+    }
 }
