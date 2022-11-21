@@ -10,7 +10,7 @@
 <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
     <strong class="ml-4 mb-0">Answer:</strong>
     <div class="card-body d-flex justify-content-between">
-        <div style="font-size: 2rem">
+        <div style="font-size: 2rem" class="answer-full-text">
             <p class="card-text">{{ $answer->full_text }}</p>
         </div>
         <div class="ml-5 d-flex">
