@@ -1,9 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<form method="POST" action="{{ route('login') }}">
-    {{ csrf_field() }}
 
+<form method="POST" action="{{ route('login') }}" class="col-md-4 mx-auto my-5 border rounded bg-light p-5">
+    {{ csrf_field() }}
+    
+    <h2>Login</h2>
     <label for="email">E-mail</label>
     <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus>
     @if ($errors->has('email'))
@@ -24,9 +26,11 @@
         <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
     </label>
 
-    <button type="submit">
-        Login
-    </button>
-    <a class="button button-outline" href="{{ route('register') }}">Register</a>
+    <div class="d-flex justify-content-end">
+        <a class="button button-outline mx-1" href="{{ route('register') }}">Register</a>
+        <button type="submit" class="mx-1">
+            Login
+        </button>
+    </div>
 </form>
 @endsection
