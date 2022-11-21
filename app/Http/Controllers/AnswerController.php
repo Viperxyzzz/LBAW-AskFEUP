@@ -43,6 +43,7 @@ class AnswerController extends Controller
       $answer->delete();
       return $answer;
     }
+
     public function edit_view(Request $request, $answer_id) {
       if (!Auth::check()) return redirect('/login');
       $answer = Answer::find($answer_id);

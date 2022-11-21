@@ -23,8 +23,7 @@
                         <i class="material-symbols-outlined">more_vert</i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
-                            <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                            <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
                             <button class="dropdown-item edit_answer" type="button">
                                 <i width="16" height="16" class="material-symbols-outlined ">edit</i>
                                 Edit

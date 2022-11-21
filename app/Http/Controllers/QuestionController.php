@@ -67,6 +67,7 @@ class QuestionController extends Controller
       ]);
       
       $question = Question::find($id);
+      $this->authorize('edit', $question);
       $question->title = $request->get('title');
       $question->full_text = $request->full_text;
 
@@ -101,6 +102,7 @@ class QuestionController extends Controller
     {
       if (!Auth::check()) return redirect('/login');
       $question = Question::find($request->question_id);
+      $this->authorize('edit', $question);
       $tags = Tag::all();
       return view('pages.edit_question',['tags' => $tags, 'question' => $question]);
     }

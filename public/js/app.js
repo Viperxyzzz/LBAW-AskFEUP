@@ -120,7 +120,6 @@ function answerAddedHandler() {
   // Insert the new answer
   let answers = document.querySelector('#answers');
   answers.prepend(new_answer);
-  addEventListeners();
 }
 
 function createAnswer(answer) {
@@ -131,8 +130,8 @@ function createAnswer(answer) {
   new_answer.id = 'answer_' + answer.answer_id;
   new_answer.innerHTML = ` 
     <div class="card-body d-flex justify-content-between">
-        <div style="font-size: 2rem">
-            <p class="card-text"> ${answer.full_text}</p>
+        <div style="font-size: 2rem" class="answer-full-text">
+            <p class="card-text">${answer.full_text}</p>
         </div>
         <div class="ml-5 d-flex">
             <aside class="question-stats">
@@ -143,12 +142,12 @@ function createAnswer(answer) {
                     <i class="material-symbols-outlined">more_vert</i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                    <data class="answer_id" hidden> ${answer.answer_id }</data>
-                    <button class="dropdown-item edit_answer">
+                    <data class="answer_id" hidden>${answer.answer_id }</data>
+                    <button class="dropdown-item edit_answer" onclick="editAnswer(event)">
                         <i width="16" height="16" class="material-symbols-outlined ">edit</i>
                         Edit
                     </button>
-                    <button class="dropdown-item delete_answer">
+                    <button class="dropdown-item delete_answer" onclick="sendDeleteAnswerRequest(event)">
                         <i width="16" height="16" class="material-symbols-outlined ">delete</i>
                         Delete
                     </button>
@@ -355,7 +354,7 @@ function submitSettings(){
 /*********** create an edit answer card ***********/
 
 function editAnswer(event) {
-  let answer_id = event.target.parentElement.children[1].value;
+  let answer_id = event.target.parentElement.children[0].innerText;
 
   let answer = document.querySelector('#answer_' + answer_id);
   let text = answer.querySelector('.card-text').innerText;
