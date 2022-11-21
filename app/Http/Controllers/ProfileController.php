@@ -32,15 +32,17 @@ class ProfileController extends Controller
      *
      * @return Response
      */
-    public function settings()
+    public function settings($user_id)
     {
       if (!Auth::check()) return redirect('/login');
-      //$this->authorize('list', Question::class);
-      $user = User::find(Auth::id());
+      $user = User::find($user_id);
+      $this->authorize('edit', $user);
       return view('pages.settings', ['user' => $user]);
     }
 
-    public function updateUser(Request $request){
+    public function updateUser(Request $request, $user_id){
+      $user = User::find($user_id);
+      $this->authorize('edit', $user);
 
       $valid_settings = $request->validate([
         'username' => 'required|string|max:255',
@@ -50,24 +52,20 @@ class ProfileController extends Controller
         'confirm_pass' => 'same:new_password',
       ]);
 
-      $new_password = $request->new_password;
-      $confirm_pass = $request->confirm_pass;
-
-
       if(DB::table('users')->where('username', $request->username)->count() !== 0 && 
-        auth()->user()->username !== $request->username
+        $user->username !== $request->username
       ){
         return back()->with("error", "This username already exists!");
       }
 
       if(DB::table('users')->where('email', $request->email)->count() !== 0 &&
-         auth()->user()->email !== $request->email
+         $user->email !== $request->email
         ){
         return back()->with("error", "This email already exists!");
       }
 
-      if($new_password === NULL){
-        auth()->user()->update([
+      if($request->new_password === NULL){
+        $user->update([
           'name' => $request->name,
           'username' => $request->username,
           'email' => $request->email,
@@ -75,7 +73,7 @@ class ProfileController extends Controller
       }
 
       else {
-        auth()->user()->update([
+        $user->update([
           'name' => $request->name,
           'username' => $request->username,
           'email' => $request->email,
@@ -83,8 +81,7 @@ class ProfileController extends Controller
         ]);
       }
 
-      return back()->with("status", "Settings edited successfully!");
-      
+      return redirect('users/'.$user->user_id);
     }
 
 }

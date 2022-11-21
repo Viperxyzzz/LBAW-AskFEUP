@@ -8,9 +8,9 @@
             <h4 class="ml-5">{{$user->email}}</h4>
         </div>
         <div>
-            @if (Auth::id() === $user->user_id)
-                <a href="{{ url('/settings') }}"> <button>Edit Profile</button></a>
-            @endif
+            @can('edit', $user)
+                <a href="{{ url('/settings', ['id' => $user->user_id]) }}"> <button>Edit Profile</button></a>
+            @endcan
             <h4 class="text-right"><strong class="title-blue">{{$user->score}}</strong> points</h4>
         </div>
     </div>

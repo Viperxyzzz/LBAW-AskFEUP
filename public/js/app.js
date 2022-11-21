@@ -30,11 +30,10 @@ function addEventListeners() {
   }
 
   let answerUpdater = document.querySelector('#update-answer-button');
-  console.log(answerUpdater);
   if (answerUpdater != null)
     answerUpdater.addEventListener('click', function() {alert("hey")});
 
-  let answerDelete = document.querySelectorAll('.delete_answer');
+  let answerDelete = document.querySelectorAll('.delete-answer');
   if (answerDelete != null) {
     answerDelete.forEach(
       btn => btn.addEventListener('click', sendDeleteAnswerRequest)
@@ -200,7 +199,6 @@ function createUsers(users) {
   new_users.className = 'd-flex'
   new_users.classList.add('flex-wrap')
   new_users.id = "users-list"
-  console.log(users)
   if (users.length == 0) {
     new_users.innerHTML = '<p>No results match the criteria.</p>'
   }
@@ -234,7 +232,6 @@ function createUser(user) {
 
 function sendDeleteAnswerRequest(event) {
   let answer_id = event.target.parentElement.children[0].innerHTML;
-  console.log(answer_id)
 
   if (answer != '')
     sendAjaxRequest('delete', '/api/answer/delete/' + answer_id, {}, answerDeletedHandler);
@@ -365,14 +362,11 @@ function editAnswer(event) {
   let full_text = answer.querySelector('.answer-full-text');
   full_text.insertAdjacentElement("afterend", createAnswerForm(answer_id, text));
   full_text.remove();
-
 }
-
 
 function createAnswerForm(answer_id, text) {
   let answer_form = document.createElement('div');
   let answer = document.getElementById(answer_id);
-  console.log(answer);
   //answer_form.classList.add('mt-5')
   answer_form.classList.add('answer-form')
   answer_form.style.width = "100%"

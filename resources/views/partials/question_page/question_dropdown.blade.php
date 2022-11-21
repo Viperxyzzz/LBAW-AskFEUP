@@ -1,5 +1,4 @@
-@if (Auth::check())
-    @if (Auth::user()->user_id === $question->author_id)
+@can('edit', $question)
     <div class="dropdown">
         <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
             <i class="material-symbols-outlined">more_vert</i>
@@ -20,5 +19,4 @@
             </form> 
         </div>
     </div>
-    @endif
-@endif
+@endcan

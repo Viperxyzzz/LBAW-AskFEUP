@@ -8,7 +8,7 @@
     </div>
 @endif
 
-<form id="edit-user-form" action="{{ route('update_user_api') }}" method="POST">
+<form id="edit-user-form" action="{{ route('update_user_api', ['id' => $user->user_id]) }}" method="POST">
     @csrf
     <div class="card m-5 p-5">
         @if (session('status'))
