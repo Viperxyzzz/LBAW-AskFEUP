@@ -159,7 +159,7 @@ function createAnswer(answer) {
         <p class="m-0">${answer.date}</p>
         <p class="m-0">
             <em>by</em>
-            <a href="#"> ${answer.author}</a>
+            <a href="/users/${answer.user_id}"> ${answer.author}</a>
         </p>
     </div>`;
   return new_answer;
@@ -318,7 +318,7 @@ function createQuestion(question) {
       <p class="m-0">${question.date_distance}</p>
       <p class="m-0">
           <em>by</em>
-          <a href="#"> ${question.author_name}</a>
+          <a href="/users/${question.author_id}"> ${question.author_name}</a>
       </p>
   </div>`;
 
@@ -372,13 +372,11 @@ function createAnswerForm(answer_id, text) {
   answer_form.id = `answer_form_${answer_id}`
 
   answer_form.innerHTML = `
-  <form method="POST" class="m-0 p-0">
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}" style="height:200px"></input>
       <div class="form-group" style="margin: 0">
           <input id="full_text" type="text" name="full_text" class="form-control-lg edit-text" value="${text}"required/>
       </div>
-  </form>
   <div class="text-right">
       <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
           Save Changes

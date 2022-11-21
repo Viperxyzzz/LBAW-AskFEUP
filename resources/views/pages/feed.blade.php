@@ -15,12 +15,20 @@
         </div>
         <div id="my_questions">
             <h2>My Questions</h2>
+            @if ($questions['authored']->isEmpty())
+                <p>You don't have any questions yet.
+                    <a href='/question/create'>Ask a question.</a>
+                </p>
+            @endif
             @foreach ($questions['authored'] as $question)
                 @include('partials.feed.question_card', ['question' => $question])
             @endforeach
         </div>
         <div id="following_questions">
             <h2>Questions following</h2>
+            @if ($questions['following']->isEmpty())
+                <p>You don't follow any questions yet.</p>
+            @endif
             @foreach ($questions['following'] as $question)
                 @include('partials.feed.question_card', ['question' => $question])
             @endforeach
