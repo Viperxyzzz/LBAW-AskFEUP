@@ -20,12 +20,12 @@ class QuestionPolicy
     public function edit(User $user, Question $question)
     {
       // Only the author of the question can edit it
-      return $user->user_id == $question->author_id;
+      return $user->user_id == $question->author_id || $user->is_admin;
     }
 
     public function delete(User $user, Question $question)
     {
       // Only a question's author can delete it
-      return $user->user_id == $question->author_id;
+      return $user->user_id == $question->author_id || $user->is_admin;
     }
 }

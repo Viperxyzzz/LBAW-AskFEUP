@@ -15,7 +15,7 @@ Route::get('/', 'Auth\LoginController@home');
 
 // User specific
 Route::get('feed', 'FeedController@home');
-Route::get('settings', 'ProfileController@settings');
+Route::get('settings/{id}', 'ProfileController@settings');
 
 // Users
 Route::get('users', 'UserController@home');
@@ -36,7 +36,7 @@ Route::get('api/browse', 'SearchController@browse');
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
-Route::post('api/settings', 'ProfileController@updateUser')->name('update_user_api');
+Route::post('api/settings/{id}', 'ProfileController@updateUser')->name('update_user_api');
 Route::delete('api/question/{id}', 'QuestionController@delete')->name('question_delete_api');
 
 // Answers

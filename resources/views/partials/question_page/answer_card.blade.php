@@ -1,12 +1,4 @@
-@if (session('status'))
-    <div class="alert alert-success" role="alert">
-        {{ session('status') }}
-    </div>
-@elseif (session('error'))
-    <div class="alert alert-danger" role="alert">
-        {{ session('error') }}
-    </div>
-@endif
+
 <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
     <strong class="ml-4 mb-0">Answer:</strong>
     <div class="card-body d-flex justify-content-between">
@@ -25,33 +17,25 @@
                 <p class="m-0 text-nowrap">edited</p>
                 @endif
             </aside>
-
-            @if (Auth::check())
-                @if (Auth::user()->user_id === $answer->user_id)
+            @can('edit', $answer)
                 <div class="dropdown">
                     <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
                         <i class="material-symbols-outlined">more_vert</i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
-                            <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                            <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
                             <button class="dropdown-item edit_answer" type="button">
                                 <i width="16" height="16" class="material-symbols-outlined ">edit</i>
                                 Edit
                             </button>
-                        <form method="POST" action="{{ route('answer_delete_api', $answer->answer_id) }}">
-                            @method('delete')
-                            @csrf
-                            <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
-                            <button class="dropdown-item" type="submit">
-                                <i width="16" height="16" class="material-symbols-outlined ">delete</i>
-                                Delete
-                            </button>
-                        </form>
+                        <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                        <button class="dropdown-item delete-answer" type="button">
+                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                            Delete
+                        </button>
                     </div>
                 </div>
-                @endif
-            @endif
+            @endcan
         </div>
     </div>
     <div class="card-footer d-flex justify-content-between">

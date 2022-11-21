@@ -30,11 +30,10 @@ function addEventListeners() {
   }
 
   let answerUpdater = document.querySelector('#update-answer-button');
-  console.log(answerUpdater);
   if (answerUpdater != null)
     answerUpdater.addEventListener('click', function() {alert("hey")});
 
-  let answerDelete = document.querySelectorAll('.delete_answer');
+  let answerDelete = document.querySelectorAll('.delete-answer');
   if (answerDelete != null) {
     answerDelete.forEach(
       btn => btn.addEventListener('click', sendDeleteAnswerRequest)
@@ -121,7 +120,6 @@ function answerAddedHandler() {
   // Insert the new answer
   let answers = document.querySelector('#answers');
   answers.prepend(new_answer);
-  addEventListeners();
 }
 
 function createAnswer(answer) {
@@ -132,8 +130,8 @@ function createAnswer(answer) {
   new_answer.id = 'answer_' + answer.answer_id;
   new_answer.innerHTML = ` 
     <div class="card-body d-flex justify-content-between">
-        <div style="font-size: 2rem">
-            <p class="card-text"> ${answer.full_text}</p>
+        <div style="font-size: 2rem" class="answer-full-text">
+            <p class="card-text">${answer.full_text}</p>
         </div>
         <div class="ml-5 d-flex">
             <aside class="question-stats">
@@ -144,12 +142,12 @@ function createAnswer(answer) {
                     <i class="material-symbols-outlined">more_vert</i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                    <data class="answer_id" hidden> ${answer.answer_id }</data>
-                    <button class="dropdown-item edit_answer">
+                    <data class="answer_id" hidden>${answer.answer_id }</data>
+                    <button class="dropdown-item edit_answer" onclick="editAnswer(event)">
                         <i width="16" height="16" class="material-symbols-outlined ">edit</i>
                         Edit
                     </button>
-                    <button class="dropdown-item delete_answer">
+                    <button class="dropdown-item delete_answer" onclick="sendDeleteAnswerRequest(event)">
                         <i width="16" height="16" class="material-symbols-outlined ">delete</i>
                         Delete
                     </button>
@@ -200,7 +198,6 @@ function createUsers(users) {
   new_users.className = 'd-flex'
   new_users.classList.add('flex-wrap')
   new_users.id = "users-list"
-  console.log(users)
   if (users.length == 0) {
     new_users.innerHTML = '<p>No results match the criteria.</p>'
   }
@@ -234,7 +231,6 @@ function createUser(user) {
 
 function sendDeleteAnswerRequest(event) {
   let answer_id = event.target.parentElement.children[0].innerHTML;
-  console.log(answer_id)
 
   if (answer != '')
     sendAjaxRequest('delete', '/api/answer/delete/' + answer_id, {}, answerDeletedHandler);
@@ -358,21 +354,18 @@ function submitSettings(){
 /*********** create an edit answer card ***********/
 
 function editAnswer(event) {
-  let answer_id = event.target.parentElement.children[1].value;
+  let answer_id = event.target.parentElement.children[0].innerText;
 
   let answer = document.querySelector('#answer_' + answer_id);
   let text = answer.querySelector('.card-text').innerText;
   let full_text = answer.querySelector('.answer-full-text');
   full_text.insertAdjacentElement("afterend", createAnswerForm(answer_id, text));
   full_text.remove();
-
 }
-
 
 function createAnswerForm(answer_id, text) {
   let answer_form = document.createElement('div');
   let answer = document.getElementById(answer_id);
-  console.log(answer);
   //answer_form.classList.add('mt-5')
   answer_form.classList.add('answer-form')
   answer_form.style.width = "100%"

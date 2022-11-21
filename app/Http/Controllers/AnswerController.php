@@ -41,8 +41,9 @@ class AnswerController extends Controller
       $this->authorize('delete', $answer);
 
       $answer->delete();
-      return back()->with("status", "Answer deleted successfully!");
+      return $answer;
     }
+
     public function edit_view(Request $request, $answer_id) {
       if (!Auth::check()) return redirect('/login');
       $answer = Answer::find($answer_id);

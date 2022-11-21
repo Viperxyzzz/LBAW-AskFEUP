@@ -21,17 +21,17 @@ class AnswerPolicy
     public function delete(User $user, Answer $answer)
     {
       // Only an answer's author can delete it
-      return $user->user_id == $answer->user_id;
+      return $user->user_id == $answer->user_id || $user->is_admin;
     }
     public function edit(User $user, Answer $answer)
     {
       // Only an answer's author can edit it
-      return $user->user_id == $answer->user_id;
+      return $user->user_id == $answer->user_id || $user->is_admin;
     }
 
     public function update(User $user, Answer $answer)
     {
       // Only an answer's author can update it
-      return $user->user_id == $answer->user_id;
+      return $user->user_id == $answer->user_id || $user->is_admin;
     }
 }
