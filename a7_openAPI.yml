@@ -148,8 +148,8 @@ paths:
 
   /users/{user_id}:
     get:
-      operationId: R201
-      summary: 'R201: View user profile'
+      operationId: R106
+      summary: 'R106: View user profile'
       description: 'Show the individual user profile. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M01: Authentication and Individual Profile'
@@ -164,6 +164,90 @@ paths:
       responses:
         '200':
           description: 'Ok. Show view profile UI'
+  /feed:
+    get:
+      operationId: R107
+      summary: 'R107: View feed'
+      description: 'Show the feed. Access: USR, Own, ADM, MOD'
+      tags:
+        - 'M01: Authentication and Individual Profile'
+
+      responses:
+        '200':
+          description: 'Ok. Show view feed UI'
+
+  /settings/{id}:
+    get:
+      operationId: R108
+      summary: 'R108: View settings'
+      description: 'Show the settings. Access: USR, Own, ADM, MOD'
+      tags:
+        - 'M01: Authentication and Individual Profile'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '200':
+          description: 'Ok. Show view settings UI'
+
+  /api/settings/{id}:
+    get:
+      operationId: R109
+      summary: 'R109: Edit profile settings action'
+      description: 'Edit the profile settings. Access: USR, Own, ADM, MOD'
+      tags:
+        - 'M01: Authentication and Individual Profile'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                name: 
+                  type: string
+                email:
+                  type: string
+                new_password:
+                    type: string
+                confirm_pass:
+                    type: string
+              required:
+                - username
+                - name
+                - email
+
+      responses:
+        '302':
+          description: 'Redirects after processing the new user information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful authentication. Redirects to user profile.'
+                  value: '/users/{id}'
+                302Failure:
+                  description: 'Failed authentication. Redirects to user profile.'
+                  value: '/settings/{id}'
+
+        
 
   /questions/{question_id}:
     get:
