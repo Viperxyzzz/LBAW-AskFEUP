@@ -63,7 +63,7 @@ paths:
               examples:
                 302Success:
                   description: 'Successful authentication. Redirects to homepage (top questions).'
-                  value: '/homepage/{user_id}'  # MUDAR SE NÃO FOR HOMEPAGE
+                  value: '/feed'
                 302Error:
                   description: 'Failed authentication. Redirects to login form.'
                   value: '/login'
@@ -184,7 +184,7 @@ paths:
         '200':
           description: 'Ok. Show question UI'
 
-  /questions/new_question:
+  /question/create:
     get:
       operationId: R202
       summary: 'R202: Create a question'
@@ -205,13 +205,15 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:  # MUDAR DEPOIS
+          application/x-www-form-urlencoded:
             schema:
               type: object
               properties:
                 title:
                   type: string
                 full_text:
+                  type: string
+                tags:
                   type: string
               required:
                 - title
@@ -228,10 +230,57 @@ paths:
                 302Success:
                   description: 'Successful creation. Redirects to the question page.'
                   value: '/questions/{question_id}'
-                302Failure:
-                  description: 'Failed creation. Redirects to homepage.'
-                  value: '/homepage'
 
+  /api/question:
+    post:
+      operationId: R205
+      summary: 'R205: Question creation action'
+      description: 'Processes the new question form submission. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M02: Questions'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                full_text:
+                  type: string
+                tags:
+                  type: string
+              required:
+                - title
+                - full_text
+  /api/question/delete/{id}:
+    post:
+      operationId: R206
+      summary: 'R206: Question deletion action'
+      description: 'Deletes a question. Access: OWN, ADM, MOD'
+      tags:
+        - 'M02: Questions'
+      
+      parameters:
+        - in: path
+          name: "id"
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '302':
+          description: 'Redirects after processing the question deletion.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful deletion. Redirects to homepage.'
+                  value: '/feed'
   /api/questions:
     get:
       operationId: R204
