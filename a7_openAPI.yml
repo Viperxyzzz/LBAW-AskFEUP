@@ -196,7 +196,7 @@ paths:
           description: 'Ok. Show view settings UI'
 
   /api/settings/{id}:
-    get:
+    post:
       operationId: R109
       summary: 'R109: Edit profile settings action'
       description: 'Edit the profile settings. Access: USR, Own, ADM, MOD'
