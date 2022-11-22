@@ -14,10 +14,11 @@ externalDocs:
   url: https://web.fe.up.pt/~ssn/wiki/teach/lbaw/medialib/a07   # MUDAR 
 
 tags:
-  - name: 'M01: Authentication and Individual Profile'
-  - name: 'M02: Questions'
-  - name: 'M03: User administration'
-  - name: 'M04: Static pages'
+  - name: 'M01: Authentication'
+  - name: 'M02: Profile and User Settings'
+  - name: 'M03: Search'
+  - name: 'M04: Questions'
+  - name: 'M05: User Administration and static pages'
 
 paths:
 
@@ -27,7 +28,7 @@ paths:
       summary: 'R101: Login Form'
       description: 'Provide login form. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
       responses:
         '200':
           description: 'Ok. Show log-in UI'
@@ -36,7 +37,7 @@ paths:
       summary: 'R102: Login Action'
       description: 'Processes the login form submission. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
  
       requestBody:
         required: true
@@ -75,7 +76,7 @@ paths:
       summary: 'R103: Logout Action'
       description: 'Logout the current authenticated user. Access: USR, ADM, OWN, MOD'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
       responses:
         '302':
           description: 'Redirects to login page after processing logout.'
@@ -94,7 +95,7 @@ paths:
       summary: 'R104: Register Form'
       description: 'Provides new user registration form. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
       responses:
         '200':
           description: 'Ok. Show sign-up UI'
@@ -104,7 +105,7 @@ paths:
       summary: 'R105: Register Action'
       description: 'Processes the new user registration form submission. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
 
       requestBody:
         required: true
@@ -152,7 +153,7 @@ paths:
       summary: 'R106: View user profile'
       description: 'Show the individual user profile. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M02: Profile and User Settings'
 
       parameters:
         - in: path
@@ -170,7 +171,7 @@ paths:
       summary: 'R107: View feed'
       description: 'Show the feed. Access: USR, Own, ADM, MOD'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M05: User Administration and static pages'
 
       responses:
         '200':
@@ -182,7 +183,7 @@ paths:
       summary: 'R108: View settings'
       description: 'Show the settings. Access: USR, Own, ADM, MOD'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M02: Profile and User Settings'
 
       parameters:
         - in: path
@@ -201,7 +202,7 @@ paths:
       summary: 'R109: Edit profile settings action'
       description: 'Edit the profile settings. Access: USR, Own, ADM, MOD'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M02: Profile and User Settings'
 
       parameters:
         - in: path
@@ -255,7 +256,7 @@ paths:
       summary: 'R201: View questions details such as answers'
       description: 'Show the individual question information. Access: PUB, USR, OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
 
       parameters:
         - in: path
@@ -274,7 +275,7 @@ paths:
       summary: 'R202: Displays the form for question creation'
       description: 'Provides the new question form. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
       responses:
         '200':
           description: 'Ok. Show sign-up UI'
@@ -285,7 +286,7 @@ paths:
       summary: 'R203: Displays the form for question edition'
       description: 'Provides the question edition form. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
 
       parameters:
         - in: path
@@ -305,7 +306,7 @@ paths:
       summary: 'R204: Question creation action'
       description: 'Processes the new question form submission. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
 
       requestBody:
         required: true
@@ -336,11 +337,11 @@ paths:
                   value: '/questions/{question_id}'
   /api/question/{id}:
     post:
-      operationId: R205
+      operationId: R405
       summary: 'R205: Question deletion action'
       description: 'Deletes a question. Access: OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
       
       parameters:
         - in: path
@@ -360,13 +361,53 @@ paths:
                 302Success:
                   description: 'Successful deletion. Redirects to homepage.'
                   value: '/feed'
+  /api/question/update/{id}:
+    post:
+      operationId: R406
+      summary: 'R206: Question update action'
+      description: 'Updates a question. Access: OWN, ADM, MOD'
+      tags:
+        - 'M04: Questions'
+      
+      parameters:
+        - in: path
+          name: "id"
+          schema:
+            type: integer
+          required: true
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                full_text:
+                  type: string
+              required:
+                - title
+                - full_text
+      responses:
+        '302':
+          description: 'Redirects after processing the question update.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful update. Redirects to question page.'
+                  value: '/questions/{question_id}'
   /api/answer/{id}:
     put:
       operationId: R206
       summary: 'R206: Answer edition action'
       description: 'Processes the answer edition form submission. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
 
       parameters:
         - in: path
@@ -406,7 +447,7 @@ paths:
       summary: 'R207: Answer deletion action'
       description: 'Deletes an answer. Access: OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
       
       parameters:
         - in: path
@@ -432,7 +473,7 @@ paths:
       summary: 'R208: Displays the form for answer edition'
       description: 'Provides the answer edition form. Access: OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
 
       parameters:
         - in: path
@@ -450,7 +491,7 @@ paths:
       summary: 'R209: Answer edition update action'
       description: 'Processes the answer edition form submission. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
 
       parameters:
         - in: path
@@ -487,7 +528,7 @@ paths:
       summary: 'R401: View all users'
       description: 'Show the list of all users. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M04: Users'
+        - 'M05: User Administration and static pages'
       responses:
         '200':
           description: 'Ok. Show users UI'
@@ -497,7 +538,7 @@ paths:
       summary: 'R402: Displays all users that match an exact search'
       description: 'Provides the list of users that match an exact search. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M04: Users'
+        - 'M03: Search'
       responses:
         '200':
           description: 'Ok. Show users'
@@ -507,7 +548,7 @@ paths:
       summary: 'R403: Displays the browse page'
       description: 'Provides the browse page. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M04: Users'
+        - 'M03: Search'
       responses:
         '200':
           description: 'Ok. Show browse UI'
@@ -517,7 +558,17 @@ paths:
       summary: 'R404: Displays all users that match a search'
       description: 'Provides the list of users that match a search. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M04: Users'
+        - 'M03: Search'
       responses:
         '200':
           description: 'Ok. Show users'
+  /:
+    get:
+      operationId: R501
+      summary: 'R501 Displays the homepage'
+      description: 'Provides the homepage. Access: USR, OWN, ADM, MOD'
+      tags:
+      - 'M05: User Administration and static pages'
+      responses:
+        '200':
+          description: 'Ok. Show homepage UI'
