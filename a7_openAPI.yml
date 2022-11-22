@@ -149,8 +149,8 @@ paths:
 
   /users/{user_id}:
     get:
-      operationId: R106
-      summary: 'R106: View user profile'
+      operationId: R201
+      summary: 'R201: View user profile'
       description: 'Show the individual user profile. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M02: Profile and User Settings'
@@ -179,8 +179,8 @@ paths:
 
   /settings/{id}:
     get:
-      operationId: R108
-      summary: 'R108: View settings'
+      operationId: R202
+      summary: 'R202: View settings'
       description: 'Show the settings. Access: USR, Own, ADM, MOD'
       tags:
         - 'M02: Profile and User Settings'
@@ -198,8 +198,8 @@ paths:
 
   /api/settings/{id}:
     post:
-      operationId: R109
-      summary: 'R109: Edit profile settings action'
+      operationId: R203
+      summary: 'R203: Edit profile settings action'
       description: 'Edit the profile settings. Access: USR, Own, ADM, MOD'
       tags:
         - 'M02: Profile and User Settings'
