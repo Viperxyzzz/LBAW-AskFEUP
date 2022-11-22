@@ -279,10 +279,30 @@ paths:
         '200':
           description: 'Ok. Show sign-up UI'
 
+  /question/{id}/edit:
+    get:
+      operationId: R203
+      summary: 'R203: Displays the form for question edition'
+      description: 'Provides the question edition form. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M02: Questions'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '200':
+          description: 'Ok. Show sign-up UI'
+  
+
   /api/question:
     post:
-      operationId: R203
-      summary: 'R203: Question creation action'
+      operationId: R204
+      summary: 'R204: Question creation action'
       description: 'Processes the new question form submission. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M02: Questions'
@@ -314,10 +334,10 @@ paths:
                 302Success:
                   description: 'Successful creation. Redirects to the question page.'
                   value: '/questions/{question_id}'
-  /api/question/delete/{id}:
+  /api/question/{id}:
     post:
-      operationId: R204
-      summary: 'R204: Question deletion action'
+      operationId: R205
+      summary: 'R205: Question deletion action'
       description: 'Deletes a question. Access: OWN, ADM, MOD'
       tags:
         - 'M02: Questions'
@@ -340,3 +360,124 @@ paths:
                 302Success:
                   description: 'Successful deletion. Redirects to homepage.'
                   value: '/feed'
+  /api/answer/{id}:
+    put:
+      operationId: R206
+      summary: 'R206: Answer edition action'
+      description: 'Processes the answer edition form submission. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M02: Questions'
+
+      parameters:
+        - in: path
+          name: "id"
+          schema:
+            type: integer
+          required: true
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_text:
+                  type: string
+                question_id:
+                  type: integer
+              required:
+                - full_text
+                - question_id
+      responses:
+        '302':
+          description: 'Redirects after processing the answer edition.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful edition. Redirects to the question page.'
+                  value: '/questions/{question_id}'
+  /api/answer/delete/{id}:
+    delete:
+      operationId: R207
+      summary: 'R207: Answer deletion action'
+      description: 'Deletes an answer. Access: OWN, ADM, MOD'
+      tags:
+        - 'M02: Questions'
+      
+      parameters:
+        - in: path
+          name: "id"
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '302':
+          description: 'Redirects after processing the answer deletion.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful deletion. Redirects to the question page.'
+                  value: '/questions/{question_id}'
+  /api/answer/edit/{id}:
+    get:
+      operationId: R208
+      summary: 'R208: Displays the form for answer edition'
+      description: 'Provides the answer edition form. Access: OWN, ADM, MOD'
+      tags:
+        - 'M02: Questions'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '200':
+          description: 'Ok. Show edit UI'
+  /api/answer/update/{id}:
+    put:
+      operationId: R209
+      summary: 'R209: Answer edition action'
+      description: 'Processes the answer edition form submission. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M02: Questions'
+
+      parameters:
+        - in: path
+          name: "id"
+          schema:
+            type: integer
+          required: true
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_text:
+                  type: string
+              required:
+                - full_text
+      responses:
+        '302':
+          description: 'Redirects after processing the answer edition.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful edition. Redirects to the question page.'
+                  value: '/questions/{question_id}'
