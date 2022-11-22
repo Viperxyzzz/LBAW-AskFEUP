@@ -252,8 +252,8 @@ paths:
 
   /questions/{question_id}:
     get:
-      operationId: R201
-      summary: 'R201: View questions details such as answers'
+      operationId: R401
+      summary: 'R401: View questions details such as answers'
       description: 'Show the individual question information. Access: PUB, USR, OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
@@ -271,8 +271,8 @@ paths:
 
   /question/create:
     get:
-      operationId: R202
-      summary: 'R202: Displays the form for question creation'
+      operationId: R402
+      summary: 'R402: Displays the form for question creation'
       description: 'Provides the new question form. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
@@ -282,8 +282,8 @@ paths:
 
   /question/{id}/edit:
     get:
-      operationId: R203
-      summary: 'R203: Displays the form for question edition'
+      operationId: R403
+      summary: 'R403: Displays the form for question edition'
       description: 'Provides the question edition form. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
@@ -302,8 +302,8 @@ paths:
 
   /api/question:
     post:
-      operationId: R204
-      summary: 'R204: Question creation action'
+      operationId: R404
+      summary: 'R404: Question creation action'
       description: 'Processes the new question form submission. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
@@ -338,7 +338,7 @@ paths:
   /api/question/{id}:
     post:
       operationId: R405
-      summary: 'R205: Question deletion action'
+      summary: 'R405: Question deletion action'
       description: 'Deletes a question. Access: OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
@@ -364,7 +364,7 @@ paths:
   /api/question/update/{id}:
     post:
       operationId: R406
-      summary: 'R206: Question update action'
+      summary: 'R406: Question update action'
       description: 'Updates a question. Access: OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
@@ -403,8 +403,8 @@ paths:
                   value: '/questions/{question_id}'
   /api/answer/{id}:
     put:
-      operationId: R206
-      summary: 'R206: Answer edition action'
+      operationId: R406
+      summary: 'R406: Answer edition action'
       description: 'Processes the answer edition form submission. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
@@ -443,8 +443,8 @@ paths:
                   value: '/questions/{question_id}'
   /api/answer/delete/{id}:
     delete:
-      operationId: R207
-      summary: 'R207: Answer deletion action'
+      operationId: R407
+      summary: 'R407: Answer deletion action'
       description: 'Deletes an answer. Access: OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
@@ -469,8 +469,8 @@ paths:
                   value: '/questions/{question_id}'
   /api/answer/edit/{id}:
     get:
-      operationId: R208
-      summary: 'R208: Displays the form for answer edition'
+      operationId: R408
+      summary: 'R408: Displays the form for answer edition'
       description: 'Provides the answer edition form. Access: OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
@@ -487,8 +487,8 @@ paths:
           description: 'Ok. Show edit UI'
   /api/answer/update/{id}:
     put:
-      operationId: R209
-      summary: 'R209: Answer edition update action'
+      operationId: R409
+      summary: 'R409: Answer edition update action'
       description: 'Processes the answer edition form submission. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
