@@ -534,8 +534,8 @@ paths:
           description: 'Ok. Show users UI'
   /api/users/:
     get:
-      operationId: R402
-      summary: 'R402: Displays all users that match an exact search'
+      operationId: R301
+      summary: 'R301: Displays all users that match an exact search'
       description: 'Provides the list of users that match an exact search. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M03: Search'
@@ -544,8 +544,8 @@ paths:
           description: 'Ok. Show users'
   /browse:
     get:
-      operationId: R403
-      summary: 'R403: Displays the browse page'
+      operationId: R302
+      summary: 'R302: Displays the browse page'
       description: 'Provides the browse page. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M03: Search'
@@ -554,8 +554,8 @@ paths:
           description: 'Ok. Show browse UI'
   /api/browse:
     get:
-      operationId: R404
-      summary: 'R404: Displays all users that match a search'
+      operationId: R303
+      summary: 'R303: Displays all users that match a search'
       description: 'Provides the list of users that match a search. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M03: Search'
