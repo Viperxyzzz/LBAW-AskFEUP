@@ -447,7 +447,7 @@ paths:
   /api/answer/update/{id}:
     put:
       operationId: R209
-      summary: 'R209: Answer edition action'
+      summary: 'R209: Answer edition update action'
       description: 'Processes the answer edition form submission. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M02: Questions'
@@ -481,3 +481,43 @@ paths:
                 302Success:
                   description: 'Successful edition. Redirects to the question page.'
                   value: '/questions/{question_id}'
+  /users:
+    get:
+      operationId: R401
+      summary: 'R401: View all users'
+      description: 'Show the list of all users. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M04: Users'
+      responses:
+        '200':
+          description: 'Ok. Show users UI'
+  /api/users/:
+    get:
+      operationId: R402
+      summary: 'R402: Displays all users that match an exact search'
+      description: 'Provides the list of users that match an exact search. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M04: Users'
+      responses:
+        '200':
+          description: 'Ok. Show users'
+  /browse:
+    get:
+      operationId: R403
+      summary: 'R403: Displays the browse page'
+      description: 'Provides the browse page. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M04: Users'
+      responses:
+        '200':
+          description: 'Ok. Show browse UI'
+  /api/browse:
+    get:
+      operationId: R404
+      summary: 'R404: Displays all users that match a search'
+      description: 'Provides the list of users that match a search. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M04: Users'
+      responses:
+        '200':
+          description: 'Ok. Show users'
