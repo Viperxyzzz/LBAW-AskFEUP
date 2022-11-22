@@ -9,9 +9,6 @@ servers:
 - url: http://db.fe.up.pt
   description: Production server
 
-externalDocs:
-  description: Find more info here.
-  url: https://web.fe.up.pt/~ssn/wiki/teach/lbaw/medialib/a07   # MUDAR 
 
 tags:
   - name: 'M01: Authentication'
@@ -46,9 +43,9 @@ paths:
             schema:
               type: object
               properties:
-                email:          # <!--- form field name
+                email:         
                   type: string
-                password:    # <!--- form field name
+                password:    
                   type: string
               required:
                 - email
@@ -122,7 +119,7 @@ paths:
                   type: string
                 password:
                   type: string
-                picture:  # INCLUIR NA BASE DE DADOS / UML / WIKI... ETC
+                picture: 
                   type: string
                   format: binary
               required:
@@ -200,7 +197,7 @@ paths:
     post:
       operationId: R203
       summary: 'R203: Edit profile settings action'
-      description: 'Edit the profile settings. Access: USR, Own, ADM, MOD'
+      description: 'Edit the profile settings actuib. Access: USR, Own, ADM, MOD'
       tags:
         - 'M02: Profile and User Settings'
 
@@ -401,11 +398,14 @@ paths:
                 302Success:
                   description: 'Successful update. Redirects to question page.'
                   value: '/questions/{question_id}'
+                302Failure:
+                  description: 'Failed update. Redirects to question page.'
+                  value: '/questions/{question_id}'
   /api/answer/{id}:
     put:
       operationId: R407
       summary: 'R407: Answer edition action'
-      description: 'Processes the answer edition form submission. Access: USR, OWN, ADM, MOD'
+      description: 'Processes the answer edition form submission. Access: OWN, ADM, MOD'
       tags:
         - 'M04: Questions'
 
@@ -441,6 +441,7 @@ paths:
                 302Success:
                   description: 'Successful edition. Redirects to the question page.'
                   value: '/questions/{question_id}'
+
   /api/answer/delete/{id}:
     delete:
       operationId: R408
@@ -541,7 +542,7 @@ paths:
         - 'M03: Search'
       responses:
         '200':
-          description: 'Ok. Show users'
+          description: 'Ok. Show users UI'
   /browse:
     get:
       operationId: R302
@@ -561,7 +562,7 @@ paths:
         - 'M03: Search'
       responses:
         '200':
-          description: 'Ok. Show users'
+          description: 'Ok. Show users UI'
   /:
     get:
       operationId: R503
