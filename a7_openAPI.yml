@@ -187,7 +187,7 @@ paths:
   /question/create:
     get:
       operationId: R202
-      summary: 'R202: Create a question'
+      summary: 'R202: Displays the form for question creation'
       description: 'Provides the new question form. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M02: Questions'
@@ -195,46 +195,10 @@ paths:
         '200':
           description: 'Ok. Show sign-up UI'
 
+  /api/question:
     post:
       operationId: R203
       summary: 'R203: Question creation action'
-      description: 'Processes the new question form submission. Access: USR, OWN, ADM, MOD'
-      tags:
-        - 'M02: Questions'
-
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                full_text:
-                  type: string
-                tags:
-                  type: string
-              required:
-                - title
-                - full_text
-
-      responses:
-        '302':
-          description: 'Redirects after processing the new question information.'
-          headers:
-            Location:
-              schema:
-                type: string
-              examples:
-                302Success:
-                  description: 'Successful creation. Redirects to the question page.'
-                  value: '/questions/{question_id}'
-
-  /api/question:
-    post:
-      operationId: R205
-      summary: 'R205: Question creation action'
       description: 'Processes the new question form submission. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M02: Questions'
@@ -255,10 +219,21 @@ paths:
               required:
                 - title
                 - full_text
+      responses:
+        '302':
+          description: 'Redirects after processing the new question information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful creation. Redirects to the question page.'
+                  value: '/questions/{question_id}'
   /api/question/delete/{id}:
     post:
-      operationId: R206
-      summary: 'R206: Question deletion action'
+      operationId: R204
+      summary: 'R204: Question deletion action'
       description: 'Deletes a question. Access: OWN, ADM, MOD'
       tags:
         - 'M02: Questions'
@@ -281,79 +256,3 @@ paths:
                 302Success:
                   description: 'Successful deletion. Redirects to homepage.'
                   value: '/feed'
-  /api/questions:
-    get:
-      operationId: R204
-      summary: 'R204: Search questions API'
-      description: 'Searches for questions and returns the results as JSON. Access: PUB, USR, OWN, ADM, MOD.'
-
-      tags: 
-        - 'M02: Questions'
-
-      parameters:
-        - in: query
-          name: query
-          description: String to use for full-text search
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: tag
-          description: Category of the questions
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: author
-          description: Boolean with the author flag value
-          schema:
-            type: boolean
-          required: false
-        - in: query
-          name: num_votes
-          description: Integer corresponding to the number of votes for the question
-          schema:
-            type: integer
-          required: false
-        - in: query
-          name: num_answers
-          description: Integer corresponding to the number of answers for the question
-          schema:
-            type: integer
-          required: false
-
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    question_id:
-                      type: integer
-                    title:
-                      type: string
-                    full_text:
-                      type: string
-                    num_votes:
-                      type: integer
-                    num_answers:
-                      type: integer
-                    owner:
-                      type: string
-                example:
-                  - question_id: 1
-                    title: How to install python
-                    full_text: I'm having some trouble, can anyone help me?
-                    num_votes: 5
-                    num_answers: 2
-                    owner: João Ferreira
-                  - question_id: 10
-                    title: What is openAPI?
-                    full_text: I'm not understanding the main usage of openAPI.
-                    num_votes: 5
-                    num_answers: 2
-                    owner: Inês Costa
