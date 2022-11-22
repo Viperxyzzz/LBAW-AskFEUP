@@ -9,15 +9,13 @@ servers:
 - url: http://db.fe.up.pt
   description: Production server
 
-externalDocs:
-  description: Find more info here.
-  url: https://web.fe.up.pt/~ssn/wiki/teach/lbaw/medialib/a07   # MUDAR 
 
 tags:
-  - name: 'M01: Authentication and Individual Profile'
-  - name: 'M02: Questions'
-  - name: 'M03: User administration'
-  - name: 'M04: Static pages'
+  - name: 'M01: Authentication'
+  - name: 'M02: Profile and User Settings'
+  - name: 'M03: Search'
+  - name: 'M04: Questions'
+  - name: 'M05: User Administration and static pages'
 
 paths:
 
@@ -27,7 +25,7 @@ paths:
       summary: 'R101: Login Form'
       description: 'Provide login form. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
       responses:
         '200':
           description: 'Ok. Show log-in UI'
@@ -36,7 +34,7 @@ paths:
       summary: 'R102: Login Action'
       description: 'Processes the login form submission. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
  
       requestBody:
         required: true
@@ -45,9 +43,9 @@ paths:
             schema:
               type: object
               properties:
-                email:          # <!--- form field name
+                email:         
                   type: string
-                password:    # <!--- form field name
+                password:    
                   type: string
               required:
                 - email
@@ -63,7 +61,7 @@ paths:
               examples:
                 302Success:
                   description: 'Successful authentication. Redirects to homepage (top questions).'
-                  value: '/homepage/{user_id}'  # MUDAR SE NÃO FOR HOMEPAGE
+                  value: '/feed'
                 302Error:
                   description: 'Failed authentication. Redirects to login form.'
                   value: '/login'
@@ -75,7 +73,7 @@ paths:
       summary: 'R103: Logout Action'
       description: 'Logout the current authenticated user. Access: USR, ADM, OWN, MOD'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
       responses:
         '302':
           description: 'Redirects to login page after processing logout.'
@@ -94,7 +92,7 @@ paths:
       summary: 'R104: Register Form'
       description: 'Provides new user registration form. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
       responses:
         '200':
           description: 'Ok. Show sign-up UI'
@@ -104,7 +102,7 @@ paths:
       summary: 'R105: Register Action'
       description: 'Processes the new user registration form submission. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
 
       requestBody:
         required: true
@@ -121,7 +119,7 @@ paths:
                   type: string
                 password:
                   type: string
-                picture:  # INCLUIR NA BASE DE DADOS / UML / WIKI... ETC
+                picture: 
                   type: string
                   format: binary
               required:
@@ -152,7 +150,7 @@ paths:
       summary: 'R201: View user profile'
       description: 'Show the individual user profile. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M02: Profile and User Settings'
 
       parameters:
         - in: path
@@ -164,14 +162,98 @@ paths:
       responses:
         '200':
           description: 'Ok. Show view profile UI'
+  /feed:
+    get:
+      operationId: R501
+      summary: 'R501: View feed'
+      description: 'Show the feed. Access: USR, Own, ADM, MOD'
+      tags:
+        - 'M05: User Administration and static pages'
+
+      responses:
+        '200':
+          description: 'Ok. Show view feed UI'
+
+  /settings/{id}:
+    get:
+      operationId: R202
+      summary: 'R202: View settings'
+      description: 'Show the settings. Access: USR, Own, ADM, MOD'
+      tags:
+        - 'M02: Profile and User Settings'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '200':
+          description: 'Ok. Show view settings UI'
+
+  /api/settings/{id}:
+    post:
+      operationId: R203
+      summary: 'R203: Edit profile settings action'
+      description: 'Edit the profile settings actuib. Access: USR, Own, ADM, MOD'
+      tags:
+        - 'M02: Profile and User Settings'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                name: 
+                  type: string
+                email:
+                  type: string
+                new_password:
+                    type: string
+                confirm_pass:
+                    type: string
+              required:
+                - username
+                - name
+                - email
+
+      responses:
+        '302':
+          description: 'Redirects after processing the new user information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful authentication. Redirects to user profile.'
+                  value: '/users/{id}'
+                302Failure:
+                  description: 'Failed authentication. Redirects to user profile.'
+                  value: '/settings/{id}'
+
+        
 
   /questions/{question_id}:
     get:
-      operationId: R201
-      summary: 'R201: View questions details such as answers'
+      operationId: R401
+      summary: 'R401: View questions details such as answers'
       description: 'Show the individual question information. Access: PUB, USR, OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
 
       parameters:
         - in: path
@@ -184,28 +266,49 @@ paths:
         '200':
           description: 'Ok. Show question UI'
 
-  /questions/new_question:
+  /question/create:
     get:
-      operationId: R202
-      summary: 'R202: Create a question'
+      operationId: R402
+      summary: 'R402: Displays the form for question creation'
       description: 'Provides the new question form. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
       responses:
         '200':
           description: 'Ok. Show sign-up UI'
 
+  /question/{id}/edit:
+    get:
+      operationId: R403
+      summary: 'R403: Displays the form for question edition'
+      description: 'Provides the question edition form. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M04: Questions'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '200':
+          description: 'Ok. Show sign-up UI'
+  
+
+  /api/question:
     post:
-      operationId: R203
-      summary: 'R203: Question creation action'
+      operationId: R404
+      summary: 'R404: Question creation action'
       description: 'Processes the new question form submission. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M02: Questions'
+        - 'M04: Questions'
 
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:  # MUDAR DEPOIS
+          application/json:
             schema:
               type: object
               properties:
@@ -213,10 +316,11 @@ paths:
                   type: string
                 full_text:
                   type: string
+                tags:
+                  type: string
               required:
                 - title
                 - full_text
-
       responses:
         '302':
           description: 'Redirects after processing the new question information.'
@@ -228,83 +332,244 @@ paths:
                 302Success:
                   description: 'Successful creation. Redirects to the question page.'
                   value: '/questions/{question_id}'
+  /api/question/{id}:
+    post:
+      operationId: R405
+      summary: 'R405: Question deletion action'
+      description: 'Deletes a question. Access: OWN, ADM, MOD'
+      tags:
+        - 'M04: Questions'
+      
+      parameters:
+        - in: path
+          name: "id"
+          schema:
+            type: integer
+          required: true
+
+      responses:
+        '302':
+          description: 'Redirects after processing the question deletion.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful deletion. Redirects to homepage.'
+                  value: '/feed'
+  /api/question/update/{id}:
+    post:
+      operationId: R406
+      summary: 'R406: Question update action'
+      description: 'Updates a question. Access: OWN, ADM, MOD'
+      tags:
+        - 'M04: Questions'
+      
+      parameters:
+        - in: path
+          name: "id"
+          schema:
+            type: integer
+          required: true
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                full_text:
+                  type: string
+              required:
+                - title
+                - full_text
+      responses:
+        '302':
+          description: 'Redirects after processing the question update.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful update. Redirects to question page.'
+                  value: '/questions/{question_id}'
                 302Failure:
-                  description: 'Failed creation. Redirects to homepage.'
-                  value: '/homepage'
-
-  /api/questions:
-    get:
-      operationId: R204
-      summary: 'R204: Search questions API'
-      description: 'Searches for questions and returns the results as JSON. Access: PUB, USR, OWN, ADM, MOD.'
-
-      tags: 
-        - 'M02: Questions'
+                  description: 'Failed update. Redirects to question page.'
+                  value: '/questions/{question_id}'
+  /api/answer/{id}:
+    put:
+      operationId: R407
+      summary: 'R407: Answer edition action'
+      description: 'Processes the answer edition form submission. Access: OWN, ADM, MOD'
+      tags:
+        - 'M04: Questions'
 
       parameters:
-        - in: query
-          name: query
-          description: String to use for full-text search
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: tag
-          description: Category of the questions
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: author
-          description: Boolean with the author flag value
-          schema:
-            type: boolean
-          required: false
-        - in: query
-          name: num_votes
-          description: Integer corresponding to the number of votes for the question
+        - in: path
+          name: "id"
           schema:
             type: integer
-          required: false
-        - in: query
-          name: num_answers
-          description: Integer corresponding to the number of answers for the question
+          required: true
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_text:
+                  type: string
+                question_id:
+                  type: integer
+              required:
+                - full_text
+                - question_id
+      responses:
+        '302':
+          description: 'Redirects after processing the answer edition.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful edition. Redirects to the question page.'
+                  value: '/questions/{question_id}'
+
+  /api/answer/delete/{id}:
+    delete:
+      operationId: R408
+      summary: 'R408: Answer deletion action'
+      description: 'Deletes an answer. Access: OWN, ADM, MOD'
+      tags:
+        - 'M04: Questions'
+      
+      parameters:
+        - in: path
+          name: "id"
           schema:
             type: integer
-          required: false
+          required: true
+
+      responses:
+        '302':
+          description: 'Redirects after processing the answer deletion.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful deletion. Redirects to the question page.'
+                  value: '/questions/{question_id}'
+  /api/answer/edit/{id}:
+    get:
+      operationId: R409
+      summary: 'R409: Displays the form for answer edition'
+      description: 'Provides the answer edition form. Access: OWN, ADM, MOD'
+      tags:
+        - 'M04: Questions'
+
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
 
       responses:
         '200':
-          description: Success
-          content:
-            application/json:
+          description: 'Ok. Show edit UI'
+  /api/answer/update/{id}:
+    put:
+      operationId: R410
+      summary: 'R410: Answer edition update action'
+      description: 'Processes the answer edition form submission. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M04: Questions'
+
+      parameters:
+        - in: path
+          name: "id"
+          schema:
+            type: integer
+          required: true
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_text:
+                  type: string
+              required:
+                - full_text
+      responses:
+        '302':
+          description: 'Redirects after processing the answer edition.'
+          headers:
+            Location:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    question_id:
-                      type: integer
-                    title:
-                      type: string
-                    full_text:
-                      type: string
-                    num_votes:
-                      type: integer
-                    num_answers:
-                      type: integer
-                    owner:
-                      type: string
-                example:
-                  - question_id: 1
-                    title: How to install python
-                    full_text: I'm having some trouble, can anyone help me?
-                    num_votes: 5
-                    num_answers: 2
-                    owner: João Ferreira
-                  - question_id: 10
-                    title: What is openAPI?
-                    full_text: I'm not understanding the main usage of openAPI.
-                    num_votes: 5
-                    num_answers: 2
-                    owner: Inês Costa
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful edition. Redirects to the question page.'
+                  value: '/questions/{question_id}'
+  /users:
+    get:
+      operationId: R502
+      summary: 'R502: View all users'
+      description: 'Show the list of all users. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M05: User Administration and static pages'
+      responses:
+        '200':
+          description: 'Ok. Show users UI'
+  /api/users/:
+    get:
+      operationId: R301
+      summary: 'R301: Displays all users that match an exact search'
+      description: 'Provides the list of users that match an exact search. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M03: Search'
+      responses:
+        '200':
+          description: 'Ok. Show users UI'
+  /browse:
+    get:
+      operationId: R302
+      summary: 'R302: Displays the browse page'
+      description: 'Provides the browse page. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M03: Search'
+      responses:
+        '200':
+          description: 'Ok. Show browse UI'
+  /api/browse:
+    get:
+      operationId: R303
+      summary: 'R303: Displays all users that match a search'
+      description: 'Provides the list of users that match a search. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M03: Search'
+      responses:
+        '200':
+          description: 'Ok. Show users UI'
+  /:
+    get:
+      operationId: R503
+      summary: 'R503 Displays the homepage'
+      description: 'Provides the homepage. Access: USR, OWN, ADM, MOD'
+      tags:
+      - 'M05: User Administration and static pages'
+      responses:
+        '200':
+          description: 'Ok. Show homepage UI'
