@@ -3,6 +3,15 @@ function addEventListeners() {
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
+  let enterInputAnswerCreator = document.getElementById('answer');
+  enterInputAnswerCreator.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter')
+      {
+        event.preventDefault();
+        sendCreateAnswerRequest(event);
+      }
+    });
+
   let userSearch = document.querySelector('#user-search');
   if (userSearch != null) {
     userSearch.addEventListener('input', sendSearchUsersRequest);
@@ -99,8 +108,11 @@ function sendAjaxRequest(method, url, data, handler) {
 /*********** create an answer ***********/
 
 function sendCreateAnswerRequest(event) {
+  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
+  console.log(question_id)
   let answer = document.querySelector('#answer').value;
+  console.log(answer)
 
   if (answer != '')
     sendAjaxRequest('put', '/api/answer/' + question_id, { answer: answer }, answerAddedHandler);
