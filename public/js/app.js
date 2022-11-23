@@ -4,13 +4,38 @@ function addEventListeners() {
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
   let enterInputAnswerCreator = document.getElementById('answer');
-  enterInputAnswerCreator.addEventListener('keypress', function(event) {
+  if(enterInputAnswerCreator != null)
+    enterInputAnswerCreator.addEventListener('keypress', function(event) {
       if (event.key === 'Enter')
       {
         event.preventDefault();
         sendCreateAnswerRequest(event);
       }
     });
+
+  let enterInputEditUserFullName = document.querySelector('#edit-full-name');
+  if(enterInputEditUserFullName != null)
+    enterInputEditUserFullName.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter'){
+        document.getElementById("edit-username").focus();
+      }
+  });
+
+  let enterInputEditUserUsername = document.querySelector('#edit-username');
+  if(enterInputEditUserUsername != null)
+    enterInputEditUserUsername.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter'){
+        document.getElementById("edit-email").focus();
+      }
+  });
+
+  let enterInputEditUserEmail = document.querySelector('#edit-email');
+  if(enterInputEditUserEmail != null)
+    enterInputEditUserEmail.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter'){
+        document.getElementById("save-settings").focus();
+      }
+  });
 
   let userSearch = document.querySelector('#user-search');
   if (userSearch != null) {
