@@ -38,10 +38,6 @@ function addEventListeners() {
       );
   }
 
-  let answerUpdater = document.querySelector('#update-answer-button');
-  if (answerUpdater != null)
-    answerUpdater.addEventListener('click', function() {alert("hey")});
-
   let answerDelete = document.querySelectorAll('.delete-answer');
   if (answerDelete != null) {
     answerDelete.forEach(
@@ -383,17 +379,31 @@ function createAnswerForm(answer_id, text) {
   answer_form.style.width = "100%"
   answer_form.id = `answer_form_${answer_id}`
 
-  answer_form.innerHTML = `
+  setInnerHTML( answer_form,
+    `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}" style="height:200px"></input>
       <div class="form-group" style="margin: 0">
-          <input id="full_text" type="text" name="full_text" class="form-control-lg edit-text" value="${text}"required/>
+      <input type="submit" style="display: none" />
+          <input id="full_text" type="text" name="full_text" class="form-control-lg edit-text answer-update" value="${text}" required/>
       </div>
-  <div class="text-right">
-      <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
-          Save Changes
-      </button>
-  </div>`;
+      <div class="text-right">
+          <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
+              Save Changes
+          </button>
+      </div>
+      <script>
+      var input = document.getElementById("full_text");
+      console.log(input);
+      console.log("oi");
+      input.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("update-answer-button").click();
+        }
+      });
+      </script>
+`)
   return answer_form;
 }
 
@@ -406,14 +416,33 @@ function answerUpdater() {
 
 function sendCreateAnswerUpdateRequest() {
   let answer = JSON.parse(this.responseText);
-  
+
   let p = document.createElement('p');
   p.innerText = answer.full_text;
-  
+
   let answer_element = document.querySelector('#answer_' + answer.answer_id);
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.insertAdjacentElement("afterend", p);
   answer_form.remove();
 
 }
+
+function setInnerHTML(elm, html) {
+  elm.innerHTML = html;
+
+  Array.from(elm.querySelectorAll("script"))
+    .forEach( oldScriptEl => {
+      const newScriptEl = document.createElement("script");
+
+      Array.from(oldScriptEl.attributes).forEach( attr => {
+        newScriptEl.setAttribute(attr.name, attr.value)
+      });
+      const scriptText = document.createTextNode(oldScriptEl.innerHTML);
+      newScriptEl.appendChild(scriptText);
+      oldScriptEl.parentNode.replaceChild(newScriptEl, oldScriptEl);
+  });
+}
+
+/***********  ***********/
+
 addEventListeners();
