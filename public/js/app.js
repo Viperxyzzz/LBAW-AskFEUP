@@ -394,8 +394,6 @@ function createAnswerForm(answer_id, text) {
       </div>
       <script>
       var input = document.getElementById("full_text");
-      console.log(input);
-      console.log("oi");
       input.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
           event.preventDefault();
