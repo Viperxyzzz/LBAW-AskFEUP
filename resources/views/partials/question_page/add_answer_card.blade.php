@@ -3,7 +3,7 @@
         {{ csrf_field() }}
         <input type="hidden" name="question_id" id="question_id" value="{{ $question_id }}"></input>
 
-        <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="6"
+        <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
             id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
         @if ($errors->has('answer'))
             <span class="error">

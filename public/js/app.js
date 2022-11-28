@@ -129,39 +129,56 @@ function createAnswer(answer) {
   new_answer.classList.add('answer')
   new_answer.id = 'answer_' + answer.answer_id;
   new_answer.innerHTML = ` 
-    <div class="card-body d-flex justify-content-between">
-        <div style="font-size: 2rem" class="answer-full-text">
-            <p class="card-text">${answer.full_text}</p>
-        </div>
-        <div class="ml-5 d-flex">
-            <aside class="question-stats">
-                <p class="m-0 text-nowrap">0 votes</p>
-            </aside>
-            <div class="dropdown">
-                <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
-                    <i class="material-symbols-outlined">more_vert</i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                    <data class="answer_id" hidden>${answer.answer_id }</data>
-                    <button class="dropdown-item edit_answer" onclick="editAnswer(event)">
-                        <i width="16" height="16" class="material-symbols-outlined ">edit</i>
-                        Edit
-                    </button>
-                    <button class="dropdown-item delete_answer" onclick="sendDeleteAnswerRequest(event)">
-                        <i width="16" height="16" class="material-symbols-outlined ">delete</i>
-                        Delete
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card-footer d-flex justify-content-between">
-        <p class="m-0">${answer.date}</p>
-        <p class="m-0">
-            <em>by</em>
-            <a href="/users/${answer.user_id}"> ${answer.author}</a>
-        </p>
-    </div>`;
+  <div class="card-body d-flex justify-content-between">
+      <div>
+          <p class="m-0">
+              <img src="/storage/${answer.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
+              <a class="font-weight-bold" href="/users/${answer.user_id}"> ${answer.author.name}</a>
+          </p>
+          <div class="answer-full-text">
+              <p class="card-text pb-5 pt-2">${answer.full_text}</p>
+          </div>
+      </div>
+      <div class="ml-5 d-flex">
+          <aside class="question-stats">
+          </aside>
+              <div class="dropdown">
+                  <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                      <i class="material-symbols-outlined">more_vert</i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                          <data class="answer_id" hidden>${answer.answer_id}</data>
+                          <button class="dropdown-item edit_answer" type="button" onclick=editAnswer(event)>
+                              <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                              Edit
+                          </button>
+                      <input type="hidden" name="answer_id" value="${answer.answer_id}">
+                      <button class="dropdown-item delete-answer" type="button" onclick=sendDeleteAnswerRequest(event)>
+                          <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                          Delete
+                      </button>
+                  </div>
+              </div>
+      </div>
+  </div>
+  <div class="card-footer d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-start mt-2">
+          <button class="button-clear m-0 px-1" type="button">
+              <i width="16" height="16" class="material-symbols-outlined ">arrow_upward</i>
+          </button>
+          <p class="m-0 px-1 pt-1">${answer.num_votes}</p>
+          <button class="button-clear d-block m-0 px-1" type="button">
+              <i width="16" height="16" class="material-symbols-outlined ">arrow_downward</i>
+          </button>
+          <button class="button-clear m-0 px-1" type="button">
+              <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
+          </button>
+      </div>
+      <p class="m-0">${answer.date}</p>
+  </div>
+  <div class="answer-comments">
+  </div>`;
+
   return new_answer;
 }
 
@@ -368,15 +385,13 @@ function createAnswerForm(answer_id, text) {
   let answer = document.getElementById(answer_id);
   //answer_form.classList.add('mt-5')
   answer_form.classList.add('answer-form')
-  answer_form.style.width = "100%"
+  answer_form.classList.add('w-100')
   answer_form.id = `answer_form_${answer_id}`
 
   answer_form.innerHTML = `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
-    <input type="hidden" name="answer" id="answer" value="${answer}" style="height:200px"></input>
-      <div class="form-group" style="margin: 0">
-          <input id="full_text" type="text" name="full_text" class="form-control-lg edit-text" value="${text}"required/>
-      </div>
+    <input type="hidden" name="answer" id="answer" value="${answer}"></input>
+    <textarea id="full_text" rows="4" type="text" name="full_text" class="edit-text mt-2" required/>${text}</textarea>
   <div class="text-right">
       <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
           Save Changes
