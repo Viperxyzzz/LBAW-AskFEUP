@@ -1,5 +1,6 @@
 
 <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+    @include('partials.question_page.delete_answer_modal', ['answer' => $answer])
     <div class="card-body d-flex justify-content-between">
         <div class="flex-fill">
             <p class="m-0">
@@ -25,7 +26,7 @@
                                 Edit
                             </button>
                         <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
-                        <button class="dropdown-item delete-answer" type="button">
+                        <button class="dropdown-item" type="button" data-toggle="modal" data-target="#answerModal_{{$answer->answer_id}}">
                             <i width="16" height="16" class="material-symbols-outlined ">delete</i>
                             Delete
                         </button>

@@ -129,6 +129,26 @@ function createAnswer(answer) {
   new_answer.classList.add('answer')
   new_answer.id = 'answer_' + answer.answer_id;
   new_answer.innerHTML = ` 
+  <div class="modal fade" id="answerModal_${answer.answer_id}" tabindex="-1" aria-labelledby="answerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="answerModalLabel">Delete answer</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <i class="material-symbols-outlined">close</i>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this answer?
+        </div>
+        <div class="modal-footer border-0">
+          <input type="hidden" name="answer_id" value="${answer.answer_id}">
+          <button type="button" class="button-outline" data-dismiss="modal">Close</button>
+          <button type="button" onclick=sendDeleteAnswerRequest(event) class="button delete-answer" data-dismiss="modal">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="card-body d-flex justify-content-between">
       <div>
           <p class="m-0">
@@ -153,7 +173,7 @@ function createAnswer(answer) {
                               Edit
                           </button>
                       <input type="hidden" name="answer_id" value="${answer.answer_id}">
-                      <button class="dropdown-item delete-answer" type="button" onclick=sendDeleteAnswerRequest(event)>
+                      <button class="dropdown-item" type="button"  data-toggle="modal" data-target="#answerModal_${answer.answer_id}">
                           <i width="16" height="16" class="material-symbols-outlined ">delete</i>
                           Delete
                       </button>
@@ -247,7 +267,7 @@ function createUser(user) {
 /*********** delete an answer ***********/
 
 function sendDeleteAnswerRequest(event) {
-  let answer_id = event.target.parentElement.children[0].innerHTML;
+  let answer_id = event.target.parentElement.children[0].value;
 
   if (answer != '')
     sendAjaxRequest('delete', '/api/answer/delete/' + answer_id, {}, answerDeletedHandler);

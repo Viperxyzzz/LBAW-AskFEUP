@@ -12,19 +12,14 @@
                     Edit
                 </button>
             </form> 
-            <form method="post" action="{{ route('question_delete_api', $question->question_id) }}">
-                @method('delete')
-                @csrf
-                <input type="hidden" name="question_id" value="{{$question->question_id}}">
-                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#exampleModal">
-                    <i width="16" height="16" class="material-symbols-outlined ">delete</i>
-                    Delete
-                </button>
-            </form> 
+            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#questionModal">
+                <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                Delete
+            </button>
 
 
         </div>
     </div>
 @endcan
 
-            @include('partials.question_page.delete_question_modal', ['question' => $question])
+@include('partials.question_page.delete_question_modal', ['question' => $question])

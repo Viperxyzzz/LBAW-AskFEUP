@@ -1,8 +1,8 @@
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="questionModal" tabindex="-1" aria-labelledby="questionModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="exampleModalLabel">Delete question</h4>
+        <h4 class="modal-title" id="questionModalLabel">Delete question</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <i class="material-symbols-outlined">close</i>
         </button>
