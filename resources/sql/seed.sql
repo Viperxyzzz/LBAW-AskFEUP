@@ -12,7 +12,8 @@ CREATE TABLE topic(
 DROP TABLE IF EXISTS tag CASCADE;
 CREATE TABLE tag(
     tag_id SERIAL PRIMARY KEY,
-    tag_name TEXT UNIQUE NOT NULL
+    tag_name TEXT UNIQUE NOT NULL,
+    tag_description TEXT
 );
 
 DROP TABLE IF EXISTS badge CASCADE;
@@ -441,49 +442,48 @@ INSERT INTO topic(topic_name,num_views) VALUES ('Jobs',116);
 INSERT INTO topic(topic_name,num_views) VALUES ('Languages',114);
 INSERT INTO topic(topic_name,num_views) VALUES ('Music',178);
 
+INSERT INTO tag(tag_name,tag_description) VALUES ('javascript','Ut neque quaerat quiquia dolorem quiquia neque.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('python','Numquam amet quisquam voluptatem consectetur adipisci porro velit.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('java','Neque est amet ipsum tempora ut.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('c#','Labore magnam dolor porro sit.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('php','Consectetur adipisci modi adipisci ipsum consectetur amet sit.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('android','Ipsum amet ipsum quaerat ipsum dolor magnam.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('html','Ipsum non neque numquam.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('jquery','Dolorem velit adipisci ipsum adipisci est non ipsum.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('c++','Voluptatem voluptatem non modi numquam.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('css','Non etincidunt voluptatem ut amet.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('ios','Non est numquam sed quisquam porro ut non.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('mysql','Quaerat consectetur quisquam dolorem tempora voluptatem.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('sql','Quaerat non dolorem dolorem eius.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('r','Consectetur numquam dolore quaerat porro non neque est.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('node.js','Dolore adipisci amet tempora numquam.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('reactjs','Sit consectetur aliquam quiquia.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('arrays','Quaerat voluptatem quisquam porro voluptatem dolorem.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('c','Labore sit eius eius velit aliquam non.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('consectetur','Etincidunt velit porro est sit.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('temporai','Neque ipsum porro voluptatem numquam quaerat eius dolorem.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('quaerat','Aliquam tempora neque numquam numquam numquam.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('neque','Ipsum sed ipsum magnam voluptatem.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('labore','Porro aliquam non quaerat tempora.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('quisquamus','Non quiquia quisquam labore ut amet quiquia ipsum.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('temporali','Amet magnam amet ut aliquam.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('quisquam','Labore tempora ut est.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('modi','Aliquam voluptatem non sed dolor.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('aliquam','Quisquam labore voluptatem etincidunt consectetur.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('velit','Neque velit non numquam voluptatem.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('magnam','Est porro aliquam velit quiquia eius.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('voluptatem','Neque etincidunt dolorem quiquia aliquam magnam voluptatem quisquam.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('quaerati','Consectetur aliquam magnam sit velit sed.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('quarat','Tempora voluptatem amet sit quaerat consectetur modi neque.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('dolore','Aliquam amet dolorem modi dolorem voluptatem ut ipsum.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('tempora','Quiquia neque modi sed.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('dolor','Quisquam adipisci dolorem quaerat.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('etincidunt','Porro tempora tempora amet non dolore.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('ipsum','Numquam eius ut velit aliquam aliquam quaerat.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('eius','Dolor modi ut aliquam labore adipisci dolor.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('adipisci','Etincidunt neque quisquam non neque est.');
+INSERT INTO tag(tag_name,tag_description) VALUES ('quiquam','Consectetur neque est dolorem dolorem numquam ut neque.');
 
-INSERT INTO tag(tag_name) VALUES ('javascript');
-INSERT INTO tag(tag_name) VALUES ('python');
-INSERT INTO tag(tag_name) VALUES ('java');
-INSERT INTO tag(tag_name) VALUES ('c#');
-INSERT INTO tag(tag_name) VALUES ('php');
-INSERT INTO tag(tag_name) VALUES ('android');
-INSERT INTO tag(tag_name) VALUES ('html');
-INSERT INTO tag(tag_name) VALUES ('jquery');
-INSERT INTO tag(tag_name) VALUES ('c++');
-INSERT INTO tag(tag_name) VALUES ('css');
-INSERT INTO tag(tag_name) VALUES ('ios');
-INSERT INTO tag(tag_name) VALUES ('mysql');
-INSERT INTO tag(tag_name) VALUES ('sql');
-INSERT INTO tag(tag_name) VALUES ('r');
-INSERT INTO tag(tag_name) VALUES ('node.js');
-INSERT INTO tag(tag_name) VALUES ('reactjs');
-INSERT INTO tag(tag_name) VALUES ('arrays');
-INSERT INTO tag(tag_name) VALUES ('c');
-INSERT INTO tag(tag_name) VALUES ('consectetur');
-INSERT INTO tag(tag_name) VALUES ('tempora');
-INSERT INTO tag(tag_name) VALUES ('quaerat');
-INSERT INTO tag(tag_name) VALUES ('neque');
-INSERT INTO tag(tag_name) VALUES ('labore');
-INSERT INTO tag(tag_name) VALUES ('quisquam');
-INSERT INTO tag(tag_name) VALUES ('lorem');
-INSERT INTO tag(tag_name) VALUES ('quisquamont');
-INSERT INTO tag(tag_name) VALUES ('modi');
-INSERT INTO tag(tag_name) VALUES ('aliquam');
-INSERT INTO tag(tag_name) VALUES ('velit');
-INSERT INTO tag(tag_name) VALUES ('magnam');
-INSERT INTO tag(tag_name) VALUES ('voluptatem');
-INSERT INTO tag(tag_name) VALUES ('quaeratus');
-INSERT INTO tag(tag_name) VALUES ('quaeratis');
-INSERT INTO tag(tag_name) VALUES ('dolore');
-INSERT INTO tag(tag_name) VALUES ('temporalius');
-INSERT INTO tag(tag_name) VALUES ('dolor');
-INSERT INTO tag(tag_name) VALUES ('etincidunt');
-INSERT INTO tag(tag_name) VALUES ('ipsum');
-INSERT INTO tag(tag_name) VALUES ('eius');
-INSERT INTO tag(tag_name) VALUES ('adipisci');
-INSERT INTO tag(tag_name) VALUES ('quisqumanos');
- 
 INSERT INTO badge(badge_name)
 VALUES
   ('First question'),
