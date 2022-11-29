@@ -36,6 +36,7 @@ Route::get('api/browse', 'SearchController@browse');
 
 // Tags
 Route::get('tags', 'TagController@index');
+Route::get('api/tags/', 'TagController@search');
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');

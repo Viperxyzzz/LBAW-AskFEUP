@@ -26,4 +26,12 @@ class Tag extends Model
      * @var string
      */
     protected $primaryKey = 'tag_id';
+
+    /**
+     * Perform an exact search match for tag names.
+     */
+    public static function search(string $query) {
+      return Tag::where('tag_name', 'like', "%$query%")->get();
+    }
+
 }

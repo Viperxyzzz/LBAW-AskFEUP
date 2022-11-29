@@ -5,7 +5,7 @@
     <div class="col-lg-10 mt-5">
         <h2>Tags</h2>
         <input id="tags-search" name="tags-search" value="" autocomplete="off" class="col-sm-3" type="text" placeholder="Search...">
-        <div class="d-flex flex-wrap">
+        <div id="tags-list" class="d-flex flex-wrap">
         @foreach($tags as $tag) 
             <div class="card m-3" style="width: 250px;">
                 <div class="card-header d-flex justify-content-between">

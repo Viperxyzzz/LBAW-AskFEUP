@@ -8,6 +8,11 @@ function addEventListeners() {
     userSearch.addEventListener('input', sendSearchUsersRequest);
   }
 
+  let tagsSearch = document.querySelector('#tags-search');
+  if (tagsSearch != null) {
+    tagsSearch.addEventListener('input', sendSearchTagsRequest);
+  }
+
   let orderUserRadio = document.querySelectorAll('input[name=order-users]');
   if (orderUserRadio != null) {
     orderUserRadio.forEach(orderUserButton => {
@@ -225,6 +230,65 @@ function createUser(user) {
       </div>
   </div>`;
   return new_user;
+}
+
+/*********** search for tags ***********/
+
+function sendSearchTagsRequest(event) {
+  let search = document.querySelector('#tags-search').value;
+
+  sendAjaxRequest('get', `/api/tags/?search=${search}`, {}, tagsSearchHandler);
+
+  event.preventDefault();
+}
+
+function tagsSearchHandler() {
+  //if (this.status != 201) window.location = '/';
+  let tags = JSON.parse(this.responseText);
+
+
+  // Create the new tags
+  let new_element = createTags(tags);
+
+  // Insert the new tags
+  let old_element = document.getElementById('tags-list');
+  let parent = old_element.parentElement;
+
+  old_element.remove()
+  parent.appendChild(new_element);
+}
+
+function createTags(tags) {
+  let new_tags = document.createElement('div');
+  new_tags.className = 'd-flex'
+  new_tags.classList.add('flex-wrap')
+  new_tags.id = "tags-list"
+  if (tags.length == 0) {
+    new_tags.innerHTML = '<p>No results match the criteria.</p>'
+  }
+  Object.values(tags).forEach(tag => {
+    new_tags.appendChild(createTag(tag))
+  });
+  return new_tags;
+}
+
+function createTag(tag) {
+  let new_tag = document.createElement('div');
+  new_tag.className = 'card'
+  new_tag.classList.add('m-3')
+  new_tag.style = "width: 250px"
+  new_tag.innerHTML = `
+  <div class="card-header d-flex justify-content-between">
+      <p class="badge p-2 m-1">${tag.tag_name}</p>
+      <a href="#" class="p-0">
+          <i class="p-0 material-symbols-outlined">add</i>
+          Follow
+      </a>
+  </div>
+  <div class="card-body">
+      <p>${tag.tag_description}</p>
+  </div>`;
+  return new_tag;
 }
 
 /*********** delete an answer ***********/

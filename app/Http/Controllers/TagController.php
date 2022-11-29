@@ -19,6 +19,12 @@ class TagController extends Controller
         return view('pages.tags', ['tags' => $tags]);
     }
 
+    public function search(Request $request) {
+        $search =  $request->input('search') ?? '';
+        $tags = Tag::search($search);
+        return $tags;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
