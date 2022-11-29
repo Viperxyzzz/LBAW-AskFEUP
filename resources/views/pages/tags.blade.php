@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="row">
-    @include('partials.feed.left_nav')
+    @include('partials.tags.tag_filter')
     <div class="col-lg-10 mt-5">
         <h2>Tags</h2>
         <input id="tags-search" name="tags-search" value="" autocomplete="off" class="col-sm-3" type="text" placeholder="Search...">

@@ -30,8 +30,9 @@ class Tag extends Model
     /**
      * Perform an exact search match for tag names.
      */
-    public static function search(string $query) {
-      return Tag::where('tag_name', 'like', "%$query%")->get();
+    public static function search(string $query, array $topics) {
+      if (empty($topics)) return Tag::where('tag_name', 'like', "%$query%")->get();
+      return Tag::where('tag_name', 'like', "%$query%")->whereIn('topic_id',$topics)->get();
     }
 
 }

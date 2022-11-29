@@ -13,6 +13,13 @@ function addEventListeners() {
     tagsSearch.addEventListener('input', sendSearchTagsRequest);
   }
 
+  let tagsFilter = document.querySelectorAll('.topic-check');
+  if (tagsFilter != null) {
+    tagsFilter.forEach(
+      check => check.addEventListener('input', sendSearchTagsRequest)
+    );
+  }
+
   let orderUserRadio = document.querySelectorAll('input[name=order-users]');
   if (orderUserRadio != null) {
     orderUserRadio.forEach(orderUserButton => {
@@ -236,8 +243,15 @@ function createUser(user) {
 
 function sendSearchTagsRequest(event) {
   let search = document.querySelector('#tags-search').value;
+  let topics = document.querySelectorAll('.topic-check');
+  let topicsStr = '';
+  topics.forEach(
+    topic => {
+      topicsStr += (topic.checked) ? `&topics[]=${topic.value}` : '';
+    }
+  )
 
-  sendAjaxRequest('get', `/api/tags/?search=${search}`, {}, tagsSearchHandler);
+  sendAjaxRequest('get', `/api/tags/?search=${search}${topicsStr}`, {}, tagsSearchHandler);
 
   event.preventDefault();
 }
@@ -468,4 +482,18 @@ function sendCreateAnswerUpdateRequest() {
   answer_form.remove();
 
 }
+
+/** Multi-select dropdown */
+
+let options = document.querySelectorAll('option');
+options.forEach(
+  (option) => option.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (e.target.hasAttribute('selected')) e.target.removeAttribute('selected');
+    else e.target.setAttribute('selected', '');
+    return false;
+  })
+  )
+
+
 addEventListeners();

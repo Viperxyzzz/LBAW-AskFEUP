@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Tag;
+use App\Models\Topic;
 
 class TagController extends Controller
 {
@@ -16,12 +17,14 @@ class TagController extends Controller
     public function index()
     {
         $tags = Tag::all();
-        return view('pages.tags', ['tags' => $tags]);
+        $topics = Topic::all();
+        return view('pages.tags', ['tags' => $tags, 'topics' => $topics]);
     }
 
     public function search(Request $request) {
         $search =  $request->input('search') ?? '';
-        $tags = Tag::search($search);
+        $topics = $request->input('topics') ?? [];
+        $tags = Tag::search($search, $topics);
         return $tags;
     }
 

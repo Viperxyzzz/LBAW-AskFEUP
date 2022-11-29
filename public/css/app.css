@@ -125,6 +125,14 @@ input[type=radio]:checked + label {
     width: 25rem;
 }
 
+input[type="checkbox"] {
+    accent-color: var(--accent-color);
+}
+
+.multi-check {
+    font-weight: normal;
+}
+
 @keyframes fadeIn {
   0% { opacity: 0; }
   100% { opacity: 1; }
