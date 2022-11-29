@@ -3,6 +3,40 @@ function addEventListeners() {
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
+  let enterInputAnswerCreator = document.getElementById('answer');
+  if(enterInputAnswerCreator != null)
+    enterInputAnswerCreator.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter')
+      {
+        event.preventDefault();
+        sendCreateAnswerRequest(event);
+      }
+    });
+
+  let enterInputEditUserFullName = document.querySelector('#edit-full-name');
+  if(enterInputEditUserFullName != null)
+    enterInputEditUserFullName.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter'){
+        document.getElementById("edit-username").focus();
+      }
+  });
+
+  let enterInputEditUserUsername = document.querySelector('#edit-username');
+  if(enterInputEditUserUsername != null)
+    enterInputEditUserUsername.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter'){
+        document.getElementById("edit-email").focus();
+      }
+  });
+
+  let enterInputEditUserEmail = document.querySelector('#edit-email');
+  if(enterInputEditUserEmail != null)
+    enterInputEditUserEmail.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter'){
+        document.getElementById("save-settings").focus();
+      }
+  });
+
   let userSearch = document.querySelector('#user-search');
   if (userSearch != null) {
     userSearch.addEventListener('input', sendSearchUsersRequest);
@@ -28,10 +62,6 @@ function addEventListeners() {
       btn => btn.addEventListener('click', editAnswer)
       );
   }
-
-  let answerUpdater = document.querySelector('#update-answer-button');
-  if (answerUpdater != null)
-    answerUpdater.addEventListener('click', function() {alert("hey")});
 
   let answerDelete = document.querySelectorAll('.delete-answer');
   if (answerDelete != null) {
@@ -99,8 +129,11 @@ function sendAjaxRequest(method, url, data, handler) {
 /*********** create an answer ***********/
 
 function sendCreateAnswerRequest(event) {
+  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
+  console.log(question_id)
   let answer = document.querySelector('#answer').value;
+  console.log(answer)
 
   if (answer != '')
     sendAjaxRequest('put', '/api/answer/' + question_id, { answer: answer }, answerAddedHandler);
@@ -371,17 +404,29 @@ function createAnswerForm(answer_id, text) {
   answer_form.style.width = "100%"
   answer_form.id = `answer_form_${answer_id}`
 
-  answer_form.innerHTML = `
+  setInnerHTML( answer_form,
+    `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}" style="height:200px"></input>
       <div class="form-group" style="margin: 0">
-          <input id="full_text" type="text" name="full_text" class="form-control-lg edit-text" value="${text}"required/>
+      <input type="submit" style="display: none" />
+          <input id="full_text" type="text" name="full_text" class="form-control-lg edit-text answer-update" value="${text}" required/>
       </div>
-  <div class="text-right">
-      <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
-          Save Changes
-      </button>
-  </div>`;
+      <div class="text-right">
+          <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
+              Save Changes
+          </button>
+      </div>
+      <script>
+      var input = document.getElementById("full_text");
+      input.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("update-answer-button").click();
+        }
+      });
+      </script>
+`)
   return answer_form;
 }
 
@@ -394,14 +439,33 @@ function answerUpdater() {
 
 function sendCreateAnswerUpdateRequest() {
   let answer = JSON.parse(this.responseText);
-  
+
   let p = document.createElement('p');
   p.innerText = answer.full_text;
-  
+
   let answer_element = document.querySelector('#answer_' + answer.answer_id);
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.insertAdjacentElement("afterend", p);
   answer_form.remove();
 
 }
+
+function setInnerHTML(elm, html) {
+  elm.innerHTML = html;
+
+  Array.from(elm.querySelectorAll("script"))
+    .forEach( oldScriptEl => {
+      const newScriptEl = document.createElement("script");
+
+      Array.from(oldScriptEl.attributes).forEach( attr => {
+        newScriptEl.setAttribute(attr.name, attr.value)
+      });
+      const scriptText = document.createTextNode(oldScriptEl.innerHTML);
+      newScriptEl.appendChild(scriptText);
+      oldScriptEl.parentNode.replaceChild(newScriptEl, oldScriptEl);
+  });
+}
+
+/***********  ***********/
+
 addEventListeners();

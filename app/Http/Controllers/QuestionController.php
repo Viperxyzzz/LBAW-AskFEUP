@@ -75,17 +75,7 @@ class QuestionController extends Controller
       $question->was_edited = true;
 
       $question->save();
-      /*
-      $tags = $request->tags;
-      if($tags === null)
-        return redirect('/question/'.$question->question_id);
-      for($i = 0; $i < count($tags); $i++){
-        $question_tag = new QuestionTag;
-        $question_tag->question_id = $question->question_id;
-        $question_tag->tag_id = $tags[$i];
-        $question_tag->save();
-      }
-      */
+
       return redirect('/question/'.$question->question_id);
     }
 
