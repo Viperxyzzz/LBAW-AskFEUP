@@ -150,7 +150,7 @@ function createAnswer(answer) {
     </div>
   </div>
   <div class="card-body d-flex justify-content-between">
-      <div>
+      <div class="flex-fill">
           <p class="m-0">
               <img src="/storage/${answer.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
               <a class="font-weight-bold" href="/users/${answer.user_id}"> ${answer.author.name}</a>
