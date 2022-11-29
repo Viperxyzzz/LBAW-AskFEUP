@@ -12,8 +12,6 @@
             </div>
         </div>
         <div class="ml-5 d-flex">
-            <aside class="question-stats">
-            </aside>
             @can('edit', $answer)
                 <div class="dropdown">
                     <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
