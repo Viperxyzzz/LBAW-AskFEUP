@@ -4,6 +4,7 @@
             <h3><a class="mx-2" href="{{ url('/') }}">AskFeup</a></h3>
             <h5><a class="link-dark mx-2" href="{{ url('/') }}">Home</a></h5>
             <h5><a class="link-dark mx-2" href="{{ url('/browse') }}">Browse</a></h5>
+            <h5><a class="link-dark mx-2" href="{{ url('/tags') }}">Tags</a></h5>
             <h5><a class="link-dark mx-2" href="{{ url('/users') }}">Users</a></h5>
         </nav>
         <form class="col-lg-6 m-0 p-0 d-flex align-items-top flex-nowrap" method="GET" action="{{ route('browse') }}">

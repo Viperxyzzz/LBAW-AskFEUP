@@ -12,6 +12,16 @@ function addEventListeners() {
         sendCreateAnswerRequest(event);
       }
     });
+  
+  let filterOptions = document.querySelectorAll('.filter-option');
+  if (filterOptions != null) {
+    filterOptions.forEach((btn) => {
+      if (btn.querySelector('input').checked) btn.classList.toggle('active');
+      btn.addEventListener(
+      'click', (event) => event.target.classList.toggle('active'));
+    }
+    )
+  }
 
   let enterInputEditUserFullName = document.querySelector('#edit-full-name');
   if(enterInputEditUserFullName != null)
