@@ -30,12 +30,17 @@
     </div>
     <hr class="mx-0 my-2">
     <div class=" d-flex mx-2 justify-content-between">
-        <p class="m-0">
-            {{ $question->date_distance() }}
-            @if ($question->was_edited)
-                (Edited)
-            @endif
-        </p>
+        <div class="row">
+            <button class="button-clear m-0 px-1" type="button">
+            <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
+            </button>
+            <p class="m-0">
+                {{ $question->date_distance() }}
+                @if ($question->was_edited)
+                    (Edited)
+                @endif
+            </p>
+        </div>
         <p class="m-0">
             <em>by</em>
             <a href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
