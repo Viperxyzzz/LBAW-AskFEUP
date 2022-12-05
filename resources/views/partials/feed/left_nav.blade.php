@@ -1,7 +1,7 @@
 <nav class="col-lg-2 p-5 border-right">
     <ul class="navbar-nav">
         <li class="nav-item">
-            <a class="nav-link active rounded p-2" aria-current="page" href=".">
+            <a class="nav-link rounded p-2" aria-current="page" href="{{url('/')}}">
                 <i width="16" height="16" class="material-symbols-outlined ">home</i>
                 Home
             </a>
