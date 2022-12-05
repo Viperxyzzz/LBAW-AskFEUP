@@ -371,17 +371,29 @@ function createTag(tag) {
   new_tag.className = 'card'
   new_tag.classList.add('m-3')
   new_tag.style = "width: 250px"
-  new_tag.innerHTML = `
+  let html = `
   <div class="card-header d-flex justify-content-between">
-      <p class="badge p-2 m-1">${tag.tag_name}</p>
-      <a href="#" class="p-0">
+      <p class="badge p-2 m-1">${tag.tag_name}</p>`
+
+  if (tag['following']) {
+    html +=
+      `<a href="#" class="p-0">
+          <i class="p-0 material-symbols-outlined">done</i>
+          Following
+      </a>`
+  }
+  else {
+    html +=
+      `<a href="#" class="p-0">
           <i class="p-0 material-symbols-outlined">add</i>
           Follow
-      </a>
-  </div>
-  <div class="card-body">
-      <p>${tag.tag_description}</p>
-  </div>`;
+      </a>`
+  }
+  html +=`</div>
+    <div class="card-body">
+        <p>${tag.tag_description}</p>
+    </div>`;
+  new_tag.innerHTML = html;
   return new_tag;
 }
 

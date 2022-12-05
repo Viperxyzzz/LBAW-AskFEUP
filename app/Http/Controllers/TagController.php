@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Tag;
 use App\Models\Topic;
@@ -25,6 +26,11 @@ class TagController extends Controller
         $search =  $request->input('search') ?? '';
         $topics = $request->input('topics') ?? [];
         $tags = Tag::search($search, $topics);
+        if (Auth::check()) {
+            foreach($tags as $tag) {
+                $tag['following'] = Auth::user()->follows_tag($tag->tag_id);
+            }
+        }
         return $tags;
     }
 
