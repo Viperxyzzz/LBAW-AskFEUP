@@ -25,7 +25,8 @@ class QuestionController extends Controller
       $question = Question::find($question_id);
       $answers = $question->answers();
       $comments = $question->comments();
-      return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments]);
+      $question_comments = $question->question_comments();
+      return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments, 'question_comments' => $question_comments]);
     }
 
     public function create(Request $request)

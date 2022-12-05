@@ -56,6 +56,13 @@ class Question extends Model
         return $this->hasMany(Answer::class, 'question_id', 'question_id');
     }
 
+    public function question_comments()
+    {
+        return $this->comments()->select("*")
+        ->whereNotNull('answer_id')
+        ->get();
+    }
+
     public function date_distance() {
         return Carbon::parse($this->date)->diffForHumans();
     }
