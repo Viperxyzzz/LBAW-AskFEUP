@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\Tag;
 use App\Models\Topic;
+use App\Models\UserTag;
 
 class TagController extends Controller
 {
@@ -32,6 +33,12 @@ class TagController extends Controller
             }
         }
         return $tags;
+    }
+
+    public function follow(Request $request, $tag_id) {
+        if (!Auth::check()) abort(403);
+        if ($tag_id == NULL) return;
+        return UserTag::follow(Auth::id(), $tag_id);
     }
 
     /**

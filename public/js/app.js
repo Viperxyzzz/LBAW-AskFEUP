@@ -115,6 +115,13 @@ function addEventListeners() {
       })
     }
   )
+
+  let followTag = document.querySelectorAll('.follow-tag')
+  followTag.forEach(
+    button => {
+      button.addEventListener('click', sendFollowTagRequest)
+    }
+  )
 }
 
 function closeProfileTabs() {
@@ -583,6 +590,27 @@ function sendCreateAnswerUpdateRequest() {
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
   answer_form.remove();
 
+}
+
+function sendFollowTagRequest(event) {
+  let tag_id = event.currentTarget.querySelector('input').value;
+
+  if (tag_id != '')
+    sendAjaxRequest('post', `/api/tag/follow/${tag_id}`, {}, tagFollowHandler);
+    
+  event.preventDefault();
+}
+
+function tagFollowHandler() {
+  let follow = JSON.parse(this.responseText);
+  let tag_id = follow['tag_id'];
+
+  let button = document.getElementById(`follow-tag-${tag_id}`)
+
+  button.classList.remove('follow-tag')
+  button.classList.add('unfollow-tag')
+  button.querySelector('i').innerHTML = 'done'
+  button.querySelector('p').innerHTML = 'Following'
 }
 
 /** Multi-select dropdown */

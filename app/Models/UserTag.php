@@ -20,4 +20,19 @@ class UserTag extends Model
      */
     protected $table = 'user_tag';
 
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'user_id';
+
+    public static function follow($user_id, $tag_id) {
+        $follow = new UserTag;
+        $follow->user_id = $user_id;
+        $follow->tag_id = $tag_id;
+        $follow->save();
+        return $follow;
+    }
+
 }
