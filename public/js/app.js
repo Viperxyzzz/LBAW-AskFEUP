@@ -122,6 +122,13 @@ function addEventListeners() {
       button.addEventListener('click', sendFollowTagRequest)
     }
   )
+
+  let unFollowTag = document.querySelectorAll('.unFollow-tag')
+  unFollowTag.forEach(
+    button => {
+      button.addEventListener('click', sendUnFollowTagRequest)
+    }
+  )
 }
 
 function closeProfileTabs() {
@@ -607,10 +614,37 @@ function tagFollowHandler() {
 
   let button = document.getElementById(`follow-tag-${tag_id}`)
 
+  button.onclick = sendUnFollowTagRequest
+
+  button.id = `unFollow-tag-${tag_id}`
   button.classList.remove('follow-tag')
-  button.classList.add('unfollow-tag')
+  button.classList.add('unFollow-tag')
   button.querySelector('i').innerHTML = 'done'
   button.querySelector('p').innerHTML = 'Following'
+}
+
+function sendUnFollowTagRequest(event) {
+  let tag_id = event.currentTarget.querySelector('input').value;
+
+  if (tag_id != '')
+    sendAjaxRequest('post', `/api/tag/unFollow/${tag_id}`, {}, tagUnFollowHandler);
+    
+  event.preventDefault();
+}
+
+function tagUnFollowHandler() {
+  let follow = JSON.parse(this.responseText);
+  let tag_id = follow['tag_id'];
+
+  let button = document.getElementById(`unFollow-tag-${tag_id}`)
+
+  button.onclick = sendFollowTagRequest
+
+  button.id = `follow-tag-${tag_id}`
+  button.classList.remove('unFollow-tag')
+  button.classList.add('follow-tag')
+  button.querySelector('i').innerHTML = 'add'
+  button.querySelector('p').innerHTML = 'Follow'
 }
 
 /** Multi-select dropdown */

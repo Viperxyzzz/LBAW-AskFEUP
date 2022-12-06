@@ -12,4 +12,8 @@ class TagPolicy
 {
     use HandlesAuthorization;
 
+    public function unFollow(User $user, UserTag $tag)
+    {
+      return $user->user_id == $tag->user_id;
+    }
 }

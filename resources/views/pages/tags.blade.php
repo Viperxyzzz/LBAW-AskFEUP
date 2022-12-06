@@ -11,7 +11,7 @@
                 <div class="card-header d-flex align-items-start justify-content-between">
                     <p class="badge p-3 m-1 mt-2">{{ $tag->tag_name }}</p>
                     @if (Auth::user()->follows_tag($tag->tag_id))
-                    <button class="unfollow-tag button-clear px-2 pr-3 pb-2 d-flex">
+                    <button class="unFollow-tag button-clear px-2 pr-3 pb-2 d-flex" id="unFollow-tag-{{ $tag->tag_id }}">
                         <input type="hidden" value="{{ $tag->tag_id }}">
                         <i class="p-0 pt-2 material-symbols-outlined">done</i>
                         <p class="pb-2">Following</p>

@@ -38,6 +38,7 @@ Route::get('api/browse', 'SearchController@browse');
 Route::get('tags', 'TagController@index');
 Route::get('api/tags/', 'TagController@search');
 Route::post('api/tag/follow/{id}', 'TagController@follow');
+Route::post('api/tag/unFollow/{id}', 'TagController@unFollow');
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');

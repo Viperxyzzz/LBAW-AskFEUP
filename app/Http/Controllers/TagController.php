@@ -41,6 +41,15 @@ class TagController extends Controller
         return UserTag::follow(Auth::id(), $tag_id);
     }
 
+    public function unFollow(Request $request, $tag_id) {
+        $follow = UserTag::where([
+            ['user_id', '=', Auth::id()],
+            ['tag_id', '=', $tag_id]
+        ]);
+        $follow->delete();
+        return ['tag_id' => $tag_id];
+    }
+
     /**
      * Show the form for creating a new resource.
      *
