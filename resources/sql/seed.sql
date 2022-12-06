@@ -195,7 +195,7 @@ CREATE TRIGGER num_supports_update
     FOR EACH ROW EXECUTE FUNCTION num_supports_update();
 
 
--- Create trigger to increment num of answers after insert on questions.
+--
 CREATE OR REPLACE FUNCTION first_question() RETURNS TRIGGER AS
 $FUNC3$
 BEGIN
@@ -375,6 +375,80 @@ DROP TRIGGER IF EXISTS was_edited ON question CASCADE;
 CREATE TRIGGER was_edited
     AFTER UPDATE ON question
     FOR EACH ROW EXECUTE FUNCTION was_edited();
+    
+
+--
+CREATE OR REPLACE FUNCTION new_answer_notification() RETURNS TRIGGER AS
+$FUNC9$
+BEGIN
+    INSERT INTO notification(notification_text, date, viewed, user_id) VALUES
+    ("New answers to your question", DEFAULT, 'No', 
+        (SELECT author_id FROM question FULL OUTER JOIN answer USING(question_id) WHERE answer_id = NEW.answer_id)
+    );
+    RETURN NEW;
+END
+$FUNC9$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_answer_notification ON answer CASCADE;
+CREATE TRIGGER new_answer_notification
+    AFTER INSERT ON answer
+    FOR EACH ROW EXECUTE FUNCTION new_answer_notification();
+
+
+--
+CREATE OR REPLACE FUNCTION new_vote_notification() RETURNS TRIGGER AS
+$FUNC10$
+BEGIN
+    IF OLD.num_votes < NEW.num_votes THEN
+        INSERT INTO notification(notification_text, date, viewed, user_id) VALUES
+        ("New vote on your comment", DEFAULT, 'No', NEW.user_id);
+    END IF;
+    RETURN NEW;
+END
+$FUNC10$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_vote_notification ON comment CASCADE;
+CREATE TRIGGER new_vote_notification
+    BEFORE UPDATE ON comment
+    FOR EACH ROW EXECUTE FUNCTION new_vote_notification();
+
+
+--
+CREATE OR REPLACE FUNCTION new_correct_answer_notification() RETURNS TRIGGER AS
+$FUNC11$
+BEGIN
+    IF OLD.is_correct = 'No' AND NEW.is_correct = 'Yes' THEN
+        INSERT INTO notification(notification_text, date, viewed, user_id) VALUES
+        ("Your answer was marked as correc", DEFAULT, 'No', NEW.user_id);
+    END IF;
+    RETURN NEW;
+END
+$FUNC11$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_correct_answer_notification ON answer CASCADE;
+CREATE TRIGGER new_correct_answer_notification
+    BEFORE UPDATE ON answer
+    FOR EACH ROW EXECUTE FUNCTION new_correct_answer_notification();
+
+
+--
+CREATE OR REPLACE FUNCTION new_badge_notification() RETURNS TRIGGER AS
+$FUNC12$
+BEGIN
+    INSERT INTO notification(notification_text, date, viewed, user_id) VALUES
+    ("New answers to your question", DEFAULT, 'No', NEW.user_id);
+    RETURN NEW;
+END
+$FUNC12$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_badge_notification ON user_badge CASCADE;
+CREATE TRIGGER new_badge_notification
+    AFTER INSERT ON user_badge
+    FOR EACH ROW EXECUTE FUNCTION new_badge_notification();
 
 
 --INDEXES
