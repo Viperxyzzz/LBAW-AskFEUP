@@ -12,7 +12,9 @@ CREATE TABLE topic(
 DROP TABLE IF EXISTS tag CASCADE;
 CREATE TABLE tag(
     tag_id SERIAL PRIMARY KEY,
-    tag_name TEXT UNIQUE NOT NULL
+    tag_name TEXT UNIQUE NOT NULL,
+    topic_id INTEGER REFERENCES topic (topic_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    tag_description TEXT
 );
 
 DROP TABLE IF EXISTS badge CASCADE;
@@ -90,14 +92,6 @@ CREATE TABLE comment(
    answer_id INTEGER REFERENCES answer (answer_id) ON UPDATE CASCADE ON DELETE CASCADE,
    comment_id INTEGER REFERENCES comment (comment_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
-
-DROP TABLE IF EXISTS topic_tag CASCADE;
-CREATE TABLE topic_tag(
-        topic_id INTEGER REFERENCES topic (topic_id) ON UPDATE CASCADE,
-        tag_id INTEGER REFERENCES tag (tag_id) ON UPDATE CASCADE,
-        PRIMARY KEY (topic_id, tag_id)
-);
-
 
 DROP TABLE IF EXISTS user_tag CASCADE;
 CREATE table user_tag(
@@ -441,49 +435,48 @@ INSERT INTO topic(topic_name,num_views) VALUES ('Jobs',116);
 INSERT INTO topic(topic_name,num_views) VALUES ('Languages',114);
 INSERT INTO topic(topic_name,num_views) VALUES ('Music',178);
 
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('javascript','Ut neque quaerat quiquia dolorem quiquia neque.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('python','Numquam amet quisquam voluptatem consectetur adipisci porro velit.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('java','Neque est amet ipsum tempora ut.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('c#','Labore magnam dolor porro sit.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('php','Consectetur adipisci modi adipisci ipsum consectetur amet sit.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('android','Ipsum amet ipsum quaerat ipsum dolor magnam.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('html','Ipsum non neque numquam.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('jquery','Dolorem velit adipisci ipsum adipisci est non ipsum.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('c++','Voluptatem voluptatem non modi numquam.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('css','Non etincidunt voluptatem ut amet.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('ios','Non est numquam sed quisquam porro ut non.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('mysql','Quaerat consectetur quisquam dolorem tempora voluptatem.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('sql','Quaerat non dolorem dolorem eius.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('r','Consectetur numquam dolore quaerat porro non neque est.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('node.js','Dolore adipisci amet tempora numquam.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('reactjs','Sit consectetur aliquam quiquia.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('arrays','Quaerat voluptatem quisquam porro voluptatem dolorem.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('c','Labore sit eius eius velit aliquam non.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('consectetur','Etincidunt velit porro est sit.',2);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('temporai','Neque ipsum porro voluptatem numquam quaerat eius dolorem.',3);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quaerat','Aliquam tempora neque numquam numquam numquam.',4);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('neque','Ipsum sed ipsum magnam voluptatem.',5);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('labore','Porro aliquam non quaerat tempora.',6);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quisquamus','Non quiquia quisquam labore ut amet quiquia ipsum.',7);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('temporali','Amet magnam amet ut aliquam.',8);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quisquam','Labore tempora ut est.',9);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('modi','Aliquam voluptatem non sed dolor.',10);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('aliquam','Quisquam labore voluptatem etincidunt consectetur.',11);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('velit','Neque velit non numquam voluptatem.',12);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('magnam','Est porro aliquam velit quiquia eius.',13);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('voluptatem','Neque etincidunt dolorem quiquia aliquam magnam voluptatem quisquam.',14);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quaerati','Consectetur aliquam magnam sit velit sed.',15);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quarat','Tempora voluptatem amet sit quaerat consectetur modi neque.',16);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('dolore','Aliquam amet dolorem modi dolorem voluptatem ut ipsum.',17);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('tempora','Quiquia neque modi sed.',18);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('dolor','Quisquam adipisci dolorem quaerat.',19);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('etincidunt','Porro tempora tempora amet non dolore.',20);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('ipsum','Numquam eius ut velit aliquam aliquam quaerat.',21);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('eius','Dolor modi ut aliquam labore adipisci dolor.',22);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('adipisci','Etincidunt neque quisquam non neque est.',2);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quiquam','Consectetur neque est dolorem dolorem numquam ut neque.',2);
 
-INSERT INTO tag(tag_name) VALUES ('javascript');
-INSERT INTO tag(tag_name) VALUES ('python');
-INSERT INTO tag(tag_name) VALUES ('java');
-INSERT INTO tag(tag_name) VALUES ('c#');
-INSERT INTO tag(tag_name) VALUES ('php');
-INSERT INTO tag(tag_name) VALUES ('android');
-INSERT INTO tag(tag_name) VALUES ('html');
-INSERT INTO tag(tag_name) VALUES ('jquery');
-INSERT INTO tag(tag_name) VALUES ('c++');
-INSERT INTO tag(tag_name) VALUES ('css');
-INSERT INTO tag(tag_name) VALUES ('ios');
-INSERT INTO tag(tag_name) VALUES ('mysql');
-INSERT INTO tag(tag_name) VALUES ('sql');
-INSERT INTO tag(tag_name) VALUES ('r');
-INSERT INTO tag(tag_name) VALUES ('node.js');
-INSERT INTO tag(tag_name) VALUES ('reactjs');
-INSERT INTO tag(tag_name) VALUES ('arrays');
-INSERT INTO tag(tag_name) VALUES ('c');
-INSERT INTO tag(tag_name) VALUES ('consectetur');
-INSERT INTO tag(tag_name) VALUES ('tempora');
-INSERT INTO tag(tag_name) VALUES ('quaerat');
-INSERT INTO tag(tag_name) VALUES ('neque');
-INSERT INTO tag(tag_name) VALUES ('labore');
-INSERT INTO tag(tag_name) VALUES ('quisquam');
-INSERT INTO tag(tag_name) VALUES ('lorem');
-INSERT INTO tag(tag_name) VALUES ('quisquamont');
-INSERT INTO tag(tag_name) VALUES ('modi');
-INSERT INTO tag(tag_name) VALUES ('aliquam');
-INSERT INTO tag(tag_name) VALUES ('velit');
-INSERT INTO tag(tag_name) VALUES ('magnam');
-INSERT INTO tag(tag_name) VALUES ('voluptatem');
-INSERT INTO tag(tag_name) VALUES ('quaeratus');
-INSERT INTO tag(tag_name) VALUES ('quaeratis');
-INSERT INTO tag(tag_name) VALUES ('dolore');
-INSERT INTO tag(tag_name) VALUES ('temporalius');
-INSERT INTO tag(tag_name) VALUES ('dolor');
-INSERT INTO tag(tag_name) VALUES ('etincidunt');
-INSERT INTO tag(tag_name) VALUES ('ipsum');
-INSERT INTO tag(tag_name) VALUES ('eius');
-INSERT INTO tag(tag_name) VALUES ('adipisci');
-INSERT INTO tag(tag_name) VALUES ('quisqumanos');
- 
 INSERT INTO badge(badge_name)
 VALUES
   ('First question'),
@@ -692,47 +685,6 @@ VALUES
   ('Harassment','May 26, 2022',3,3,3),
   ('blandit. Nam nulla magna, malesuada vel, convallis','Nov 16, 2021',4,NULL,NULL),
   ('sit amet, consectetuer adipiscing elit. Etiam laoreet,','Dec 3, 2021',5,5,5);
-
-insert into topic_tag (topic_id, tag_id) values (1, 1);
-insert into topic_tag (topic_id, tag_id) values (1, 2);
-insert into topic_tag (topic_id, tag_id) values (1, 3);
-insert into topic_tag (topic_id, tag_id) values (1, 4);
-insert into topic_tag (topic_id, tag_id) values (1, 5);
-insert into topic_tag (topic_id, tag_id) values (1, 6);
-insert into topic_tag (topic_id, tag_id) values (1, 7);
-insert into topic_tag (topic_id, tag_id) values (1, 8);
-insert into topic_tag (topic_id, tag_id) values (1, 9);
-insert into topic_tag (topic_id, tag_id) values (1, 10);
-insert into topic_tag (topic_id, tag_id) values (1, 11);
-insert into topic_tag (topic_id, tag_id) values (1, 12);
-insert into topic_tag (topic_id, tag_id) values (1, 13);
-insert into topic_tag (topic_id, tag_id) values (1, 14);
-insert into topic_tag (topic_id, tag_id) values (1, 15);
-insert into topic_tag (topic_id, tag_id) values (1, 16);
-insert into topic_tag (topic_id, tag_id) values (1, 17);
-insert into topic_tag (topic_id, tag_id) values (1, 18);
-INSERT INTO topic_tag (topic_id, tag_id) VALUES (2,19);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (3,20);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (4,21);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (5,22);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (6,23);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (7,24);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (8,25);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (9,26);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (10,27);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (11,28);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (12,29);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (13,30);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (14,31);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (15,32);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (16,33);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (17,34);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (18,35);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (19,36);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (20,37);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (21,38);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (22,39);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (23,40);
 
 insert into user_tag (user_id, tag_id) values (1, 1);
 insert into user_tag (user_id, tag_id) values (1, 2);
