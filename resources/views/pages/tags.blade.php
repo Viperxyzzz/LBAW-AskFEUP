@@ -9,7 +9,7 @@
         @foreach($tags as $tag) 
             <div class="card m-3" style="width: 250px;">
                 <div class="card-header d-flex justify-content-between">
-                    <p class="badge p-2 m-1">{{ $tag->tag_name }}</p>
+                    <a href="/browse/?tags[]={{ $tag->tag_id }}" class="badge p-2 m-1">{{ $tag->tag_name }}</a>
                     <a href="#" class="p-0">
                         <i class="p-0 material-symbols-outlined">add</i>
                         Follow
