@@ -53,13 +53,13 @@ class Question extends Model
 
     public function comments()
     {
-        return $this->hasMany(Answer::class, 'question_id', 'question_id');
+        return $this->hasMany(Comment::class, 'question_id', 'question_id');
     }
 
     public function question_comments()
     {
         return $this->comments()->select("*")
-        ->whereNotNull('answer_id')
+        ->whereNull('answer_id')
         ->get();
     }
 
