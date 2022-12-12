@@ -33,7 +33,7 @@
             @endcan
         </div>
     </div>
-    <div class="card-footer d-flex justify-content-between align-items-center">
+    <div class="card-footer d-flex justify-content-between align-items-center answer-footer">
         <div class="d-flex align-items-start mt-2">
             <button class="button-clear m-0 px-1" type="button">
                 <i width="16" height="16" class="material-symbols-outlined ">arrow_upward</i>
@@ -42,8 +42,8 @@
             <button class="button-clear d-block m-0 px-1" type="button">
                 <i width="16" height="16" class="material-symbols-outlined ">arrow_downward</i>
             </button>
-            <button class="button-clear m-0 px-1" type="button">
-                <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
+            <button class="add-comment-answer-form-button button button-clear m-0 px-1" type="button">
+                <i width="12" height="12" class="material-symbols-outlined">chat_bubble</i>
             </button>
             @if ($answer->is_correct)
                 <i class="material-symbols-outlined c-primary b-accent rounded-circle ml-2">

@@ -13,6 +13,20 @@ function addEventListeners() {
       }
     });
 
+  let commentFormCreator = document.querySelectorAll('.add-comment-answer-form-button');
+  if (commentFormCreator != null) {
+    commentFormCreator.forEach(button =>{
+      button.addEventListener('click', answerCommentForm);
+  });
+  }
+
+  let commentCreator = document.querySelectorAll('#add-comment-button');
+  if (commentCreator != null) {
+    commentCreator.forEach(button =>{
+      button.addEventListener('click', function(){alert("test")});
+  });
+  }
+
   let enterInputEditUserFullName = document.querySelector('#edit-full-name');
   if(enterInputEditUserFullName != null)
     enterInputEditUserFullName.addEventListener('keypress', function(event) {
@@ -441,7 +455,7 @@ function createAnswerForm(answer_id, text) {
   answer_form.classList.add('w-100')
   answer_form.id = `answer_form_${answer_id}`
 
-  setInnerHTML( answer_form,
+  answer_form.innerHTML(
     `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}"></input>
@@ -501,6 +515,86 @@ function setInnerHTML(elm, html) {
   });
 }
 
-/***********  ***********/
+/*********** create answer comment ***********/
+function answerCommentForm(event) {
+  let answer = event.target.parentElement.parentElement.parentElement
+  answer.insertAdjacentElement('afterend', createCommentForm())
+}
+
+function createCommentForm() {
+  let comment_form = document.createElement('div');
+  comment_form.className = 'card';
+  comment_form.innerHTML = `
+    <form method="POST" class="card-body m-0 p-0">
+        <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="3"
+            id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
+    </form>
+    <div class="card-footer text-right">
+        <button id="add-comment-button" type="submit" onclick="sendCreateCommentRequest()" class="m-0">
+            Comment
+        </button>
+    </div>
+  `;
+  return comment_form;
+}
+
+function sendCreateCommentRequest(event) {
+  console.log("create request function")
+  let question_id = document.querySelector('#question_id').value;
+  console.log(question_id)
+  let answer_id = document.querySelector('#answer_id').value;
+  console.log(question_id)
+  let comment = document.querySelector('#comment').value;
+  console.log(comment)
+
+  if (comment != '')
+    sendAjaxRequest('put', '/api/comment/' + question_id, { comment: comment, question_id: question_id, answer_id, answer_id }, commentAddedHandler);
+
+  event.preventDefault();
+}
+
+function commentAddedHandler() {
+  //if (this.status != 200) window.location = '/login';
+  let comment = JSON.parse(this.responseText);
+
+  document.querySelector('#comment').value = "";
+
+  // Create the new comment
+  let new_comment = createComment(comment);
+
+  // Insert the new comment
+  let comments = document.querySelector('#comments');
+  comments.prepend(new_comment);
+}
+
+function createComment(comment) {
+  let new_comment = document.createElement('div');
+  new_comment.className = 'border-top'
+  new_comment.classList.add('d-flex')
+  new_comment.classList.add('justify-content-between')
+  new_comment.innerHTML = `
+  <div class="d-flex">
+  <div class="d-flex align-items-center flex-column p-1">
+      <button class="button-clear p-0 m-0 mr-2" type="button">
+          <i class="material-symbols-outlined">keyboard_arrow_up</i>
+      </button>
+      <p class="m-0 pr-2 text-nowrap">{{ ${comment.num_votes} }}</p>
+      <button class="button-clear d-block p-0 m-0 mr-2" type="button">
+          <i class="material-symbols-outlined ">keyboard_arrow_down</i>
+      </button>
+  </div>
+  <div class="pt-3">
+      <p class="m-0">
+          <img src="{{asset('storage/'.(${comment.author.picture_path}).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
+          <a href="{{url("/users/${comment.user_id}")}}"> {{ ${comment.author.name} }}</a>
+          {{ \Carbon\Carbon::parse(${comment.date})->format('d/m/Y')}}
+      </p>
+  <p class="card-text py-2">{{ ${comment.full_text} }}</p>
+  </div>
+</div>
+  `;
+
+  return new_answer;
+}
 
 addEventListeners();

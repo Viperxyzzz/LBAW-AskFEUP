@@ -31,7 +31,7 @@
     <hr class="mx-0 my-2">
     <div class=" d-flex mx-2 justify-content-between">
         <div class="row">
-            <button class="button-clear m-0 px-1" type="button">
+            <button class="button-clear m-0 px-1 add-comment-form-button" type="button">
             <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
             </button>
             <p class="m-0">
