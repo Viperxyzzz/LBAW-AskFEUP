@@ -1,4 +1,4 @@
-<aside class="m-5 bg-light sticky-top card border col-lg-2" style="height:250px;">
+<aside class="m-5 bg-light sticky-top card border z-index-2 col-lg-2" style="height:250px;">
     <h4 class="title-blue mt-4 font-weight-bold">Home Feed</h4>
     <nav class="navbar" id="feed-nav">
         <ul class="nav nav-pills flex-column">

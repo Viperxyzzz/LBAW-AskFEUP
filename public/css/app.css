@@ -58,8 +58,11 @@ a {
     font-size: 1.6rem;
 }
 
-.dropdown-item {
-    font-size: 1.5rem;
+button.btn[aria-expanded="true"] { color: black;}
+
+.dropdown-menu {
+    max-height: 280px;
+    overflow-y: scroll;
 }
 
 .badge {
@@ -146,4 +149,13 @@ input[type=radio]:checked + label {
     font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
     color: var(--secondary-color);
     height: 200px;
+}
+
+span.red-circle-notification {
+    font-size: 12px;
+    color: red;
+  }
+
+aside.sticky-top{
+    z-index: 999;
 }
