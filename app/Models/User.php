@@ -120,4 +120,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class, 'user_id', 'user_id');
     }
+
+    public function notifications(){
+      return $this->hasMany(Notification::class, 'user_id', 'user_id');
+    }
+
+    public function num_non_viewed_notifications(){
+      $num = DB::table('notification')
+                    ->where([['viewed', 'No'], ['user_id', $this->user_id]])
+                    ->count();
+      return $num;
+    }
 }
