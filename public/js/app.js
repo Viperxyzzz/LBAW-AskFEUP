@@ -93,6 +93,13 @@ function addEventListeners() {
       })
     }
   )
+
+  let notificationUpdate = document.querySelectorAll('.button-notification');
+  if (notificationUpdate != null) {
+    notificationUpdate.forEach(
+      btn => btn.addEventListener('click', sendUpdateNotificationRequest)
+      );
+  }
 }
 
 function closeProfileTabs() {
@@ -501,6 +508,46 @@ function setInnerHTML(elm, html) {
   });
 }
 
+function updateNotification(notification_id){
+  console.log(notification_id)
+  let notification_button = document.getElementById("button-notification-" + notification_id)
+  console.log(notification_button)
+  let red_circle = notification_button.getElementsByTagName("span")[0]
+  if(!red_circle) return
+  notification_button.removeChild(red_circle)
+
+  let num_notifications_span = document.getElementById("num-notifications")
+  let num = parseInt(num_notifications_span.textContent) - 1
+  if(num === 0) {
+    num_notifications_span.textContent = ""
+  }
+  else num_notifications_span.textContent = num
+
+  /*let strong_tag = notification_button.getElementsByTagName("strong")[0]
+  let text = strong_tag.textContent
+
+  let div_tag = notification_button.getElementsByTagName("div")[0]
+  if(!strong_tag) return 
+  div_tag.removeChild(strong_tag)
+  div_tag.prepend(text)*/
+}
+
+
+function sendUpdateNotificationRequest(event) {
+  let button_id = event.target.parentElement.parentElement.id
+  console.log(event.target.parentElement.parentElement)
+  console.log(event)
+  console.log(button_id)
+  let notification_id = button_id.split('-').pop()
+  console.log(notification_id)
+  if (notification_id != '')
+    sendAjaxRequest('post', 
+                    'api/notification/update/' + notification_id, 
+                    {}, 
+                    function(){return updateNotification(notification_id);})
+  event.stopPropagation()
+  event.preventDefault()
+}
 /***********  ***********/
 
 addEventListeners();

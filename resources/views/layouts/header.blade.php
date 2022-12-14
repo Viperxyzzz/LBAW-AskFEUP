@@ -14,6 +14,42 @@
         </form>
         <nav class="d-flex align-items-center ml-auto">
             @if (Auth::check())
+            <div class="dropdown z-index-master mr-4">
+                <button class="btn bg-transparent m-0 p-0 border-0 d-flex shadow-none" id="btn-notifications" type="button" data-toggle="dropdown" aria-expanded="true">
+                    <div class="d-flex align-items-start">
+                        @if($num = Auth::user()->num_non_viewed_notifications())
+                            <span class="badge rounded-pill bg-danger" id="num-notifications">
+                                {{$num}}
+                            </span>
+                        @endif    
+                    </div>
+                    <span class="mt-2 material-symbols-outlined">Notifications</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                    <ul>
+                        @foreach(Auth::user()->notifications()->orderBy('notification_id', 'DESC')->get() as $notification)
+                            <li class="dropdown-item">
+                                <button class="btn bg-transparent shadow-none border-0 d-flex justify-content-between align-items-center w-100 button-notification" id="button-notification-{{$notification['notification_id']}}" aria-expanded="true">
+                                    @if(!$notification["viewed"])
+                                        <div class="d-flex flex-column">
+                                            <strong class="h5 text-left">{{$notification["notification_text"]}}</strong>
+                                            <small class="text-right">{{$notification["date"]}}</small>
+                                        </div>
+                                        <span class="material-icons ml-4 red-circle-notification">circle</span>
+                                    @else
+                                        <div class="d-flex flex-column">
+                                            {{$notification["notification_text"]}}
+                                            <small class="text-right">{{$notification["date"]}}</small>
+                                        </div>  
+                                    @endif
+                                </button>
+                            </li>
+                            <hr>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+
             <div class="dropdown mr-3">
                 <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {{ Auth::user()->name }}
