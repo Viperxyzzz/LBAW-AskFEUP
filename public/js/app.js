@@ -612,23 +612,27 @@ function questionCommentForm(event) {
   let question = event.target.parentElement.parentElement.parentElement
   console.log(question)
 
+  let question_id = document.querySelector('#question_id').value;
+  console.log(question_id)
+
   //remove answer form
   document.querySelector('#add-answer-card').innerHTML = '';
 
-  question.insertAdjacentElement('afterend', createCommentQuestionForm())
-//  let answer_card_id = answer.parentElement.id;
-//  answer.insertAdjacentElement('afterend', createCommentForm(answer_card_id))
+  question.insertAdjacentElement('afterend', createCommentQuestionForm(question_id))
+
 }
-function createCommentQuestionForm() {
-  let comment_form = document.createElement('div');
-  comment_form.className = 'card';
+function createCommentQuestionForm(question_id) {
+  let comment_form = document.createElement('div')
+  comment_form.className = 'card'
+  comment_form.classList.add('comment-form')
   comment_form.innerHTML = `
+    <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
     <form method="POST" class="card-body m-0 p-0">
         <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
             id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
     </form>
     <div class="card-footer text-right">
-        <button id="add-comment-button" type="submit" class="m-0">
+        <button id="add-comment-button" type="submit" onclick="sendCreateQuestionCommentRequest()" class="m-0">
             Comment
         </button>
     </div>
@@ -636,4 +640,35 @@ function createCommentQuestionForm() {
   return comment_form;
 }
 
+function sendCreateQuestionCommentRequest() {
+  console.log("create request function")
+  let question_id = document.querySelector('#question_id').value;
+  console.log(question_id);
+  let comment = document.querySelector('#comment').value;
+  console.log(comment)
+  
+  if (comment != '')
+    sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id}, questionCommentAddedHandler);
+
+  event.preventDefault();
+  
+}
+
+function  questionCommentAddedHandler() {
+  //if (this.status != 200) window.location = '/login';
+  let comment = JSON.parse(this.responseText);
+
+  //delete comment form
+  document.querySelector('.comment-form').innerHTML = '';
+
+  // Create the new comment
+  let new_comment = createComment(comment);
+  console.log(new_comment)
+
+  // Insert the new comment
+  let comments = document.querySelector(`.question-comments`);
+  console.log(comments)
+  comments.prepend(new_comment);
+  
+}
 addEventListeners();
