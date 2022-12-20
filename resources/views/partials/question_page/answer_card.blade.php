@@ -56,7 +56,7 @@
         </div>
         <p class="m-0">{{ \Carbon\Carbon::parse($answer->date)->format('d/m/Y')}}</p>
     </div>
-    <div class="answer-comments">
+    <div class="answer-{{$answer->answer_id}}-comments">
         @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
             @include('partials.question_page.comment_card', ['comment' => $comment])
         @endforeach

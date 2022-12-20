@@ -19,20 +19,21 @@ class CommentController extends Controller
      * 
      * @return TODO
      */
-    public function create(Request $request, $question_id, $answer_id) {
+    public function create(Request $request) {
       if (!Auth::check()) return redirect('/login');
       $this->authorize('create', Comment::class);
       $comment = new Comment();
-      $comment->full_text = $request->input('comment');
+      $comment->full_text = $request->full_text;
       $comment->num_votes = 0;
-      $comment->question_id = $question_id;
-      $comment->answer_id = $answer_id;
+      $comment->question_id = $request->question_id;
+      $comment->date = date('Y-m-d H:i:s');
+      $comment->answer_id = $request->answer_id;
       $comment->user_id = auth::id();
       $comment->save();
 
       $comment['author']['name'] = Auth::user()->name;
       $comment['author']['picture_path'] = Auth::user()->picture_path;
-      $comment['date'] = date("d-m-Y");
+      $comment['date'] = date("d/m/Y");
       return json_encode($comment);
     }
 }

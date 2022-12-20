@@ -170,6 +170,7 @@ function answerAddedHandler() {
 }
 
 function createAnswer(answer) {
+  console.log(answer)
   let new_answer = document.createElement('div');
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
@@ -518,19 +519,23 @@ function setInnerHTML(elm, html) {
 /*********** create answer comment ***********/
 function answerCommentForm(event) {
   let answer = event.target.parentElement.parentElement.parentElement
-  answer.insertAdjacentElement('afterend', createCommentForm())
+  let answer_card_id = answer.parentElement.id;
+  answer.insertAdjacentElement('afterend', createCommentForm(answer_card_id))
 }
 
-function createCommentForm() {
+function createCommentForm(answer_card_id) {
+  let answer_card_id_list = answer_card_id.split('_', 2);
+  let answer_id = answer_card_id_list[1]
   let comment_form = document.createElement('div');
   comment_form.className = 'card';
+  comment_form.className = 'comment-form';
   comment_form.innerHTML = `
     <form method="POST" class="card-body m-0 p-0">
         <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="3"
             id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
     </form>
     <div class="card-footer text-right">
-        <button id="add-comment-button" type="submit" onclick="sendCreateCommentRequest()" class="m-0">
+        <button id="add-comment-button" type="submit" onclick="sendCreateCommentRequest(${answer_id})" class="m-0">
             Comment
         </button>
     </div>
@@ -538,17 +543,13 @@ function createCommentForm() {
   return comment_form;
 }
 
-function sendCreateCommentRequest(event) {
+function sendCreateCommentRequest(answer_id) {
   console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
-  console.log(question_id)
-  let answer_id = document.querySelector('#answer_id').value;
-  console.log(question_id)
   let comment = document.querySelector('#comment').value;
-  console.log(comment)
 
   if (comment != '')
-    sendAjaxRequest('put', '/api/comment/' + question_id, { comment: comment, question_id: question_id, answer_id, answer_id }, commentAddedHandler);
+    sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id, answer_id: answer_id }, commentAddedHandler);
 
   event.preventDefault();
 }
@@ -557,17 +558,21 @@ function commentAddedHandler() {
   //if (this.status != 200) window.location = '/login';
   let comment = JSON.parse(this.responseText);
 
-  document.querySelector('#comment').value = "";
+  //delete comment form
+  document.querySelector('.comment-form').innerHTML = '';
 
   // Create the new comment
   let new_comment = createComment(comment);
+  console.log(new_comment)
 
   // Insert the new comment
-  let comments = document.querySelector('#comments');
+  let comments = document.querySelector(`.answer-${comment.answer_id}-comments`);
+  console.log(comments)
   comments.prepend(new_comment);
 }
 
 function createComment(comment) {
+  console.log(comment)
   let new_comment = document.createElement('div');
   new_comment.className = 'border-top'
   new_comment.classList.add('d-flex')
@@ -578,23 +583,22 @@ function createComment(comment) {
       <button class="button-clear p-0 m-0 mr-2" type="button">
           <i class="material-symbols-outlined">keyboard_arrow_up</i>
       </button>
-      <p class="m-0 pr-2 text-nowrap">{{ ${comment.num_votes} }}</p>
+      <p class="m-0 pr-2 text-nowrap">${comment.num_votes}</p>
       <button class="button-clear d-block p-0 m-0 mr-2" type="button">
           <i class="material-symbols-outlined ">keyboard_arrow_down</i>
       </button>
   </div>
   <div class="pt-3">
       <p class="m-0">
-          <img src="{{asset('storage/'.(${comment.author.picture_path}).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
-          <a href="{{url("/users/${comment.user_id}")}}"> {{ ${comment.author.name} }}</a>
-          {{ \Carbon\Carbon::parse(${comment.date})->format('d/m/Y')}}
+          <img src="/storage/${comment.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
+          <a href="url("/users/${comment.user_id}")">${comment.author.name}</a>
+          ${comment.date}
       </p>
-  <p class="card-text py-2">{{ ${comment.full_text} }}</p>
+  <p class="card-text py-2">${comment.full_text}</p>
   </div>
 </div>
   `;
-
-  return new_answer;
+  return new_comment;
 }
 
 addEventListeners();

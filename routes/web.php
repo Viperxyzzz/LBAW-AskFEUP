@@ -53,4 +53,4 @@ Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('re
 Route::post('register', 'Auth\RegisterController@register');
 
 // Comments
-Route::put('api/comment/{id}', 'CommentController@create')->name('create_comment');
+Route::post('api/comment/{id}', 'CommentController@create')->name('create_comment');
