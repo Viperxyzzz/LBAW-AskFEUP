@@ -1,4 +1,4 @@
-<div class="card mt-5">
+<div class="card mt-5" id="add-answer-card">
     <form method="POST" class="card-body m-0 p-0">
         {{ csrf_field() }}
         <input type="hidden" name="question_id" id="question_id" value="{{ $question_id }}"></input>

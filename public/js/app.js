@@ -20,6 +20,11 @@ function addEventListeners() {
   });
   }
 
+  let commentQuestionFormCreator = document.querySelectorAll('.add-comment-question-form-button');
+  if (commentQuestionFormCreator != null)
+      commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
+
+
   let commentCreator = document.querySelectorAll('#add-comment-button');
   if (commentCreator != null) {
     commentCreator.forEach(button =>{
@@ -599,6 +604,36 @@ function createComment(comment) {
 </div>
   `;
   return new_comment;
+}
+
+/*********** create question comment ***********/
+
+function questionCommentForm(event) {
+  let question = event.target.parentElement.parentElement.parentElement
+  console.log(question)
+
+  //remove answer form
+  document.querySelector('#add-answer-card').innerHTML = '';
+
+  question.insertAdjacentElement('afterend', createCommentQuestionForm())
+//  let answer_card_id = answer.parentElement.id;
+//  answer.insertAdjacentElement('afterend', createCommentForm(answer_card_id))
+}
+function createCommentQuestionForm() {
+  let comment_form = document.createElement('div');
+  comment_form.className = 'card';
+  comment_form.innerHTML = `
+    <form method="POST" class="card-body m-0 p-0">
+        <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+            id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
+    </form>
+    <div class="card-footer text-right">
+        <button id="add-comment-button" type="submit" class="m-0">
+            Comment
+        </button>
+    </div>
+  `;
+  return comment_form;
 }
 
 addEventListeners();
