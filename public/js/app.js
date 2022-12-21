@@ -525,22 +525,27 @@ function setInnerHTML(elm, html) {
 function answerCommentForm(event) {
   let answer = event.target.parentElement.parentElement.parentElement
   let answer_card_id = answer.parentElement.id;
-  answer.insertAdjacentElement('afterend', createCommentForm(answer_card_id))
+  answer.insertAdjacentElement('afterend', createAnswerCommentForm(answer_card_id))
 }
 
-function createCommentForm(answer_card_id) {
+function createAnswerCommentForm(answer_card_id) {
   let answer_card_id_list = answer_card_id.split('_', 2);
   let answer_id = answer_card_id_list[1]
+
+  let previous_comment_form = document.querySelector(`.comment-answer-${answer_id}-form`)
+  console.log(previous_comment_form)
+  if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
+
   let comment_form = document.createElement('div');
   comment_form.className = 'card';
-  comment_form.className = 'comment-form';
+  comment_form.className = `comment-answer-${answer_id}-form`;
   comment_form.innerHTML = `
     <form method="POST" class="card-body m-0 p-0">
         <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="3"
             id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
     </form>
     <div class="card-footer text-right">
-        <button id="add-comment-button" type="submit" onclick="sendCreateCommentRequest(${answer_id})" class="m-0">
+        <button id="add-comment-button" type="submit" onclick="sendCreateAnswerCommentRequest(${answer_id})" class="m-0">
             Comment
         </button>
     </div>
@@ -548,22 +553,22 @@ function createCommentForm(answer_card_id) {
   return comment_form;
 }
 
-function sendCreateCommentRequest(answer_id) {
+function sendCreateAnswerCommentRequest(answer_id) {
   console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
   let comment = document.querySelector('#comment').value;
 
   if (comment != '')
-    sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id, answer_id: answer_id }, commentAddedHandler);
+    sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id, answer_id: answer_id }, answerCommentAddedHandler);
 
   event.preventDefault();
 }
 
-function commentAddedHandler() {
+function answerCommentAddedHandler() {
   let comment = JSON.parse(this.responseText);
 
   //delete comment form
-  document.querySelector('.comment-form').innerHTML = '';
+  document.querySelector(`.comment-answer-${comment.answer_id}-form`).innerHTML = '';
 
   // Create the new comment
   let new_comment = createComment(comment);
@@ -617,13 +622,14 @@ function questionCommentForm(event) {
   //remove answer form
   document.querySelector('#add-answer-card').innerHTML = '';
 
-  question.insertAdjacentElement('afterend', createCommentQuestionForm(question_id))
+  question.insertAdjacentElement('afterend', createQuestionCommentForm(question_id))
 
 }
-function createCommentQuestionForm(question_id) {
+function createQuestionCommentForm(question_id) {
   //prevent duplicated comment form
   let previous_comment_form = document.querySelector('.comment-form')
-  if(previous_comment_form!=null) return previous_comment_form;
+  console.log(previous_comment_form)
+  if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
 
   let comment_form = document.createElement('div')
   comment_form.className = 'card'
