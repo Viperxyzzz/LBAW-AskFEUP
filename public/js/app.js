@@ -680,7 +680,7 @@ function  questionCommentAddedHandler() {
       id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
   </form>
 <div class="card-footer text-right">
-  <button id="add-answer-button" type="submit" class="m-0">
+  <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
       Answer
   </button>
 </div>
