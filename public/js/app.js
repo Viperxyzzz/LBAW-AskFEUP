@@ -621,6 +621,10 @@ function questionCommentForm(event) {
 
 }
 function createCommentQuestionForm(question_id) {
+  //prevent duplicated comment form
+  let previous_comment_form = document.querySelector('.comment-form')
+  if(previous_comment_form!=null) return previous_comment_form;
+
   let comment_form = document.createElement('div')
   comment_form.className = 'card'
   comment_form.classList.add('comment-form')
