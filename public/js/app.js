@@ -461,7 +461,7 @@ function createAnswerForm(answer_id, text) {
   answer_form.classList.add('w-100')
   answer_form.id = `answer_form_${answer_id}`
 
-  answer_form.innerHTML(
+  answer_form.innerHTML =
     `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}"></input>
@@ -480,7 +480,7 @@ function createAnswerForm(answer_id, text) {
         }
       });
       </script>
-`)
+`
   return answer_form;
 }
 
