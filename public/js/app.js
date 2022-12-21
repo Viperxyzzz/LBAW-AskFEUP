@@ -560,7 +560,6 @@ function sendCreateCommentRequest(answer_id) {
 }
 
 function commentAddedHandler() {
-  //if (this.status != 200) window.location = '/login';
   let comment = JSON.parse(this.responseText);
 
   //delete comment form
@@ -658,6 +657,8 @@ function  questionCommentAddedHandler() {
   //if (this.status != 200) window.location = '/login';
   let comment = JSON.parse(this.responseText);
 
+  let question_id = document.querySelector('#question_id').value;
+
   //delete comment form
   document.querySelector('.comment-form').innerHTML = '';
 
@@ -669,6 +670,21 @@ function  questionCommentAddedHandler() {
   let comments = document.querySelector(`.question-comments`);
   console.log(comments)
   comments.prepend(new_comment);
-  
+
+  // Insert answer form back
+  let add_answer_card = document.querySelector('#add-answer-card');
+  add_answer_card.innerHTML = `
+  <form method="POST" class="card-body m-0 p-0">
+    <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+    <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+      id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
+  </form>
+<div class="card-footer text-right">
+  <button id="add-answer-button" type="submit" class="m-0">
+      Answer
+  </button>
+</div>
+  `
 }
+
 addEventListeners();
