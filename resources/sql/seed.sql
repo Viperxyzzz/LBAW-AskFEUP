@@ -739,10 +739,10 @@ INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id
 INSERT INTO report(reason,date,question_id,answer_id,comment_id)
 VALUES
   ('Spam','Dec 30, 2021',1,NULL,NULL),
-  ('Hate speech','Mar 23, 2022',2,2,NULL),
-  ('Harassment','May 26, 2022',3,3,3),
+  ('Hate speech','Mar 23, 2022',2,3,NULL),
+  ('Harassment','May 26, 2022',3,NULL,100),
   ('blandit. Nam nulla magna, malesuada vel, convallis','Nov 16, 2021',4,NULL,NULL),
-  ('sit amet, consectetuer adipiscing elit. Etiam laoreet,','Dec 3, 2021',5,5,5);
+  ('sit amet, consectetuer adipiscing elit. Etiam laoreet,','Dec 3, 2021',5,47,NULL);
 
 insert into user_tag (user_id, tag_id) values (1, 1);
 insert into user_tag (user_id, tag_id) values (1, 2);
