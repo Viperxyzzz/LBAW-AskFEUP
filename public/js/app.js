@@ -196,6 +196,12 @@ function answerAddedHandler() {
   // Insert the new answer
   let answers = document.querySelector('#answers');
   answers.prepend(new_answer);
+  let markValidAnswer = document.querySelectorAll('.mark-valid-answer')
+  markValidAnswer.forEach(
+    button => {
+      button.addEventListener('click', sendMarkValidAnswerRequest)
+    }
+  )
 }
 
 function createAnswer(answer) {
@@ -206,17 +212,13 @@ function createAnswer(answer) {
   // split link to get the id of the user(last element)
   let link_list = question_author.href.split('/');
   //make question_author_id an int
-
   let question_author_id = link_list[link_list.length - 1];
-  console.log(question_author_id);
-  console.log(answer.user_id);
-  console.log(question_author_id == answer.user_id);
   let markValidQuestionHtml = "";
   if(question_author_id == answer.user_id){
     markValidQuestionHtml = 
     `                        
-    <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-{{ ${answer.answer_id} }}" type="submit">
-    <input type="hidden" name="answer_id" value="{{ ${answer.answer_id}}}">
+    <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-${answer.answer_id}" type="submit">
+    <input type="hidden" name="answer_id" value="${answer.answer_id}">
     <i id="mark-valid-button" width="16" height="16" class="material-symbols-outlined">check</i>
     </button>
     `;
