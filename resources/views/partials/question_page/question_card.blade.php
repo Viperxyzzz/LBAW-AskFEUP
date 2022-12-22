@@ -1,12 +1,22 @@
 <div class="pb-5">
     <div class="d-flex">
         <div>
-            <button class="button-clear p-1 mr-2" type="button">
-                <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_up</i>
-            </button>
-            <button class="button-clear d-block p-1 mr-2" type="button">
-                <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_down</i>
-            </button>
+            <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
+                {{ csrf_field() }}
+                <input type="hidden" name="vote" value="1"></input>
+                <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
+                <button class="button-clear p-1 mr-2" type="submit">
+                    <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_up</i>
+                </button>
+            </form>
+            <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
+                {{ csrf_field() }}
+                <input type="hidden" name="vote" value="-1"></input>
+                <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
+                <button class="button-clear p-1 mr-2" type="submit">
+                    <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_down</i>
+                </button>
+            </form>
         </div>
         <div class="d-flex flex-fill justify-content-between">
             <div>

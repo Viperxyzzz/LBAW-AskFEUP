@@ -97,6 +97,18 @@ class QuestionController extends Controller
       return view('pages.edit_question',['tags' => $tags, 'question' => $question]);
     }
 
+    public function vote(Request $request)
+    {
+      if(!Auth::check()) return redirect('/login');
+      $question = Question::find($request->question_id);
+      error_log($request->vote);
+      error_log($request->question_id);
+      // $this->authorize('vote', $question);
+      $question->num_votes += $request->vote;
+      $question->save();
+      return redirect('/question/'.$question->question_id);
+    }
+
     public function create_view()
     {
       if (!Auth::check()) return redirect('/login');
