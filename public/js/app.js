@@ -129,6 +129,13 @@ function addEventListeners() {
       button.addEventListener('click', sendUnFollowTagRequest)
     }
   )
+  
+  let markValidAnswer = document.querySelectorAll('.mark-valid-answer')
+  markValidAnswer.forEach(
+    button => {
+      button.addEventListener('click', sendMarkValidAnswerRequest)
+    }
+  )
 }
 
 function closeProfileTabs() {
@@ -645,6 +652,33 @@ function tagUnFollowHandler() {
   button.classList.add('follow-tag')
   button.querySelector('i').innerHTML = 'add'
   button.querySelector('p').innerHTML = 'Follow'
+}
+
+function sendMarkValidAnswerRequest(event){
+  console.log(event.currentTarget);
+  let answer_id = event.currentTarget.querySelector('input').value;
+
+  if (answer_id != '')
+    sendAjaxRequest('post', `/api/answer/valid/${answer_id}`, {}, markValidAnswerHandler);
+  
+  event.preventDefault();
+}
+
+function markValidAnswerHandler() {
+  let answer = JSON.parse(this.responseText);
+  let answer_id = answer['answer_id'];
+
+  let button = document.getElementById(`valid-answer-tag-${answer_id}`)
+  button.id = `invalid-answer-tag-${answer_id}`;
+  button.classList.remove('valid-answer-tag');
+  button.classList.add('invalid-answer-tag');
+  button.querySelector('i').classList.add('c-primary');
+  button.querySelector('i').classList.add('b-accent');
+  button.querySelector('i').classList.add('rounded-circle');
+}
+
+function sendMarkInvalidAnswerRequest(event){
+  console.log("not a thing");
 }
 
 /** Multi-select dropdown */

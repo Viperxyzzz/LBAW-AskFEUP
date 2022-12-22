@@ -47,19 +47,19 @@
             </button>
             @if (!$answer->is_correct)
                 @can('valid', $answer)
-                    <form method="post" action="{{ route('valid_answer', $answer->answer_id) }}">
-                        @csrf
-                        <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
-                        <button class="button-clear m-0 px-1" type="submit">
-                            <i width="16" height="16" class="material-symbols-outlined ">check</i>
+                    <!-- <form method="post" action="{{ route('valid_answer', $answer->answer_id) }}">
+                        @csrf-->
+                        <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-{{ $answer->answer_id }}" type="submit">
+                            <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                            <i id="mark-valid-button" width="16" height="16" class="material-symbols-outlined">check</i>
                         </button>
-                    </form>
+                    <!-- </form> -->
                 @endcan
-            @endif
-            @if ($answer->is_correct)
-                <i class="material-symbols-outlined c-primary b-accent rounded-circle ml-2">
-                    check
-                </i>
+            @else
+                <button class="button-clear m-0 px-1 mark-invalid-answer" id="invalid-answer-tag-{{ $answer->answerid }}" type="submit">
+                    <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                    <i width="16" height="16" class="material-symbols-outlined c-primary b-accent rounded-circle">check</i>
+                </button>
             @endif
             @if($answer->was_edited)
                 <p class="m-0 p-0 mt-1 ml-3">edited</p>
