@@ -7,6 +7,9 @@
         <h2 class="m-3">Moderator Dashboard</h2>
         <hr>
         <h3 class="m-4">Reports</h3>
+        @if($reports->isEmpty())
+            <p class="m-4">There are no new reports!</p>
+        @endif
         <div class="d-flex flex-wrap">
             @each('partials.admin.report_card', $reports, 'report')
         </div>

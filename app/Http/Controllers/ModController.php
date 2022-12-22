@@ -24,6 +24,23 @@ class ModController extends Controller
     }
 
     /**
+     * Remove a report from storage.
+     *
+     * @param int $id Id of the report to be eliminated.
+     * @return \Illuminate\Http\Response JSON object that represents eliminated report
+     */
+    public function delete_report($report_id)
+    {
+        if (!Auth::check()) return redirect('/login');
+        if (!Auth::user()->is_mod()) return redirect('/');
+        $report = Report::find($report_id);
+        $this->authorize('delete', $report);
+
+        $report->delete();
+        return $report;
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response

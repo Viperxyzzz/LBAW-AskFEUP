@@ -92,6 +92,13 @@ function addEventListeners() {
       );
   }
 
+  let reportDelete = document.querySelectorAll('.delete-report');
+  if (reportDelete != null) {
+    reportDelete.forEach(
+      btn => btn.addEventListener('click', sendDeleteReportRequest)
+      );
+  }
+
   let orderQuestionsRadio = document.querySelectorAll('input[name=order-questions]');
   if (orderQuestionsRadio != null) {
     orderQuestionsRadio.forEach(orderQuestionsButton => {
@@ -429,6 +436,24 @@ function answerDeletedHandler() {
 
   let deletedAnswerElement = document.getElementById("answer_" + deletedAnswer.answer_id)
   deletedAnswerElement.remove();
+}
+
+/*********** delete a report ***********/
+
+function sendDeleteReportRequest(event) {
+  let report_id = event.target.parentElement.children[0].innerText;
+
+  if (report_id != '')
+    sendAjaxRequest('delete', '/api/report/delete/' + report_id, {}, reportDeletedHandler);
+  event.preventDefault();
+}
+
+function reportDeletedHandler() {
+  //if (this.status != 202) window.location = '/';
+  let deletedReport = JSON.parse(this.responseText);
+
+  let deletedReportElement = document.getElementById("report_" + deletedReport.report_id)
+  deletedReportElement.remove();
 }
 
 /*********** filter questions ***********/

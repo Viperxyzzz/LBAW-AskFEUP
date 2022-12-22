@@ -42,6 +42,7 @@ Route::post('api/tag/unFollow/{id}', 'TagController@unFollow');
 
 // Admin
 Route::get('dashboard', 'ModController@index')->name('dashboard');
+Route::delete('api/report/delete/{id}', 'ModController@delete_report');
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
