@@ -38,7 +38,7 @@
         </p>
         <p class="m-0">
             <em>by</em>
-            <a href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
+            <a class="author" href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
         </p>
     </div>
 </div>

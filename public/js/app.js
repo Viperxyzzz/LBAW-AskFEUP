@@ -199,7 +199,29 @@ function answerAddedHandler() {
 }
 
 function createAnswer(answer) {
+  //verify if answer is from the guy creating the question
   let new_answer = document.createElement('div');
+  //find class author in document
+  let question_author = document.querySelector('.author');
+  // split link to get the id of the user(last element)
+  let link_list = question_author.href.split('/');
+  //make question_author_id an int
+
+  let question_author_id = link_list[link_list.length - 1];
+  console.log(question_author_id);
+  console.log(answer.user_id);
+  console.log(question_author_id == answer.user_id);
+  let markValidQuestionHtml = "";
+  if(question_author_id == answer.user_id){
+    markValidQuestionHtml = 
+    `                        
+    <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-{{ ${answer.answer_id} }}" type="submit">
+    <input type="hidden" name="answer_id" value="{{ ${answer.answer_id}}}">
+    <i id="mark-valid-button" width="16" height="16" class="material-symbols-outlined">check</i>
+    </button>
+    `;
+  }
+
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
   new_answer.classList.add('answer')
@@ -268,7 +290,11 @@ function createAnswer(answer) {
           </button>
           <button class="button-clear m-0 px-1" type="button">
               <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
-          </button>
+          </button>`
+          +
+          markValidQuestionHtml
+          +
+          `
       </div>
       <p class="m-0">${answer.date}</p>
   </div>
