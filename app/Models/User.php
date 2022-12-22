@@ -139,4 +139,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class, 'user_id', 'user_id');
     }
+
+    /**
+     * Check if a user is a moderator or above (admin). 
+     * 
+     * @return True if the user is either moderator or admin, false otherwise.
+     */
+    public function is_mod() {
+      return ($this->is_admin || $this->is_moderator);
+    }
 }
