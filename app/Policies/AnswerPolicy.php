@@ -7,6 +7,7 @@ use App\Models\Answer;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Question;
 
 class AnswerPolicy
 {
@@ -33,5 +34,12 @@ class AnswerPolicy
     {
       // Only an answer's author can update it
       return $user->user_id == $answer->user_id || $user->is_admin;
+    }
+
+    public function valid(User $user, Answer $answer)
+    {
+      // Only an answer's author can mark it as valid
+      $question = Question::find($answer->question_id);
+      return $user->user_id == $question->author_id;
     }
 }

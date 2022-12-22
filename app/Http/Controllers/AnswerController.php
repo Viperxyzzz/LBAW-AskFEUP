@@ -66,4 +66,14 @@ class AnswerController extends Controller
       $answer->save();
       return $answer;
     }
+
+    public function make_valid(Request $request, $answer_id) {
+      if (!Auth::check()) return redirect('/login');
+      $answer = Answer::find($answer_id);
+      $this->authorize('valid', $answer);
+
+      $answer->is_correct = true;
+      $answer->save();
+      return $answer;
+    }
 }

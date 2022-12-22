@@ -45,6 +45,17 @@
             <button class="button-clear m-0 px-1" type="button">
                 <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
             </button>
+            @if (!$answer->is_correct)
+                @can('valid', $answer)
+                    <form method="post" action="{{ route('valid_answer', $answer->answer_id) }}">
+                        @csrf
+                        <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                        <button class="button-clear m-0 px-1" type="submit">
+                            <i width="16" height="16" class="material-symbols-outlined ">check</i>
+                        </button>
+                    </form>
+                @endcan
+            @endif
             @if ($answer->is_correct)
                 <i class="material-symbols-outlined c-primary b-accent rounded-circle ml-2">
                     check
