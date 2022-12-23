@@ -27,20 +27,15 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                     <ul>
-                        @foreach(Auth::user()->notifications()->orderBy('notification_id', 'DESC')->get() as $notification)
+                        @foreach(Auth::user()->notifications()->orderBy('date', 'DESC')->get() as $notification)
                             <li class="dropdown-item">
                                 <button class="btn bg-transparent shadow-none border-0 d-flex justify-content-between align-items-center w-100 button-notification" id="button-notification-{{$notification['notification_id']}}" aria-expanded="true">
+                                    <div class="d-flex flex-column">
+                                        <strong class="h5 text-left">{{$notification["notification_text"]}}</strong>
+                                        <small class="text-left">{{date("d/m/Y H:i:s", strtotime($notification["date"]))}}</small>
+                                    </div>
                                     @if(!$notification["viewed"])
-                                        <div class="d-flex flex-column">
-                                            <strong class="h5 text-left">{{$notification["notification_text"]}}</strong>
-                                            <small class="text-right">{{$notification["date"]}}</small>
-                                        </div>
                                         <span class="material-icons ml-4 red-circle-notification">circle</span>
-                                    @else
-                                        <div class="d-flex flex-column">
-                                            {{$notification["notification_text"]}}
-                                            <small class="text-right">{{$notification["date"]}}</small>
-                                        </div>  
                                     @endif
                                 </button>
                             </li>

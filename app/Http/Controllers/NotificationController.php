@@ -12,7 +12,6 @@ class NotificationController extends Controller
     public function update($notification_id) {
       if (!Auth::check()) return redirect('/login');
       $notification = Notification::find($notification_id);
-      Gate::authorize('update', $notification);
       $notification->update(['viewed' => 'Yes']);
       return $notification;
     }
