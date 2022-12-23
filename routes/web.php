@@ -39,6 +39,7 @@ Route::get('tags', 'TagController@index');
 Route::get('api/tags/', 'TagController@search');
 Route::post('api/tag/follow/{id}', 'TagController@follow');
 Route::post('api/tag/unFollow/{id}', 'TagController@unFollow');
+Route::post('api/tag/create', 'TagController@create')->name('tag_create_api');
 
 // Admin
 Route::get('dashboard', 'ModController@index')->name('dashboard');

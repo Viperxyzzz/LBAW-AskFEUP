@@ -51,13 +51,38 @@ class TagController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Get a validator for an incoming create tag request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'tag_name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'topic' => 'required|number'
+        ]);
+    }
+
+
+    /**
+     * Create a new tag.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        if(!Auth::check()) return redirect('/login');
+        $this->authorize('create', Tag::class);
+        $tag = new Tag;
+        $tag->tag_name = $request->name;
+        $tag->tag_description = $request->description;
+        $tag->topic_id = $request->topic;
+
+        $tag->save();
+
+        return redirect('/tags');
     }
 
     /**
