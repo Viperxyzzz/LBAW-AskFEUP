@@ -625,6 +625,7 @@ function questionCommentForm(event) {
   question.insertAdjacentElement('afterend', createQuestionCommentForm(question_id))
 
 }
+
 function createQuestionCommentForm(question_id) {
   //prevent duplicated comment form
   let previous_comment_form = document.querySelector('.comment-form')
@@ -640,10 +641,16 @@ function createQuestionCommentForm(question_id) {
         <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
             id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
     </form>
-    <div class="card-footer text-right">
-        <button id="add-comment-button" type="submit" onclick="sendCreateQuestionCommentRequest()" class="m-0">
+    <div class=" card-footer">
+    <div class = "row justify-content-between" style="padding: 0.75rem 0.75rem;">
+        <button class="cancel-add-comment button-clear px-2 pr-3 pb-2 d-flex" style="margin: 0;" onclick="cancelCreateComment()">
+            <input type="hidden" value="{{ $tag->tag_id }}">
+            <p class="pb-2">Cancel</p>
+        </button>
+        <button id="add-comment-button" type="submit" style="margin: 0;" onclick="sendCreateQuestionCommentRequest()" class="m-0">
             Comment
         </button>
+        </div>
     </div>
   `;
   return comment_form;
@@ -655,16 +662,14 @@ function sendCreateQuestionCommentRequest() {
   console.log(question_id);
   let comment = document.querySelector('#comment').value;
   console.log(comment)
-  
+
   if (comment != '')
     sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id}, questionCommentAddedHandler);
 
   event.preventDefault();
-  
 }
 
 function  questionCommentAddedHandler() {
-  //if (this.status != 200) window.location = '/login';
   let comment = JSON.parse(this.responseText);
 
   let question_id = document.querySelector('#question_id').value;
@@ -696,5 +701,29 @@ function  questionCommentAddedHandler() {
 </div>
   `
 }
+
+function cancelCreateComment(){
+  let question_id = document.querySelector('#question_id').value;
+
+  let commentForm = document.querySelector('.comment-form')
+  console.log(commentForm)
+  commentForm.innerHTML = ''
+
+    // Insert answer form back
+    let add_answer_card = document.querySelector('#add-answer-card');
+    add_answer_card.innerHTML = `
+    <form method="POST" class="card-body m-0 p-0">
+      <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+      <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+        id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
+    </form>
+  <div class="card-footer text-right">
+    <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
+        Answer
+    </button>
+  </div>
+    `
+}
+
 
 addEventListeners();
