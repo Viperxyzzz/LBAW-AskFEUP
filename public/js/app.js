@@ -631,6 +631,7 @@ function createQuestionCommentForm(question_id) {
   let previous_comment_form = document.querySelector('.comment-form')
   console.log(previous_comment_form)
   if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
+  if(previous_comment_form!=null) previous_comment_form.remove()
 
   let comment_form = document.createElement('div')
   comment_form.className = 'card'
@@ -675,7 +676,7 @@ function  questionCommentAddedHandler() {
   let question_id = document.querySelector('#question_id').value;
 
   //delete comment form
-  document.querySelector('.comment-form').innerHTML = '';
+  document.querySelector('.comment-form').remove()
 
   // Create the new comment
   let new_comment = createComment(comment);
@@ -707,7 +708,7 @@ function cancelCreateComment(){
 
   let commentForm = document.querySelector('.comment-form')
   console.log(commentForm)
-  commentForm.innerHTML = ''
+  commentForm.remove()
 
     // Insert answer form back
     let add_answer_card = document.querySelector('#add-answer-card');
