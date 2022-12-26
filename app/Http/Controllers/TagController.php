@@ -138,6 +138,10 @@ class TagController extends Controller
      */
     public function destroy($id)
     {
-        //
+      if(!Auth::check()) return redirect('/login');
+      $this->authorize('manage', Tag::class);
+      $tag = Tag::find($id);
+      $tag->delete();
+      return redirect('/tags');
     }
 }
