@@ -22,6 +22,20 @@
                   <input id="full_text" type="text" name="full_text" class="form-control-lg" value="{{$question->full_text}}" required/>
                 </div>
               </div>
+              <div class="card p-3">
+                <div class="form-group">
+                    <label class="title-blue" for="tags">Tags</label>
+                    <select class="form-control" id="tags" name="tags[]" multiple size="6">
+                        @foreach ($tags as $tag)
+                            @if ($question->tags->contains($tag->tag_id))
+                              <option value="{{ $tag->tag_id }}" selected>{{ $tag->tag_name }}</option>
+                            @else
+                              <option value="{{ $tag->tag_id }}">{{ $tag->tag_name }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+            </div>
             <button class="my-5" type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
