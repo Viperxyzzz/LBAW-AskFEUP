@@ -17,5 +17,9 @@ class CommentPolicy
       // Any user can create a new comment
       return Auth::check();
     }
-
+    public function edit(User $user, Comment $comment)
+    {
+      // Only an answer's author can edit it
+      return $user->user_id == $comment->user_id || $user->is_admin;
+    }
 }
