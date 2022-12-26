@@ -3,6 +3,13 @@ function addEventListeners() {
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
+  let commentDelete = document.querySelectorAll('.delete-comment');
+  if (commentDelete != null) {
+    commentDelete.forEach(
+      btn => btn.addEventListener('click', sendDeleteCommentRequest)
+    );
+  }
+
   let enterInputAnswerCreator = document.getElementById('answer');
   if(enterInputAnswerCreator != null)
     enterInputAnswerCreator.addEventListener('keypress', function(event) {
@@ -12,7 +19,7 @@ function addEventListeners() {
         sendCreateAnswerRequest(event);
       }
     });
-  
+
   let filterOptions = document.querySelectorAll('.filter-option');
   if (filterOptions != null) {
     filterOptions.forEach((btn) => {
@@ -925,5 +932,23 @@ function cancelCreateComment(){
     `
 }
 
+/*********** delete an comment ***********/
+
+function sendDeleteCommentRequest(event) {
+  let comment_id = event.target.parentElement.children[0].value;
+  console.log(comment_id)
+
+  sendAjaxRequest('delete', '/api/comment/delete/' + comment_id, {}, commentDeletedHandler);
+  event.preventDefault();
+}
+
+function commentDeletedHandler() {
+  console.log("comment_handler")
+  
+  let deletedComment = JSON.parse(this.responseText);
+
+  let deletedCommentElement = document.getElementById("comment_" + deletedComment.comment_id)
+  deletedCommentElement.remove();
+}
 
 addEventListeners();
