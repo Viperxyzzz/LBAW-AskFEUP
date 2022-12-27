@@ -65,7 +65,7 @@ class TagController extends Controller
         $this->authorize('create', Tag::class);
 
         $request->validate([
-            'name' => 'required|string|max:25',
+            'name' => 'required|string|max:20',
             'description' => 'required|string|max:255',
             'topic' => 'int'
         ]);
@@ -117,7 +117,7 @@ class TagController extends Controller
         $this->authorize('manage', Tag::class);
 
         $request->validate([
-            'name' => 'required|string|max:25',
+            'name' => 'required|string|max:20',
             'description' => 'required|string|max:255',
             'topic' => 'int'
         ]);
