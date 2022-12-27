@@ -66,3 +66,4 @@ Route::post('register', 'Auth\RegisterController@register');
 
 // Comments
 Route::post('api/comment/{id}', 'CommentController@create')->name('create_comment');
+Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comment_delete_api');

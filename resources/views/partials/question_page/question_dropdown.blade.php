@@ -21,8 +21,6 @@
                 Delete
             </button>
 @endcan
-
-
         </div>
     </div>
 

@@ -1,4 +1,5 @@
 <div id="comment_{{ $comment->comment_id }}" class="border-top d-flex justify-content-between">
+    @include('partials.question_page.delete_comment_modal', ['comment' => $comment])
     <div class="d-flex">
         <div class="d-flex align-items-center flex-column p-1">
             <button class="button-clear p-0 m-0 mr-2" type="button">
@@ -23,4 +24,25 @@
         </div>
     </div>
     @include('partials.admin.add_report')
+        <div class="ml-5 d-flex align-items-end flex-column">
+            @can('edit', $comment)
+                <div class="dropdown">
+                    <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                        <i class="material-symbols-outlined">more_vert</i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                            <data class="comment_id" hidden>{{ $comment->comment_id }}</data>
+                            <button class="dropdown-item edit_comment" type="button">
+                                <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                                Edit
+                            </button>
+                        <input type="hidden" name="comment_id" value="{{$comment->comment_id}}">
+                        <button class="dropdown-item" type="button" data-toggle="modal" data-target="#commentModal_{{$comment->comment_id}}">
+                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            @endcan
+        </div>
 </div>
