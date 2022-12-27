@@ -40,9 +40,11 @@ Route::get('api/tags/', 'TagController@search');
 Route::post('api/tag/follow/{id}', 'TagController@follow');
 Route::post('api/tag/unFollow/{id}', 'TagController@unFollow');
 
-// Admin
+// Admin / Reports
 Route::get('dashboard', 'ModController@index')->name('dashboard');
 Route::delete('api/report/delete/{id}', 'ModController@delete_report');
+Route::post('api/report/create', 'ModController@create_report');
+
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');

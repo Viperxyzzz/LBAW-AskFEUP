@@ -31,9 +31,9 @@ function addEventListeners() {
   }
 
   let commentQuestionFormCreator = document.querySelectorAll('.add-comment-question-form-button');
-  if (commentQuestionFormCreator != null)
+  if (commentQuestionFormCreator.length > 0) {
       commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
-
+  }
 
   let commentCreator = document.querySelectorAll('#add-comment-button');
   if (commentCreator != null) {
@@ -115,6 +115,13 @@ function addEventListeners() {
   if (reportDelete != null) {
     reportDelete.forEach(
       btn => btn.addEventListener('click', sendDeleteReportRequest)
+      );
+  }
+
+  let addReport = document.querySelectorAll('.add-report');
+  if (addReport != null) {
+    addReport.forEach(
+      btn => btn.addEventListener('click', sendCreateReportRequest)
       );
   }
 
@@ -474,6 +481,22 @@ function reportDeletedHandler() {
 
   let deletedReportElement = document.getElementById("report_" + deletedReport.report_id)
   deletedReportElement.remove();
+}
+
+/*********** create a report ***********/
+
+function sendCreateReportRequest(event) {
+  console.log(event.target.parentElement.parentElement)
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let reason = body.querySelector('input[name=reason]').value
+  let question_id = body.querySelector('input[name=question_id]').value
+  let answer_id = body.querySelector('input[name=answer_id]').value
+  let comment_id = body.querySelector('input[name=comment_id]').value
+  data = {reason: reason, question_id : question_id, answer_id : answer_id, comment_id : comment_id}
+
+  if (body != null)
+    sendAjaxRequest('post', '/api/report/create', data, () => {});
+  event.preventDefault();
 }
 
 /*********** filter questions ***********/
