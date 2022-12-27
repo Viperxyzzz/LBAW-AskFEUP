@@ -12,26 +12,32 @@
             </div>
         </div>
         <div class="ml-5 d-flex">
-            @can('edit', $answer)
                 <div class="dropdown">
                     <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
                         <i class="material-symbols-outlined">more_vert</i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                            <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
-                            <button class="dropdown-item edit_answer" type="button">
-                                <i width="16" height="16" class="material-symbols-outlined ">edit</i>
-                                Edit
+                            <button class="dropdown-item m-0" type="button" data-toggle="modal" 
+                                data-target="#add-report-modal-{{ $question->question_id }}-{{ $answer->answer_id }}-">
+                                <i width="16" height="16" class="material-symbols-outlined ">flag</i>
+                                Report
                             </button>
-                        <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
-                        <button class="dropdown-item" type="button" data-toggle="modal" data-target="#answerModal_{{$answer->answer_id}}">
-                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
-                            Delete
-                        </button>
+                            @can('edit', $answer)
+                                <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
+                                <button class="dropdown-item edit_answer m-0" type="button">
+                                    <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                                    Edit
+                                </button>
+                                <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                                <button class="dropdown-item m-0" type="button" data-toggle="modal" data-target="#answerModal_{{$answer->answer_id}}">
+                                    <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                                    Delete
+                                </button>
+                            @endcan
                     </div>
                 </div>
-            @endcan
         </div>
+        @include('partials.admin.add_report', ['comment' => null])
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center answer-footer">
         <div class="d-flex align-items-start mt-2">
