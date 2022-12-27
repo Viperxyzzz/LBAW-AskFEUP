@@ -64,3 +64,7 @@ Route::post('login', 'Auth\LoginController@login');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
+
+// Comments
+Route::post('api/comment/{id}', 'CommentController@create')->name('create_comment');
+Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comment_delete_api');

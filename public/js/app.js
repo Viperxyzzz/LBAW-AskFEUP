@@ -3,6 +3,13 @@ function addEventListeners() {
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
+  let commentDelete = document.querySelectorAll('.delete-comment');
+  if (commentDelete != null) {
+    commentDelete.forEach(
+      btn => btn.addEventListener('click', sendDeleteCommentRequest)
+    );
+  }
+
   let enterInputAnswerCreator = document.getElementById('answer');
   if(enterInputAnswerCreator != null)
     enterInputAnswerCreator.addEventListener('keypress', function(event) {
@@ -12,7 +19,7 @@ function addEventListeners() {
         sendCreateAnswerRequest(event);
       }
     });
-  
+
   let filterOptions = document.querySelectorAll('.filter-option');
   if (filterOptions != null) {
     filterOptions.forEach((btn) => {
@@ -22,6 +29,17 @@ function addEventListeners() {
     }
     )
   }
+
+  let commentFormCreator = document.querySelectorAll('.add-comment-answer-form-button');
+  if (commentFormCreator != null) {
+    commentFormCreator.forEach(button =>{
+      button.addEventListener('click', answerCommentForm);
+  });
+  }
+
+  let commentQuestionFormCreator = document.querySelectorAll('.add-comment-question-form-button');
+  if (commentQuestionFormCreator != null)
+      commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
 
   let enterInputEditUserFullName = document.querySelector('#edit-full-name');
   if(enterInputEditUserFullName != null)
@@ -199,6 +217,7 @@ function answerAddedHandler() {
 }
 
 function createAnswer(answer) {
+  console.log(answer)
   let new_answer = document.createElement('div');
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
@@ -687,7 +706,7 @@ function createAnswerForm(answer_id, text) {
   answer_form.classList.add('w-100')
   answer_form.id = `answer_form_${answer_id}`
 
-  setInnerHTML( answer_form,
+  answer_form.innerHTML =
     `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}"></input>
@@ -706,7 +725,7 @@ function createAnswerForm(answer_id, text) {
         }
       });
       </script>
-`)
+`
   return answer_form;
 }
 
@@ -807,6 +826,268 @@ function setInnerHTML(elm, html) {
   });
 }
 
-/***********  ***********/
+/*********** create answer comment ***********/
+function answerCommentForm(event) {
+  let answer = event.target.parentElement.parentElement.parentElement
+  let answer_card_id = answer.parentElement.id;
+  answer.insertAdjacentElement('afterend', createAnswerCommentForm(answer_card_id))
+}
+
+function createAnswerCommentForm(answer_card_id) {
+  let answer_card_id_list = answer_card_id.split('_', 2);
+  let answer_id = answer_card_id_list[1]
+
+  let previous_comment_form = document.querySelector(`.comment-answer-${answer_id}-form`)
+  console.log(previous_comment_form)
+  if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
+
+  let comment_form = document.createElement('div');
+  comment_form.className = 'card';
+  comment_form.className = `comment-answer-${answer_id}-form`;
+  comment_form.innerHTML = `
+    <form method="POST" class="card-body m-0 p-0">
+        <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="3"
+            id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
+    </form>
+    <div class="card-footer text-right">
+        <button id="add-comment-button" type="submit" onclick="sendCreateAnswerCommentRequest(${answer_id})" class="m-0">
+            Comment
+        </button>
+    </div>
+  `;
+  return comment_form;
+}
+
+function sendCreateAnswerCommentRequest(answer_id) {
+  console.log("create request function")
+  let question_id = document.querySelector('#question_id').value;
+  let comment = document.querySelector('#comment').value;
+
+  if (comment != '')
+    sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id, answer_id: answer_id }, answerCommentAddedHandler);
+
+  event.preventDefault();
+}
+
+function answerCommentAddedHandler() {
+  let comment = JSON.parse(this.responseText);
+
+  //delete comment form
+  document.querySelector(`.comment-answer-${comment.answer_id}-form`).innerHTML = '';
+
+  // Create the new comment
+  let new_comment = createComment(comment);
+  console.log(new_comment)
+
+  // Insert the new comment
+  let comments = document.querySelector(`.answer-${comment.answer_id}-comments`);
+  console.log(comments)
+  comments.prepend(new_comment);
+}
+
+function createComment(comment) {
+  console.log(comment)
+  let new_comment = document.createElement('div');
+  new_comment.id = `comment_${comment.comment_id}`
+  new_comment.className = 'border-top'
+  new_comment.classList.add('d-flex')
+  new_comment.classList.add('justify-content-between')
+  new_comment.innerHTML = `
+  <div class="modal fade" id="commentModal_${comment.comment_id}" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="commentModalLabel">Delete comment</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <i class="material-symbols-outlined">close</i>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this comment?
+        </div>
+        <div class="modal-footer border-0">
+          <input type="hidden" name="comment_id" value="${comment.comment_id}">
+          <button type="button" class="button-outline" data-dismiss="modal">Close</button>
+          <button type="button" class="button delete-comment" data-dismiss="modal" onclick="sendDeleteCommentRequest(event)">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex">
+  <div class="d-flex align-items-center flex-column p-1">
+      <button class="button-clear p-0 m-0 mr-2" type="button">
+          <i class="material-symbols-outlined">keyboard_arrow_up</i>
+      </button>
+      <p class="m-0 pr-2 text-nowrap">${comment.num_votes}</p>
+      <button class="button-clear d-block p-0 m-0 mr-2" type="button">
+          <i class="material-symbols-outlined ">keyboard_arrow_down</i>
+      </button>
+  </div>
+  <div class="pt-3">
+      <p class="m-0">
+          <img src="/storage/${comment.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
+          <a href="url("/users/${comment.user_id}")">${comment.author.name}</a>
+          ${comment.date}
+      </p>
+  <p class="card-text py-2">${comment.full_text}</p>
+  </div>
+</div>
+<div class="ml-5 d-flex align-items-end flex-column">
+    <div class="dropdown">
+        <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+            <i class="material-symbols-outlined">more_vert</i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                <data class="comment_id" hidden>${comment.comment_id}</data>
+                <button class="dropdown-item edit_comment" type="button">
+                    <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                    Edit
+                </button>
+            <input type="hidden" name="comment_id" value="${comment.comment_id}">
+            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#commentModal_${comment.comment_id}">
+                <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+  `;
+  return new_comment;
+}
+
+/*********** create question comment ***********/
+
+function questionCommentForm(event) {
+  let question = event.target.parentElement.parentElement.parentElement
+  console.log(question)
+
+  let question_id = document.querySelector('#question_id').value;
+  console.log(question_id)
+
+  //remove answer form
+  document.querySelector('#add-answer-card').innerHTML = '';
+
+  question.insertAdjacentElement('afterend', createQuestionCommentForm(question_id))
+
+}
+
+function createQuestionCommentForm(question_id) {
+  //prevent duplicated comment form
+  let previous_comment_form = document.querySelector('.comment-form')
+  console.log(previous_comment_form)
+  if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
+  if(previous_comment_form!=null) previous_comment_form.remove()
+
+  let comment_form = document.createElement('div')
+  comment_form.className = 'card'
+  comment_form.classList.add('comment-form')
+  comment_form.innerHTML = `
+    <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+    <form method="POST" class="card-body m-0 p-0">
+        <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+            id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
+    </form>
+    <div class=" card-footer">
+    <div class = "row justify-content-between" style="padding: 0.75rem 0.75rem;">
+        <button class="cancel-add-comment button-clear px-2 pr-3 pb-2 d-flex" style="margin: 0;" onclick="cancelCreateComment()">
+            <input type="hidden" value="{{ $tag->tag_id }}">
+            <p class="pb-2">Cancel</p>
+        </button>
+        <button id="add-comment-button" type="submit" style="margin: 0;" onclick="sendCreateQuestionCommentRequest()" class="m-0">
+            Comment
+        </button>
+        </div>
+    </div>
+  `;
+  return comment_form;
+}
+
+function sendCreateQuestionCommentRequest() {
+  console.log("create request function")
+  let question_id = document.querySelector('#question_id').value;
+  console.log(question_id);
+  let comment = document.querySelector('#comment').value;
+  console.log(comment)
+
+  if (comment != '')
+    sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id}, questionCommentAddedHandler);
+
+  event.preventDefault();
+}
+
+function  questionCommentAddedHandler() {
+  let comment = JSON.parse(this.responseText);
+
+  let question_id = document.querySelector('#question_id').value;
+
+  //delete comment form
+  document.querySelector('.comment-form').remove()
+
+  // Create the new comment
+  let new_comment = createComment(comment);
+  console.log(new_comment)
+
+  // Insert the new comment
+  let comments = document.querySelector(`.question-comments`);
+  console.log(comments)
+  comments.prepend(new_comment);
+
+  // Insert answer form back
+  let add_answer_card = document.querySelector('#add-answer-card');
+  add_answer_card.innerHTML = `
+  <form method="POST" class="card-body m-0 p-0">
+    <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+    <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+      id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
+  </form>
+<div class="card-footer text-right">
+  <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
+      Answer
+  </button>
+</div>
+  `
+}
+
+function cancelCreateComment(){
+  let question_id = document.querySelector('#question_id').value;
+
+  let commentForm = document.querySelector('.comment-form')
+  console.log(commentForm)
+  commentForm.remove()
+
+    // Insert answer form back
+    let add_answer_card = document.querySelector('#add-answer-card');
+    add_answer_card.innerHTML = `
+    <form method="POST" class="card-body m-0 p-0">
+      <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+      <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+        id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
+    </form>
+  <div class="card-footer text-right">
+    <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
+        Answer
+    </button>
+  </div>
+    `
+}
+
+/*********** delete an comment ***********/
+
+function sendDeleteCommentRequest(event) {
+  let comment_id = event.target.parentElement.children[0].value;
+  console.log(comment_id)
+
+  sendAjaxRequest('delete', '/api/comment/delete/' + comment_id, {}, commentDeletedHandler);
+  event.preventDefault();
+}
+
+function commentDeletedHandler() {
+  console.log("comment_handler")
+  
+  let deletedComment = JSON.parse(this.responseText);
+
+  let deletedCommentElement = document.getElementById("comment_" + deletedComment.comment_id)
+  deletedCommentElement.remove();
+}
 
 addEventListeners();
