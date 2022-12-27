@@ -41,14 +41,6 @@ function addEventListeners() {
   if (commentQuestionFormCreator != null)
       commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
 
-
-  let commentCreator = document.querySelectorAll('#add-comment-button');
-  if (commentCreator != null) {
-    commentCreator.forEach(button =>{
-      button.addEventListener('click', function(){alert("test")});
-  });
-  }
-
   let enterInputEditUserFullName = document.querySelector('#edit-full-name');
   if(enterInputEditUserFullName != null)
     enterInputEditUserFullName.addEventListener('keypress', function(event) {
