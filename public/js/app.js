@@ -640,18 +640,16 @@ function answerUpdater() {
 
 function sendCreateAnswerUpdateRequest() {
   let answer = JSON.parse(this.responseText);
-  console.log(this.responseText)
 
   let p = document.createElement('p');
   p.classList.add('card-text', 'pb-5', 'pt-2');
   p.innerText = answer.full_text;
-  console.log(p)
 
   let answer_element = document.querySelector('#answer_' + answer.answer_id);
   console.log(answer_element)
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
-  console.log(answer_form)
+  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
 
   answer_form.remove();
 
@@ -1045,7 +1043,7 @@ function commentUpdater() {
   let comment_id = document.querySelector('#comment_id').value;
   console.log(new_text)
   console.log(comment_id)
-  sendAjaxRequest('post', '/api/comment/update/' + comment_id, { full_text: new_text, was_edited: true }, sendCreateCommentUpdateRequest);
+  sendAjaxRequest('post', '/api/comment/update/' + comment_id, { full_text: new_text }, sendCreateCommentUpdateRequest);
 }
 
 
@@ -1059,7 +1057,8 @@ function sendCreateCommentUpdateRequest() {
 
   let comment_element = document.querySelector('#comment_' + comment.comment_id);
   let comment_form = comment_element.querySelector('.comment-form');
-  comment_form.parentElement.querySelector('.comment-full-text').appendChild(p);
+  console.log(comment_form)
+  comment_form.parentElement.querySelector('.card-text').appendChild(p);
   comment_form.remove();
 
 }

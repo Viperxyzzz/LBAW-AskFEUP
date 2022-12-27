@@ -53,8 +53,6 @@ class CommentController extends Controller
     }
 
     public function update(Request $request, $comment_id) {
-      echo $request;
-      echo $comment_id;
       if (!Auth::check()) return redirect('/login');
       $comment = Comment::find($comment_id);
       $this->authorize('update', $comment);
@@ -62,7 +60,6 @@ class CommentController extends Controller
       $comment->full_text = $request->full_text;
 
       $comment->date = date('Y-m-d H:i:s');
-      $comment->was_edited = true;
 
       $comment->save();
       return $comment;
