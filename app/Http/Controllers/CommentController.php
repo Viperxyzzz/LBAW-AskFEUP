@@ -36,4 +36,12 @@ class CommentController extends Controller
       $comment['date'] = date("d/m/Y");
       return json_encode($comment);
     }
+    public function delete(Request $request, $comment_id) {
+      if (!Auth::check()) return redirect('/login');
+      $comment = Comment::find($comment_id);
+      $this->authorize('delete', $comment);
+
+      $comment->delete();
+      return $comment;
+    }
 }

@@ -3,6 +3,13 @@ function addEventListeners() {
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
+  let commentDelete = document.querySelectorAll('.delete-comment');
+  if (commentDelete != null) {
+    commentDelete.forEach(
+      btn => btn.addEventListener('click', sendDeleteCommentRequest)
+    );
+  }
+
   let enterInputAnswerCreator = document.getElementById('answer');
   if(enterInputAnswerCreator != null)
     enterInputAnswerCreator.addEventListener('keypress', function(event) {
@@ -12,7 +19,7 @@ function addEventListeners() {
         sendCreateAnswerRequest(event);
       }
     });
-  
+
   let filterOptions = document.querySelectorAll('.filter-option');
   if (filterOptions != null) {
     filterOptions.forEach((btn) => {
@@ -33,14 +40,6 @@ function addEventListeners() {
   let commentQuestionFormCreator = document.querySelectorAll('.add-comment-question-form-button');
   if (commentQuestionFormCreator != null)
       commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
-
-
-  let commentCreator = document.querySelectorAll('#add-comment-button');
-  if (commentCreator != null) {
-    commentCreator.forEach(button =>{
-      button.addEventListener('click', function(){alert("test")});
-  });
-  }
 
   let enterInputEditUserFullName = document.querySelector('#edit-full-name');
   if(enterInputEditUserFullName != null)
@@ -782,10 +781,31 @@ function answerCommentAddedHandler() {
 function createComment(comment) {
   console.log(comment)
   let new_comment = document.createElement('div');
+  new_comment.id = `comment_${comment.comment_id}`
   new_comment.className = 'border-top'
   new_comment.classList.add('d-flex')
   new_comment.classList.add('justify-content-between')
   new_comment.innerHTML = `
+  <div class="modal fade" id="commentModal_${comment.comment_id}" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="commentModalLabel">Delete comment</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <i class="material-symbols-outlined">close</i>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this comment?
+        </div>
+        <div class="modal-footer border-0">
+          <input type="hidden" name="comment_id" value="${comment.comment_id}">
+          <button type="button" class="button-outline" data-dismiss="modal">Close</button>
+          <button type="button" class="button delete-comment" data-dismiss="modal" onclick="sendDeleteCommentRequest(event)">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="d-flex">
   <div class="d-flex align-items-center flex-column p-1">
       <button class="button-clear p-0 m-0 mr-2" type="button">
@@ -804,6 +824,25 @@ function createComment(comment) {
       </p>
   <p class="card-text py-2">${comment.full_text}</p>
   </div>
+</div>
+<div class="ml-5 d-flex align-items-end flex-column">
+    <div class="dropdown">
+        <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+            <i class="material-symbols-outlined">more_vert</i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                <data class="comment_id" hidden>${comment.comment_id}</data>
+                <button class="dropdown-item edit_comment" type="button">
+                    <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                    Edit
+                </button>
+            <input type="hidden" name="comment_id" value="${comment.comment_id}">
+            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#commentModal_${comment.comment_id}">
+                <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                Delete
+            </button>
+        </div>
+    </div>
 </div>
   `;
   return new_comment;
@@ -925,5 +964,23 @@ function cancelCreateComment(){
     `
 }
 
+/*********** delete an comment ***********/
+
+function sendDeleteCommentRequest(event) {
+  let comment_id = event.target.parentElement.children[0].value;
+  console.log(comment_id)
+
+  sendAjaxRequest('delete', '/api/comment/delete/' + comment_id, {}, commentDeletedHandler);
+  event.preventDefault();
+}
+
+function commentDeletedHandler() {
+  console.log("comment_handler")
+  
+  let deletedComment = JSON.parse(this.responseText);
+
+  let deletedCommentElement = document.getElementById("comment_" + deletedComment.comment_id)
+  deletedCommentElement.remove();
+}
 
 addEventListeners();

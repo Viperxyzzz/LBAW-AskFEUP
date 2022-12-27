@@ -18,4 +18,15 @@ class CommentPolicy
       return Auth::check();
     }
 
+    public function edit(User $user, Comment $comment)
+    {
+      // Only an comment's author or admin can edit it
+      return $user->user_id == $comment->user_id || $user->is_admin;
+    }
+
+    public function delete(User $user, Comment $comment)
+    {
+      // Only a comment's author or admin can delete it
+      return $user->user_id == $comment->author_id || $user->is_admin;
+    }
 }
