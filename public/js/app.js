@@ -967,7 +967,6 @@ function cancelCreateComment(){
 /*********** delete an comment ***********/
 
 function sendDeleteCommentRequest(event) {
-  console.log(event.target)
   let comment_id = event.target.parentElement.children[0].value;
   console.log(comment_id)
 
