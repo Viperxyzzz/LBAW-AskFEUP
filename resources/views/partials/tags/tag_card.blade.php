@@ -1,4 +1,4 @@
-<li class="card m-3" style="width: 250px;">
+<li id='tag-{{ $tag->tag_id }}' class="card m-3" style="width: 250px;">
     <div class="card-header d-flex align-items-start justify-content-between">
         <p class="badge p-3 m-1 mt-2">{{ $tag->tag_name }}</p>
         <div class="d-flex justify-content-end">
@@ -23,7 +23,7 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                     <input type="hidden" name="question_id" value="{{$tag->tag_id}}">
-                    <button class="dropdown-item edit-tag" type="button" data-toggle="modal" data-target="#edit-tag-modal-{{ $tag->tag_id }}">
+                    <button class="dropdown-item" type="button" data-toggle="modal" data-target="#edit-tag-modal-{{ $tag->tag_id }}">
                         <i width="16" height="16" class="material-symbols-outlined ">edit</i>
                         Edit
                     </button>
@@ -56,12 +56,10 @@
     </div>
     <div class="modal-footer border-0">
         <button type="button" class="button-outline" data-dismiss="modal">Close</button>
-        <form method="GET" class="m-0" action="{{ url("api/tag/delete/{$tag->tag_id}") }}">
-            @csrf
-            <button class="button" type="submit">
-                Confirm
-            </button>
-        </form>
+        <input type="hidden" value="{{ $tag->tag_id }}">
+        <button class="button delete-tag" data-dismiss="modal" type="submit">
+            Confirm
+        </button>
     </div>
     </div>
 </div>
@@ -79,35 +77,31 @@
             <i class="material-symbols-outlined">close</i>
         </button>
       </div>
-
-      <form method="POST" class="m-0" action="{{ url("api/tag/edit/{$tag->tag_id}") }}">
-        @method('post')
-        @csrf
-        <div class="modal-body">
-            <h5>Name</h5>
-            <input type="text" name="name" value={{ $tag->tag_name }} required>
-            <h5>Description</h5>
-            <input type="text" name="description" value="{{ $tag->tag_description }}" required>
-            <label class="title-blue" for="topics">Topics</label>
-            <select class="form-control" id="topics" name="topic" size="6">
-                @foreach ($topics as $topic)
-                    <option  
-                        value="{{ $topic->topic_id }}" 
-                        @if(($tag->topic_id ?? -1) === $topic->topic_id)
-                            selected 
-                        @endif
-                        >
-                    {{ $topic->topic_name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="modal-footer border-0">
-            <button type="button" class="button-outline" data-dismiss="modal">Close</button>
-            <button class="button" type="submit">
-                Confirm
-            </button>
-        </form> 
-      </div>
+    <div class="modal-body">
+        <input type="hidden" name="id" value={{ $tag->tag_id }} required>
+        <h5>Name</h5>
+        <input type="text" name="name" value={{ $tag->tag_name }} required>
+        <h5>Description</h5>
+        <input type="text" name="description" value="{{ $tag->tag_description }}" required>
+        <label class="title-blue" for="topics">Topics</label>
+        <select class="form-control" id="topics" name="topic" size="6">
+            @foreach ($topics as $topic)
+                <option  
+                    value="{{ $topic->topic_id }}" 
+                    @if(($tag->topic_id ?? -1) === $topic->topic_id)
+                        selected 
+                    @endif
+                    >
+                {{ $topic->topic_name }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="modal-footer border-0">
+        <button type="button" class="button-outline" data-dismiss="modal">Close</button>
+        <button class="button edit-tag" data-dismiss="modal" type="button">
+            Confirm
+        </button>
+    </div>
   </div>
 </div>
 @endcan

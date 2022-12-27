@@ -137,7 +137,7 @@ class TagController extends Controller
 
         $tag->save();
 
-        return redirect('/tags');
+        return $tag;
     }
 
     /**
@@ -152,6 +152,6 @@ class TagController extends Controller
       $this->authorize('manage', Tag::class);
       $tag = Tag::find($id);
       $tag->delete();
-      return redirect('/tags');
+      return $tag;
     }
 }

@@ -38,7 +38,7 @@ function addEventListeners() {
   }
 
   let commentQuestionFormCreator = document.querySelectorAll('.add-comment-question-form-button');
-  if (commentQuestionFormCreator != null)
+  if (commentQuestionFormCreator.length > 0)
       commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
 
   let enterInputEditUserFullName = document.querySelector('#edit-full-name');
@@ -79,6 +79,20 @@ function addEventListeners() {
   if (tagsFilter != null) {
     tagsFilter.forEach(
       check => check.addEventListener('input', sendSearchTagsRequest)
+    );
+  }
+
+  let editTag = document.querySelectorAll('.edit-tag');
+  if (editTag != null) {
+    editTag.forEach(
+      tag => tag.addEventListener('click', sendEditTagRequest)
+    );
+  }
+
+  let removeTag = document.querySelectorAll('.delete-tag');
+  if (removeTag != null) {
+    removeTag.forEach(
+      rTag => rTag.addEventListener('click', sendRemoveTagsRequest)
     );
   }
 
@@ -392,6 +406,51 @@ function tagsSearchHandler() {
   parent.appendChild(new_element);
 }
 
+/*********** edit tags ***********/
+
+function sendEditTagRequest(event) {
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let id = body.querySelector('input[name=id]').value
+  let name = body.querySelector('input[name=name]').value
+  let description = body.querySelector('input[name=description]').value
+  let topic = body.querySelector('#topics > option:checked').value
+  let data = {name : name, description : description, topic : topic}
+
+  if (id != null)
+    sendAjaxRequest('put', `/api/tag/edit/${id}`, data, tagEditedHandler);
+
+  event.preventDefault()
+}
+
+function tagEditedHandler() {
+  //if (this.status != 201) window.location = '/';
+  let tag = JSON.parse(this.responseText);
+
+  let tag_element = document.getElementById(`tag-${tag.tag_id}`)
+  tag_element.querySelector('.card-body > p').innerHTML = tag.tag_description
+  tag_element.querySelector('.card-header > p').innerHTML = tag.tag_name
+}
+
+/*********** remove tags ***********/
+
+function sendRemoveTagsRequest(event) {
+  let id = event.target.parentElement.children[1].value
+
+  if (id != null)
+    sendAjaxRequest('delete', `/api/tag/delete/${id}`, {}, tagDeletedHandler);
+
+  event.preventDefault();
+}
+
+function tagDeletedHandler() {
+  //if (this.status != 201) window.location = '/';
+  let tag = JSON.parse(this.responseText);
+
+  let tag_element = document.getElementById(`tag-${tag.tag_id}`)
+  tag_element.remove()
+  document.querySelector('.modal-backdrop').remove()
+}
+
 function createTags(response) {
   let new_tags = document.createElement('ul');
   new_tags.className = 'd-flex'
@@ -411,6 +470,7 @@ function createTag(tag, topics) {
   new_tag.className = 'card'
   new_tag.classList.add('m-3')
   new_tag.style = "width: 250px"
+  new_tag.id = `tag-${tag.tag_id}`
   let html = `
   <div class="card-header d-flex align-items-start justify-content-between">
       <p class="badge p-3 m-1 mt-2">${tag.tag_name}</p>
@@ -487,12 +547,11 @@ function createTagModals(tag, topics) {
         </div>
         <div class="modal-footer border-0">
             <button type="button" class="button-outline" data-dismiss="modal">Close</button>
-            <form method="GET" class="m-0" action="api/tag/delete/${tag.tag_id}">
-                <button class="button" type="submit">
-                    Confirm
-                </button>
-            </form>
-        </div>
+            <input type="hidden" value="${tag.tag_id}">
+            <button class="button delete-tag" data-dismiss="modal" type="button" onclick="sendRemoveTagsRequest(event)">
+                Confirm
+            </button>
+          </div>
         </div>
     </div>
     </div>
@@ -507,11 +566,8 @@ function createTagModals(tag, topics) {
                 <i class="material-symbols-outlined">close</i>
             </button>
           </div>
-
-          <form method="POST" class="m-0" action="api/tag/edit/${tag.tag_id}">
-            <input type="hidden" name="_method" value="post">
-            <input type="hidden" name="_token" value="${csrf}">
             <div class="modal-body">
+                <input type="hidden" name="id" value=${tag.tag_id} required>
                 <h5>Name</h5>
                 <input type="text" name="name" value=${tag.tag_name} required>
                 <h5>Description</h5>
@@ -533,7 +589,7 @@ function createTagModals(tag, topics) {
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="button-outline" data-dismiss="modal">Close</button>
-                <button class="button" type="submit">
+                <button class="button" data-dismiss="modal" type="submit" onclick="sendEditTagRequest(event)">
                     Confirm
                 </button>
             </form> 
