@@ -96,7 +96,7 @@ CREATE TABLE comment(
 DROP TABLE IF EXISTS user_tag CASCADE;
 CREATE table user_tag(
         user_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE,
-        tag_id INTEGER REFERENCES tag (tag_id) ON UPDATE CASCADE,
+        tag_id INTEGER REFERENCES tag (tag_id) ON UPDATE CASCADE ON DELETE CASCADE,
         PRIMARY KEY (user_id, tag_id)
 );
 

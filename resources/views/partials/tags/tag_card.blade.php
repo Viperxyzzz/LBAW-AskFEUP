@@ -16,6 +16,7 @@
             </button>
             @endif
 
+            @can('manage', App\Tag::class)
             <div class="dropdown">
                 <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
                     <i class="material-symbols-outlined">more_vert</i>
@@ -32,6 +33,7 @@
                     </button>
                 </div>
             </div>
+            @endcan
         </div>
     </div>
     <div class="card-body">
@@ -89,10 +91,10 @@
             <label class="title-blue" for="topics">Topics</label>
             <select class="form-control" id="topics" name="topic" size="6">
                 @foreach ($topics as $topic)
-                    <option 
-                        value="{{ $topic->topic_id }}"
-                        @if($tag->topic()->first()->topic_id ?? 0 === $topic->topic_id)
-                            selected
+                    <option  
+                        value="{{ $topic->topic_id }}" 
+                        @if(($tag->topic_id ?? -1) === $topic->topic_id)
+                            selected 
                         @endif
                         >
                     {{ $topic->topic_name }}</option>

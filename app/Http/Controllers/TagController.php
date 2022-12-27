@@ -31,9 +31,10 @@ class TagController extends Controller
         if (Auth::check()) {
             foreach($tags as $tag) {
                 $tag['following'] = Auth::user()->follows_tag($tag->tag_id);
+                $tag['manage'] = Auth::user()->can('manage', Tag::class);
             }
         }
-        return $tags;
+        return ['tags' => $tags, 'topics' => Topic::all()];
     }
 
     public function follow(Request $request, $tag_id) {
