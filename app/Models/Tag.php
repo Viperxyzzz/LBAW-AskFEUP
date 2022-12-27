@@ -35,4 +35,11 @@ class Tag extends Model
       return Tag::where('tag_name', 'like', "%$query%")->whereIn('topic_id',$topics)->get();
     }
 
+    /**
+     * Get the topic the tag is currently associated with.
+     */
+    public function topic() {
+      return $this->hasOne(Topic::class, 'topic_id', 'topic_id');
+    }
+
 }

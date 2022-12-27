@@ -11,6 +11,7 @@ use App\Models\UserTag;
 
 class TagController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +19,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::all();
+        $tags = Tag::orderBy('tag_id')->get();
         $topics = Topic::all();
         return view('pages.tags', ['tags' => $tags, 'topics' => $topics]);
     }
@@ -50,21 +51,6 @@ class TagController extends Controller
         return ['tag_id' => $tag_id];
     }
 
-    /**
-     * Get a validator for an incoming create tag request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'tag_name' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-            'topic' => 'required|number'
-        ]);
-    }
-
 
     /**
      * Create a new tag.
@@ -75,6 +61,13 @@ class TagController extends Controller
     {
         if(!Auth::check()) return redirect('/login');
         $this->authorize('create', Tag::class);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'topic' => 'int'
+        ]);
+
         $tag = new Tag;
         $tag->tag_name = $request->name;
         $tag->tag_description = $request->description;
@@ -127,7 +120,23 @@ class TagController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(!Auth::check()) return redirect('/login');
+        $this->authorize('manage', Tag::class);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'topic' => 'int'
+        ]);
+        
+        $tag = Tag::find($id);
+        $tag->tag_name = $request->name;
+        $tag->tag_description = $request->description;
+        $tag->topic_id = $request->topic;
+
+        $tag->save();
+
+        return redirect('/tags');
     }
 
     /**
