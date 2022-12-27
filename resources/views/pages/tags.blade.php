@@ -30,10 +30,6 @@
             <i class="material-symbols-outlined">close</i>
         </button>
       </div>
-
-      <form method="POST" class="m-0" action="{{ route('tag_create_api') }}">
-        @method('post')
-        @csrf
         <div class="modal-body">
             <h5>Name</h5>
             <input type="text" name="name" required autofocus>
@@ -48,11 +44,10 @@
         </div>
         <div class="modal-footer border-0">
             <button type="button" class="button-outline" data-dismiss="modal">Close</button>
-            <button class="button" type="submit">
+            <button class="button add-tag" data-dismiss="modal" type="submit">
                 Confirm
             </button>
-        </form> 
-      </div>
+        </div>
   </div>
 </div>
 @endcan

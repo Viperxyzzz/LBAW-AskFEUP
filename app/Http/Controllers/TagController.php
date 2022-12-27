@@ -54,17 +54,18 @@ class TagController extends Controller
 
 
     /**
-     * Create a new tag.
+     * Store a newly created tag in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response Tag json object.
      */
-    public function create(Request $request)
+    public function store(Request $request)
     {
         if(!Auth::check()) return redirect('/login');
         $this->authorize('create', Tag::class);
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:25',
             'description' => 'required|string|max:255',
             'topic' => 'int'
         ]);
@@ -76,18 +77,9 @@ class TagController extends Controller
 
         $tag->save();
 
-        return redirect('/tags');
-    }
+        $tag['manage'] = Auth::user()->can('manage', Tag::class);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return ['tag' => $tag, 'topics' => Topic::all()];
     }
 
     /**
@@ -125,7 +117,7 @@ class TagController extends Controller
         $this->authorize('manage', Tag::class);
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:25',
             'description' => 'required|string|max:255',
             'topic' => 'int'
         ]);

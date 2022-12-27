@@ -82,6 +82,11 @@ function addEventListeners() {
     );
   }
 
+  let createTag = document.querySelector('.add-tag');
+  if (createTag != null) {
+    createTag.addEventListener('click', sendCreateTagRequest)
+  }
+
   let editTag = document.querySelectorAll('.edit-tag');
   if (editTag != null) {
     editTag.forEach(
@@ -404,6 +409,30 @@ function tagsSearchHandler() {
 
   old_element.remove()
   parent.appendChild(new_element);
+}
+
+/*********** create tags ***********/
+
+function sendCreateTagRequest(event) {
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let name = body.querySelector('input[name=name]').value
+  let description = body.querySelector('input[name=description]').value
+  let topic = body.querySelector('#topics > option:checked').value
+  let data = {name : name, description : description, topic : topic}
+
+  if (name != null)
+    sendAjaxRequest('post', `/api/tag/create`, data, tagCreatedHandler);
+
+  event.preventDefault()
+}
+
+function tagCreatedHandler() {
+  //if (this.status != 201) window.location = '/';
+  let response = JSON.parse(this.responseText);
+
+  let tag_element = createTag(response.tag, response.topics)
+
+  document.querySelector('#tags-list').prepend(tag_element)
 }
 
 /*********** edit tags ***********/
