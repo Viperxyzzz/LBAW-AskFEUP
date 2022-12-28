@@ -36,4 +36,19 @@ class BlockController extends Controller
 
         return $block;
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        if(!Auth::check()) return redirect('/login');
+        $this->authorize('create', Block::class);
+        $block = Block::where('user_id', $id)->first();
+        $block->delete();
+        return $block;
+    }
 }

@@ -151,6 +151,10 @@ input[type=radio]:checked + label {
     display: block;
 }
 
+.tab-closed {
+    display: none;
+}
+
 input[type="checkbox"] {
     accent-color: var(--accent-color);
 }

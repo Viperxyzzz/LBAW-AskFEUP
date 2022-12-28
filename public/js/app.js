@@ -143,6 +143,13 @@ function addEventListeners() {
       );
   }
 
+  let removeBlock = document.querySelectorAll('.unblock-user');
+  if (removeBlock != null) {
+    removeBlock.forEach(
+      btn => btn.addEventListener('click', sendRemoveBlockRequest)
+      );
+  }
+
   let orderQuestionsRadio = document.querySelectorAll('input[name=order-questions]');
   if (orderQuestionsRadio != null) {
     orderQuestionsRadio.forEach(orderQuestionsButton => {
@@ -698,7 +705,6 @@ function reportDeletedHandler() {
   deletedReportElement.remove();
 }
 
-
 /*********** create block ***********/
 
 function sendCreateBlockRequest(event) {
@@ -719,7 +725,7 @@ function blockCreatedHandler() {
 
   warning = document.createElement('a');
   warning.href = '/dashboard'
-  warning.classList.add('d-flex', 'ml-5', 'p-2', 'border', 'border-danger', 'rounded', 'align-items-baseline')
+  warning.classList.add('warning-blocked', 'd-flex', 'ml-5', 'p-2', 'border', 'border-danger', 'rounded', 'align-items-baseline')
   warning.innerHTML = 
   `<h4 class="m-0 text-danger">
         <i class="p-0 material-symbols-outlined">warning</i>
@@ -728,7 +734,32 @@ function blockCreatedHandler() {
     `
   info.prepend(warning)
 
-  document.querySelector('.block-user').remove()
+  document.querySelector('.block-user').classList.toggle('d-flex')
+  document.querySelector('.block-user').classList.toggle('tab-closed')
+  document.querySelector('.unblock-user').classList.toggle('d-flex')
+  document.querySelector('.unblock-user').classList.toggle('tab-closed')
+}
+
+/*********** remove block ***********/
+
+function sendRemoveBlockRequest(event) {
+  let user_id = event.target.querySelector('input[name=user_id]').value
+
+  if (user_id != null)
+    sendAjaxRequest('delete', `/api/blocks/delete/${user_id}`, {}, blockRemovedHandler);
+
+  event.preventDefault()
+}
+
+function blockRemovedHandler() {
+  if (this.status != 200) return;
+
+  document.querySelector('.warning-blocked').remove()
+
+  document.querySelector('.block-user').classList.toggle('d-flex')
+  document.querySelector('.block-user').classList.toggle('tab-closed')
+  document.querySelector('.unblock-user').classList.toggle('d-flex')
+  document.querySelector('.unblock-user').classList.toggle('tab-closed')
 }
 
 /*********** filter questions ***********/

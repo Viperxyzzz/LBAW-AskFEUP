@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between w-100">
         <div class='profile-info'>
             @if ($user->is_blocked())
-            <a href={{ url('dashboard') }} class='d-flex ml-5 p-2 border border-danger rounded align-items-baseline'>
+            <a href={{ url('dashboard') }} class='warning-blocked d-flex ml-5 p-2 border border-danger rounded align-items-baseline'>
                 <h4 class="m-0 text-danger">
                     <i class="p-0 material-symbols-outlined">warning</i>
                     This user is blocked!
@@ -17,15 +17,20 @@
         </div>
         <div>
             @can('create', App\Block::class)
-                @if ($user->is_blocked())
-                @else
-                    <button class="block-user button d-flex justify-content-center align-items-center" type="button" 
-                        data-toggle="modal" data-target="#add-block-modal" style="width: 14rem">
-                        <i class="material-symbols-outlined mr-1">block</i>
-                        Block user
-                    </button> 
-                    
-                @endif
+                <button class="unblock-user button justify-content-center align-items-center
+                 {{ ($user->is_blocked()) ? ' d-flex ' : 'tab-closed' }}" type="button"
+                    style="width: 14rem">
+                    <input type="hidden" name="user_id" value="{{ $user->user_id }}">
+                    <i class="material-symbols-outlined mr-1">emergency_home</i>
+                    Unblock user
+                </button> 
+                <button class="block-user button justify-content-center align-items-center
+                {{ ($user->is_blocked()) ? 'tab-closed' : ' d-flex ' }}" type="button" 
+                    data-toggle="modal" data-target="#add-block-modal"
+                    style="width: 14rem">
+                    <i class="material-symbols-outlined mr-1">block</i>
+                    Block user
+                </button> 
             @endcan
             @can('edit', $user)
                 <a href="{{ url('/settings', ['id' => $user->user_id]) }}">

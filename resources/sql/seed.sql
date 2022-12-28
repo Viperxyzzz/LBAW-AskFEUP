@@ -96,7 +96,7 @@ CREATE TABLE comment(
 DROP TABLE IF EXISTS blocks CASCADE;
 create table blocks(
     block_id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    user_id INTEGER UNIQUE NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
     reason TEXT NOT NULL,
     date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
 );
@@ -754,8 +754,8 @@ VALUES
 
 INSERT INTO blocks(user_id, reason, date)
 VALUES
-  (10,'Hate speech','2022-03-11 04:16:56'),
-  (11,'Too much activity','2021-03-11 04:16:57'),
+  (10,'Hate speech','2020-04-11 04:16:56'),
+  (11,'Too much activity','2021-08-27 04:16:57'),
   (12,'User repeatedly asked same questions in order to gain votes','2022-03-12 04:16:56');
 
 insert into user_tag (user_id, tag_id) values (1, 1);
