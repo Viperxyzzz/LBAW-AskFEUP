@@ -1049,7 +1049,7 @@ function commentUpdater() {
   let comment_id = document.querySelector('#comment_id').value;
   console.log(new_text)
   console.log(comment_id)
-  sendAjaxRequest('post', '/api/comment/update/' + comment_id, { full_text: new_text }, sendCreateCommentUpdateRequest);
+  sendAjaxRequest('put', '/api/comment/update/' + comment_id, { full_text: new_text }, sendCreateCommentUpdateRequest);
 }
 
 
