@@ -1,6 +1,6 @@
 <div class="d-flex border p-5 col-md-12">
     <img src="{{asset('storage/'.($user->picture_path).'.jpeg')}}" alt="avatar"
-              class="rounded-circle">
+              class="rounded-circle" width="225" height="225">
     <div class="d-flex justify-content-between w-100">
         <div>
             <h1 class="m-0 mt-2 ml-5">{{$user->name}}</h1>
