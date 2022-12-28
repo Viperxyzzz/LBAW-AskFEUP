@@ -25,4 +25,13 @@ class Block extends Model
      * @var string
      */
     protected $primaryKey = 'block_id';
+
+    /**
+     * Get the blocked user.
+     * 
+     * @return User User model of the blocked user.
+     */
+    public function user() {
+      return $this->hasOne(User::class, 'user_id', 'user_id')->first();
+    }
 }

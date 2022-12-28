@@ -167,6 +167,16 @@ function addEventListeners() {
     }
   )
 
+  let dashboardTabs = document.querySelectorAll('.dashboard-tab-button')
+  dashboardTabs.forEach(
+    button => {
+      button.addEventListener('click', function(){
+        toggleDashboardTab(button.id + '-tab')
+        button.classList.add('active');
+      })
+    }
+  )
+
   let followTag = document.querySelectorAll('.follow-tag')
   followTag.forEach(
     button => {
@@ -194,6 +204,20 @@ function toggleProfileTab(tab) {
   let open = document.getElementById(tab);
   if (open != null)
     open.classList.add('profile-tab-open');
+}
+
+function closeDashboardTabs() {
+  let buttons = document.querySelectorAll('.dashboard-tab-button');
+  buttons.forEach(button => button.classList.remove('active'))
+  let tabs = document.querySelectorAll('.dashboard-tab');
+  tabs.forEach(tab => {tab.classList.remove('tab-open')});
+}
+
+function toggleDashboardTab(tab) {
+  closeDashboardTabs();
+  let open = document.getElementById(tab);
+  if (open != null)
+    open.classList.add('tab-open');
 }
 
 function encodeForAjax(data) {
@@ -689,7 +713,7 @@ function sendCreateBlockRequest(event) {
 }
 
 function blockCreatedHandler() {
-  if (this.status != 201) window.location = '/';
+  if (this.status != 201) return;
 
   info = document.querySelector('.profile-info')
 
@@ -703,6 +727,8 @@ function blockCreatedHandler() {
     </h4>
     `
   info.prepend(warning)
+
+  document.querySelector('.block-user').remove()
 }
 
 /*********** filter questions ***********/

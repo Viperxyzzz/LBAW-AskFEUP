@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\Report;
+use App\Models\Block;
 
 class ModController extends Controller
 {
@@ -20,7 +21,8 @@ class ModController extends Controller
         if (!Auth::check()) return redirect('/login');
         if (!Auth::user()->is_mod()) return redirect('/');
         $reports = Report::all();
-        return view('pages.dashboard', ['reports' => $reports]);
+        $blocks = Block::all();
+        return view('pages.dashboard', ['reports' => $reports, 'blocks' => $blocks]);
     }
 
     /**

@@ -17,12 +17,15 @@
         </div>
         <div>
             @can('create', App\Block::class)
-                <button class="button d-flex justify-content-center align-items-center" type="button" 
-                    data-toggle="modal" data-target="#add-block-modal" style="width: 14rem">
-                    <i class="material-symbols-outlined mr-1">block</i>
-                    Block user
-                </button> 
-
+                @if ($user->is_blocked())
+                @else
+                    <button class="block-user button d-flex justify-content-center align-items-center" type="button" 
+                        data-toggle="modal" data-target="#add-block-modal" style="width: 14rem">
+                        <i class="material-symbols-outlined mr-1">block</i>
+                        Block user
+                    </button> 
+                    
+                @endif
             @endcan
             @can('edit', $user)
                 <a href="{{ url('/settings', ['id' => $user->user_id]) }}">
