@@ -16,8 +16,6 @@
                 <i width="16" height="16" class="material-symbols-outlined ">delete</i>
                 Delete
             </button>
-
-
         </div>
     </div>
 @endcan

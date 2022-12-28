@@ -7,6 +7,11 @@
 
     <div class="col-lg-7 mt-5">
         @include('partials.question_page.question_card', ['question' => $question])
+        <div class="question-comments">
+            @foreach($question->question_comments()->sortByDesc('num_votes')->all() as $comment)
+                @include('partials.question_page.comment_card', ['comment' => $comment])
+            @endforeach
+        </div>
         @include('partials.question_page.add_answer_card', ['question_id' => $question->question_id])
         <div id="answers">
             @foreach ($answers->orderBy('num_votes', 'DESC')->get() as $answer)

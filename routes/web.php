@@ -40,6 +40,10 @@ Route::get('api/tags/', 'TagController@search');
 Route::post('api/tag/follow/{id}', 'TagController@follow');
 Route::post('api/tag/unFollow/{id}', 'TagController@unFollow');
 
+// Admin
+Route::get('dashboard', 'ModController@index')->name('dashboard');
+Route::delete('api/report/delete/{id}', 'ModController@delete_report');
+
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
 Route::post('api/settings/{id}', 'ProfileController@updateUser')->name('update_user_api');
@@ -58,3 +62,7 @@ Route::post('login', 'Auth\LoginController@login');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
+
+// Comments
+Route::post('api/comment/{id}', 'CommentController@create')->name('create_comment');
+Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comment_delete_api');
