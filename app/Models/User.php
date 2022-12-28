@@ -111,6 +111,25 @@ class User extends Authenticatable
         );
     }
 
+    public function tags_following()
+    {
+        return $this->hasManyThrough(
+          Tag::class,
+          UserTag::class,
+          'user_id',
+          'tag_id',
+          'user_id',
+          'tag_id'
+        );
+    }
+
+    public function follows_tag($tag_id) {
+      return UserTag::where([
+        ['user_id', '=', $this->user_id],
+        ['tag_id', '=', $tag_id]
+      ])->exists();
+    }
+
     public function answers()
     {
         return $this->hasMany(Answer::class, 'user_id', 'user_id');
@@ -119,5 +138,23 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class, 'user_id', 'user_id');
+    }
+
+    /**
+     * Check if a user is a moderator or above (admin). 
+     * 
+     * @return True if the user is either moderator or admin, false otherwise.
+     */
+    public function is_mod() {
+      return ($this->is_admin || $this->is_moderator);
+    }
+
+    /**
+     * Check if a user is an admin. 
+     * 
+     * @return True if the user is an admin, false otherwise.
+     */
+    public function is_admin() {
+      return ($this->is_admin);
     }
 }
