@@ -815,7 +815,7 @@ function createComment(comment) {
       </div>
     </div>
   </div>
-  <div class="d-flex">
+  <div class="d-flex flex-fill">
   <div class="d-flex align-items-center flex-column p-1">
       <button class="button-clear p-0 m-0 mr-2" type="button">
           <i class="material-symbols-outlined">keyboard_arrow_up</i>
@@ -825,7 +825,7 @@ function createComment(comment) {
           <i class="material-symbols-outlined ">keyboard_arrow_down</i>
       </button>
   </div>
-  <div class="pt-3">
+  <div class="pt-3 flex-fill">
       <p class="m-0">
           <img src="/storage/${comment.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
           <a href="url("/users/${comment.user_id}")">${comment.author.name}</a>
@@ -841,8 +841,8 @@ function createComment(comment) {
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                 <data class="comment_id" hidden>${comment.comment_id}</data>
-                <button class="dropdown-item edit_comment" type="button">
-                    <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                <button class="dropdown-item edit_comment" type="button" onclick="editComment(event)">
+                    <i width="16" height="16" class="material-symbols-outlined">edit</i>
                     Edit
                 </button>
             <input type="hidden" name="comment_id" value="${comment.comment_id}">
