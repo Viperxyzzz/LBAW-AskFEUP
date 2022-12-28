@@ -185,13 +185,10 @@ function encodeForAjax(data) {
 
 function sendAjaxRequest(method, url, data, handler) {
   let request = new XMLHttpRequest();
-  console.log(request)
-  console.log(data)
   request.open(method, url, true);
   request.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
   request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   request.addEventListener('load', handler);
-  console.log(encodeForAjax(data));
   request.send(encodeForAjax(data));
 }
 
@@ -980,7 +977,6 @@ function cancelCreateComment(){
 
 function sendDeleteCommentRequest(event) {
   let comment_id = event.target.parentElement.children[0].value;
-  console.log(comment_id)
 
   sendAjaxRequest('delete', '/api/comment/delete/' + comment_id, {}, commentDeletedHandler);
   event.preventDefault();
@@ -1002,7 +998,6 @@ function editComment(event) {
 
   let text = comment.querySelector('.card-text').innerText;
   let text_card = comment.querySelector('.card-text');
-  console.log(text_card)
   text_card.insertAdjacentElement("afterend", createCommentForm(comment_id, text));
   text_card.innerHTML = '';
 }
@@ -1013,7 +1008,6 @@ function createCommentForm(comment_id, text) {
 
   // prevent duplicated edit form
   let previous_comment_form = document.querySelector(`#comment_form_${comment_id}`)
-  console.log(previous_comment_form)
   if(previous_comment_form!=null&&previous_comment_form.innerHTML!='') return previous_comment_form;
 
   comment_form.classList.add('comment-form')
@@ -1047,14 +1041,11 @@ function createCommentForm(comment_id, text) {
 function commentUpdater() {
   let new_text = document.querySelector('#full_text').value;
   let comment_id = document.querySelector('#comment_id').value;
-  console.log(new_text)
-  console.log(comment_id)
   sendAjaxRequest('put', '/api/comment/update/' + comment_id, { full_text: new_text }, sendCreateCommentUpdateRequest);
 }
 
 
 function sendCreateCommentUpdateRequest() {
-  console.log(JSON.parse(this.responseText))
   let comment = JSON.parse(this.responseText);
 
   let p = document.createElement('p');
@@ -1063,7 +1054,6 @@ function sendCreateCommentUpdateRequest() {
 
   let comment_element = document.querySelector('#comment_' + comment.comment_id);
   let comment_form = comment_element.querySelector('.comment-form');
-  console.log(comment_form)
   comment_form.parentElement.querySelector('.card-text').appendChild(p);
   comment_form.remove();
 
