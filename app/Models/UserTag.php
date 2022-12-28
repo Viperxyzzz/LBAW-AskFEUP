@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Tag extends Model
+class UserTag extends Model
 {
     use HasFactory;
 
@@ -18,21 +18,21 @@ class Tag extends Model
      *
      * @var string
      */
-    protected $table = 'tag';
+    protected $table = 'user_tag';
 
     /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = 'tag_id';
+    protected $primaryKey = 'user_id';
 
-    /**
-     * Perform an exact search match for tag names.
-     */
-    public static function search(string $query, array $topics) {
-      if (empty($topics)) return Tag::where('tag_name', 'like', "%$query%")->get();
-      return Tag::where('tag_name', 'like', "%$query%")->whereIn('topic_id',$topics)->get();
+    public static function follow($user_id, $tag_id) {
+        $follow = new UserTag;
+        $follow->user_id = $user_id;
+        $follow->tag_id = $tag_id;
+        $follow->save();
+        return $follow;
     }
 
 }

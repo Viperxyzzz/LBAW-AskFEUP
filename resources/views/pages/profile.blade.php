@@ -28,6 +28,9 @@
         <div class="profile-tab" id="user-answers-tab">
           @include('partials.profile.answers', ['answers' => $answers])
         </div>
+        <div class="profile-tab" id="user-tags-tab">
+          @include('partials.profile.tags', ['tags' => $tags])
+        </div>
       </div>
     </div>
   </div>

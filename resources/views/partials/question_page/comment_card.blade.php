@@ -1,20 +1,43 @@
-<div style="border: 1px rgba(0,0,0,.125); border-style: solid none none;">
-    <div class="card-body d-flex justify-content-between">
-        <div>
-            <p class="card-text">{{ $comment->full_text }}</p>
+<div id="comment_{{ $comment->comment_id }}" class="border-top d-flex justify-content-between">
+    @include('partials.question_page.delete_comment_modal', ['comment' => $comment])
+    <div class="d-flex">
+        <div class="d-flex align-items-center flex-column p-1">
+            <button class="button-clear p-0 m-0 mr-2" type="button">
+                <i class="material-symbols-outlined">keyboard_arrow_up</i>
+            </button>
+            <p class="m-0 pr-2 text-nowrap">{{ $comment->num_votes }}</p>
+            <button class="button-clear d-block p-0 m-0 mr-2" type="button">
+                <i class="material-symbols-outlined ">keyboard_arrow_down</i>
+            </button>
         </div>
-        <div class="ml-5" style="font-size: 1.3rem">
-            <aside class="question-stats">
-                <p class="m-0 text-nowrap">{{ $comment->num_votes }} votes</p>
-            </aside>
+        <div class="pt-3">
+            <p class="m-0">
+                <img src="{{asset('storage/'.($comment->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
+                <a href="{{url("/users/$comment->user_id")}}"> {{ $comment->author->name }}</a>
+                {{ \Carbon\Carbon::parse($comment->date)->format('d/m/Y')}}
+            </p>
+        <p class="card-text py-2">{{ $comment->full_text }}</p>
         </div>
     </div>
-    <div class="card-footer d-flex justify-content-between" style="background-color: white; padding: 0.1">
-        <p class="m-0" style="font-size: 1.2rem">{{ \Carbon\Carbon::parse($comment->date)->format('d/m/Y')}}</p>
-        <p class="m-0" style="font-size: 1.2rem; margin: 0">
-            <em>by</em>
-            <a href="{{ url("/users/$comment->user_id") }}"> {{ $comment->author->name }}</a>
-        </p>
-    </div>
-
+        <div class="ml-5 d-flex align-items-end flex-column">
+            @can('edit', $comment)
+                <div class="dropdown">
+                    <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                        <i class="material-symbols-outlined">more_vert</i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                            <data class="comment_id" hidden>{{ $comment->comment_id }}</data>
+                            <button class="dropdown-item edit_comment" type="button">
+                                <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                                Edit
+                            </button>
+                        <input type="hidden" name="comment_id" value="{{$comment->comment_id}}">
+                        <button class="dropdown-item" type="button" data-toggle="modal" data-target="#commentModal_{{$comment->comment_id}}">
+                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            @endcan
+        </div>
 </div>

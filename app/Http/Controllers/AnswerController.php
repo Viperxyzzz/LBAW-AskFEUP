@@ -30,7 +30,8 @@ class AnswerController extends Controller
       $answer->user_id = auth::id();
       $answer->save();
 
-      $answer['author'] = Auth::user()->name;
+      $answer['author']['name'] = Auth::user()->name;
+      $answer['author']['picture_path'] = Auth::user()->picture_path;
       $answer['date'] = date("d-m-Y");
       return json_encode($answer);
     }

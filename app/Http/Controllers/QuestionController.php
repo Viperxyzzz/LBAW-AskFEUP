@@ -25,7 +25,8 @@ class QuestionController extends Controller
       $question = Question::find($question_id);
       $answers = $question->answers();
       $comments = $question->comments();
-      return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments]);
+      $question_comments = $question->question_comments();
+      return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments, 'question_comments' => $question_comments]);
     }
 
     public function create(Request $request)
@@ -75,17 +76,29 @@ class QuestionController extends Controller
       $question->was_edited = true;
 
       $question->save();
-      /*
+
+      // Delete all question tags
+      $question_tags = QuestionTag::where('question_id', $question->question_id)->get();
+      foreach($question_tags as $question_tag){
+        $question_tag->delete();
+      }
+
+      // Add new question tags
       $tags = $request->tags;
+
       if($tags === null)
         return redirect('/question/'.$question->question_id);
+
       for($i = 0; $i < count($tags); $i++){
         $question_tag = new QuestionTag;
         $question_tag->question_id = $question->question_id;
         $question_tag->tag_id = $tags[$i];
         $question_tag->save();
       }
-      */
+
+
+
+
       return redirect('/question/'.$question->question_id);
     }
 

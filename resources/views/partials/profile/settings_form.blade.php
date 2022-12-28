@@ -22,15 +22,15 @@
         @endif
         <div class="form-group">
             <label>Full Name</label>
-            <input type="text" name="name" value="{{$user->name}}">
+            <input type="text" id="edit-full-name" name="name" value="{{$user->name}}">
         </div>
         <div class="form-group">
             <label>Username</label>
-            <input type="text" name="username" value="{{$user->username}}">
+            <input type="text" id="edit-username" name="username" value="{{$user->username}}">
         </div>
         <div class="form-group">
             <label>Email</label>
-            <input type="email" name="email" value="{{$user->email}}">
+            <input type="email" id="edit-email" name="email" value="{{$user->email}}">
         </div>
 
         <div id="edit-pass-div"></div>

@@ -11,7 +11,6 @@
             @csrf
             @include('partials.create_question.question_form')
             @include('partials.create_question.question_tags')
-            
             <button class="my-5" type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
