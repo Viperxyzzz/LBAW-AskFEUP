@@ -776,15 +776,15 @@ function submitSettings(){
   document.getElementById("edit-user-form").submit();
 }
 
-/*********** create an edit answer card ***********/
+/*********** edit answer ***********/
 
 function editAnswer(event) {
+  console.log("edit answer")
   let answer_id = event.target.parentElement.children[0].innerText;
 
   let answer = document.querySelector('#answer_' + answer_id);
   let text = answer.querySelector('.card-text').innerText;
   let full_text = answer.querySelector('.answer-full-text');
-  console.log(full_text)
   full_text.insertAdjacentElement("afterend", createAnswerForm(answer_id, text));
   full_text.innerHTML = '';
 }
@@ -792,10 +792,13 @@ function editAnswer(event) {
 function createAnswerForm(answer_id, text) {
   let answer_form = document.createElement('div');
   let answer = document.getElementById(answer_id);
-  //answer_form.classList.add('mt-5')
   answer_form.classList.add('answer-form')
   answer_form.classList.add('w-100')
   answer_form.id = `answer_form_${answer_id}`
+
+  // prevent duplicated edit form
+  let previous_comment_form = document.querySelector(`#answer_form_${answer_id}`)
+  if(previous_comment_form!=null&&previous_comment_form.innerHTML!='') return previous_comment_form;
 
   answer_form.innerHTML =
     `
