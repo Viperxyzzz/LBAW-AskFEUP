@@ -136,6 +136,13 @@ function addEventListeners() {
       );
   }
 
+  let addBlock = document.querySelectorAll('.add-block');
+  if (addBlock != null) {
+    addBlock.forEach(
+      btn => btn.addEventListener('click', sendCreateBlockRequest)
+      );
+  }
+
   let orderQuestionsRadio = document.querySelectorAll('input[name=order-questions]');
   if (orderQuestionsRadio != null) {
     orderQuestionsRadio.forEach(orderQuestionsButton => {
@@ -665,6 +672,37 @@ function reportDeletedHandler() {
 
   let deletedReportElement = document.getElementById("report_" + deletedReport.report_id)
   deletedReportElement.remove();
+}
+
+
+/*********** create block ***********/
+
+function sendCreateBlockRequest(event) {
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let user_id = body.querySelector('input[name=user_id]').value
+  let reason = body.querySelector('input[name=reason]').value
+
+  if (user_id != null)
+    sendAjaxRequest('post', `/api/blocks/add/${user_id}`, {reason : reason}, blockCreatedHandler);
+
+  event.preventDefault()
+}
+
+function blockCreatedHandler() {
+  if (this.status != 201) window.location = '/';
+
+  info = document.querySelector('.profile-info')
+
+  warning = document.createElement('a');
+  warning.href = '/dashboard'
+  warning.classList.add('d-flex', 'ml-5', 'p-2', 'border', 'border-danger', 'rounded', 'align-items-baseline')
+  warning.innerHTML = 
+  `<h4 class="m-0 text-danger">
+        <i class="p-0 material-symbols-outlined">warning</i>
+        This user is blocked!
+    </h4>
+    `
+  info.prepend(warning)
 }
 
 /*********** filter questions ***********/

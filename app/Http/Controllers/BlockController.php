@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Block;
 
@@ -23,7 +24,6 @@ class BlockController extends Controller
         $this->authorize('create', Block::class);
 
         $request->validate([
-            'user_id' => 'required|int',
             'reason' => 'required|string|max:255'
         ]);
 

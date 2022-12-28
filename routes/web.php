@@ -21,7 +21,6 @@ Route::get('settings/{id}', 'ProfileController@settings');
 Route::get('users', 'UserController@home');
 Route::get('users/{id}', 'ProfileController@home')->name('users');
 Route::get('api/users/', 'UserController@search');
-Route::post('api/users/block/{id}', 'UserController@block');
 
 // Questions
 Route::get('question/create', 'QuestionController@create_view')->name('question_create');
@@ -47,6 +46,7 @@ Route::put('api/tag/edit/{id}', 'TagController@update')->name('tag_update_api');
 // Admin
 Route::get('dashboard', 'ModController@index')->name('dashboard');
 Route::delete('api/report/delete/{id}', 'ModController@delete_report');
+Route::post('api/blocks/add/{id}', 'BlockController@store');
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
