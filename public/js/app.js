@@ -998,8 +998,8 @@ function commentDeletedHandler() {
 
 function editComment(event) {
   let comment_id = event.target.parentElement.children[0].innerText;
-
   let comment = document.querySelector('#comment_' + comment_id);
+
   let text = comment.querySelector('.card-text').innerText;
   let text_card = comment.querySelector('.card-text');
   console.log(text_card)
@@ -1010,6 +1010,12 @@ function editComment(event) {
 function createCommentForm(comment_id, text) {
   let comment_form = document.createElement('div');
   let comment = document.getElementById(comment_id);
+
+  // prevent duplicated edit form
+  let previous_comment_form = document.querySelector(`#comment_form_${comment_id}`)
+  console.log(previous_comment_form)
+  if(previous_comment_form!=null&&previous_comment_form.innerHTML!='') return previous_comment_form;
+
   comment_form.classList.add('comment-form')
   comment_form.classList.add('py-2')
   comment_form.classList.add('w-100')
