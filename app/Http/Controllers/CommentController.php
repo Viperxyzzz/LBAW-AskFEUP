@@ -29,6 +29,7 @@ class CommentController extends Controller
       $comment->date = date('Y-m-d H:i:s');
       $comment->answer_id = $request->answer_id;
       $comment->user_id = auth::id();
+      $comment->was_edited = false;
       $comment->save();
 
       $comment['author']['name'] = Auth::user()->name;
@@ -58,7 +59,7 @@ class CommentController extends Controller
       $this->authorize('update', $comment);
 
       $comment->full_text = $request->full_text;
-
+      $comment->was_edited = true;
       $comment->date = date('Y-m-d H:i:s');
 
       $comment->save();
