@@ -10,6 +10,7 @@ use App\Models\Question;
 use App\Models\QuestionTag;
 use App\Models\Tag;
 use App\Models\Answer;
+use App\Models\QuestionVotes;
 
 class QuestionController extends Controller
 {
@@ -126,8 +127,21 @@ class QuestionController extends Controller
       $question = Question::find($request->question_id);
       error_log($request->vote);
       error_log($request->question_id);
-      // $this->authorize('vote', $question);
-      $question->num_votes += $request->vote;
+      $this->authorize('vote', $question);
+      //create a question vote
+      //verify if user already voted
+      $question_vote = QuestionVotes::where('question_id', $request->question_id)->where('user_id', Auth::user()->user_id)->first();
+      if($question_vote !== null){
+        $question_vote->value = $request->vote;
+        $question_vote->save();
+        $question->save();
+        return redirect('/question/'.$question->question_id);
+      }
+      $question_vote = new QuestionVotes;
+      $question_vote->question_id = $request->question_id;
+      $question_vote->user_id = Auth::user()->user_id;
+      $question_vote->value = $request->vote;
+      $question_vote->save();
       $question->save();
       return redirect('/question/'.$question->question_id);
     }

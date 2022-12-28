@@ -28,4 +28,10 @@ class QuestionPolicy
       // Only a question's author can delete it
       return $user->user_id == $question->author_id || $user->is_admin;
     }
+
+    public function vote(User $user, Question $question)
+    {
+      // Any user can vote on a question
+      return Auth::check();
+    }
 }
