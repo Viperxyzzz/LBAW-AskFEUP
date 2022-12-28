@@ -157,4 +157,13 @@ class User extends Authenticatable
     public function is_admin() {
       return ($this->is_admin);
     }
+
+    /**
+     * Check if a user is blocked.
+     * 
+     * @return True if the user is blocked, false otherwise.
+     */
+    public function is_blocked() {
+      return $this->hasOne(Block::class, 'user_id', 'user_id')->exists();
+    }
 }
