@@ -29,7 +29,7 @@ class SearchController extends Controller
         ->orWhereRaw("full_text @@ to_tsquery('english', ?)", [$search])
         ->orWhereRaw("title @@ to_tsquery('english', ?)", [$search])
         ->orWhereRaw("author_id IN (SELECT user_id FROM users WHERE name @@ to_tsquery('english', ?))", [$search])
-        ->orderBy($order, $direction)->get();
+        ->get();
       }
       else{
         $questions = Question::orderBy($order, $direction)->get();
