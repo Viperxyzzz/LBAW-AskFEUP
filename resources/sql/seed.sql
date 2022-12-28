@@ -93,6 +93,14 @@ CREATE TABLE comment(
    comment_id INTEGER REFERENCES comment (comment_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS blocks CASCADE;
+create table blocks(
+    block_id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    reason TEXT NOT NULL,
+    date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
+);
+
 DROP TABLE IF EXISTS user_tag CASCADE;
 CREATE table user_tag(
         user_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE,
@@ -738,11 +746,17 @@ INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id
 
 INSERT INTO report(reason,date,question_id,answer_id,comment_id)
 VALUES
-  ('Spam','Dec 30, 2021',1,NULL,NULL),
-  ('Hate speech','Mar 23, 2022',2,3,NULL),
-  ('Harassment','May 26, 2022',3,NULL,100),
-  ('blandit. Nam nulla magna, malesuada vel, convallis','Nov 16, 2021',4,NULL,NULL),
-  ('sit amet, consectetuer adipiscing elit. Etiam laoreet,','Dec 3, 2021',5,47,NULL);
+  ('Spam','2022-02-11 03:16:56',1,NULL,NULL),
+  ('Hate speech','2022-06-11 03:16:56',2,3,NULL),
+  ('Harassment','2020-01-24 03:16:56',3,NULL,100),
+  ('blandit. Nam nulla magna, malesuada vel, convallis','2021-03-21 03:16:56',4,NULL,NULL),
+  ('sit amet, consectetuer adipiscing elit. Etiam laoreet,','2022-07-22 03:16:56',5,47,NULL);
+
+INSERT INTO blocks(user_id, reason, date)
+VALUES
+  (10,'Hate speech','2022-03-11 04:16:56'),
+  (11,'Too much activity','2021-03-11 04:16:57'),
+  (12,'User repeatedly asked same questions in order to gain votes','2022-03-12 04:16:56');
 
 insert into user_tag (user_id, tag_id) values (1, 1);
 insert into user_tag (user_id, tag_id) values (1, 2);

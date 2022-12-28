@@ -21,6 +21,7 @@ Route::get('settings/{id}', 'ProfileController@settings');
 Route::get('users', 'UserController@home');
 Route::get('users/{id}', 'ProfileController@home')->name('users');
 Route::get('api/users/', 'UserController@search');
+Route::post('api/users/block/{id}', 'UserController@block');
 
 // Questions
 Route::get('question/create', 'QuestionController@create_view')->name('question_create');
