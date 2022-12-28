@@ -38,7 +38,7 @@ function addEventListeners() {
   }
 
   let commentQuestionFormCreator = document.querySelectorAll('.add-comment-question-form-button');
-  if (commentQuestionFormCreator != null)
+  if (commentQuestionFormCreator.length > 0)
       commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
 
   let enterInputEditUserFullName = document.querySelector('#edit-full-name');
@@ -79,6 +79,25 @@ function addEventListeners() {
   if (tagsFilter != null) {
     tagsFilter.forEach(
       check => check.addEventListener('input', sendSearchTagsRequest)
+    );
+  }
+
+  let createTag = document.querySelector('.add-tag');
+  if (createTag != null) {
+    createTag.addEventListener('click', sendCreateTagRequest)
+  }
+
+  let editTag = document.querySelectorAll('.edit-tag');
+  if (editTag != null) {
+    editTag.forEach(
+      tag => tag.addEventListener('click', sendEditTagRequest)
+    );
+  }
+
+  let removeTag = document.querySelectorAll('.delete-tag');
+  if (removeTag != null) {
+    removeTag.forEach(
+      rTag => rTag.addEventListener('click', sendRemoveTagsRequest)
     );
   }
 
@@ -378,11 +397,11 @@ function sendSearchTagsRequest(event) {
 
 function tagsSearchHandler() {
   //if (this.status != 201) window.location = '/';
-  let tags = JSON.parse(this.responseText);
+  let response = JSON.parse(this.responseText);
 
 
   // Create the new tags
-  let new_element = createTags(tags);
+  let new_element = createTags(response);
 
   // Insert the new tags
   let old_element = document.getElementById('tags-list');
@@ -392,49 +411,222 @@ function tagsSearchHandler() {
   parent.appendChild(new_element);
 }
 
-function createTags(tags) {
-  let new_tags = document.createElement('div');
+/*********** create tags ***********/
+
+function sendCreateTagRequest(event) {
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let name = body.querySelector('input[name=name]').value
+  let description = body.querySelector('input[name=description]').value
+  let topic = body.querySelector('#topics > option:checked').value
+  let data = {name : name, description : description, topic : topic}
+
+  if (name != null)
+    sendAjaxRequest('post', `/api/tag/create`, data, tagCreatedHandler);
+
+  event.preventDefault()
+}
+
+function tagCreatedHandler() {
+  //if (this.status != 201) window.location = '/';
+  let response = JSON.parse(this.responseText);
+
+  let tag_element = createTag(response.tag, response.topics)
+
+  document.querySelector('#tags-list').prepend(tag_element)
+}
+
+/*********** edit tags ***********/
+
+function sendEditTagRequest(event) {
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let id = body.querySelector('input[name=id]').value
+  let name = body.querySelector('input[name=name]').value
+  let description = body.querySelector('input[name=description]').value
+  let topic = body.querySelector('#topics > option:checked').value
+  let data = {name : name, description : description, topic : topic}
+
+  if (id != null)
+    sendAjaxRequest('put', `/api/tag/edit/${id}`, data, tagEditedHandler);
+
+  event.preventDefault()
+}
+
+function tagEditedHandler() {
+  //if (this.status != 201) window.location = '/';
+  let tag = JSON.parse(this.responseText);
+
+  let tag_element = document.getElementById(`tag-${tag.tag_id}`)
+  tag_element.querySelector('.card-body > p').innerHTML = tag.tag_description
+  tag_element.querySelector('.card-header > p').innerHTML = tag.tag_name
+}
+
+/*********** remove tags ***********/
+
+function sendRemoveTagsRequest(event) {
+  let id = event.target.parentElement.children[1].value
+
+  if (id != null)
+    sendAjaxRequest('delete', `/api/tag/delete/${id}`, {}, tagDeletedHandler);
+
+  event.preventDefault();
+}
+
+function tagDeletedHandler() {
+  //if (this.status != 201) window.location = '/';
+  let tag = JSON.parse(this.responseText);
+
+  let tag_element = document.getElementById(`tag-${tag.tag_id}`)
+  tag_element.remove()
+  document.querySelector('.modal-backdrop').remove()
+}
+
+function createTags(response) {
+  let new_tags = document.createElement('ul');
   new_tags.className = 'd-flex'
   new_tags.classList.add('flex-wrap')
   new_tags.id = "tags-list"
-  if (tags.length == 0) {
+  if (response.tags.length == 0) {
     new_tags.innerHTML = '<p>No results match the criteria.</p>'
   }
-  Object.values(tags).forEach(tag => {
-    new_tags.appendChild(createTag(tag))
+  Object.values(response.tags).forEach(tag => {
+    new_tags.appendChild(createTag(tag, response.topics))
   });
   return new_tags;
 }
 
-function createTag(tag) {
-  let new_tag = document.createElement('div');
+function createTag(tag, topics) {
+  let new_tag = document.createElement('li');
   new_tag.className = 'card'
   new_tag.classList.add('m-3')
   new_tag.style = "width: 250px"
+  new_tag.id = `tag-${tag.tag_id}`
   let html = `
-  <div class="card-header d-flex justify-content-between">
-      <p class="badge p-2 m-1">${tag.tag_name}</p>`
+  <div class="card-header d-flex align-items-start justify-content-between">
+      <p class="badge p-3 m-1 mt-2">${tag.tag_name}</p>
+      <div class="d-flex justify-content-end">`
 
   if (tag['following']) {
     html +=
-      `<a href="#" class="p-0">
-          <i class="p-0 material-symbols-outlined">done</i>
-          Following
-      </a>`
+      `<button class="unFollow-tag button-clear px-2 pr-3 pb-2 d-flex" id="unFollow-tag-${tag.tag_id}" onClick="sendUnFollowTagRequest(event)">
+          <input type="hidden" value="${tag.tag_id}">
+          <i class="p-0 pt-2 material-symbols-outlined">done</i>
+          <p class="pb-2">Following</p>
+      </button>`
   }
   else {
     html +=
-      `<a href="#" class="p-0">
-          <i class="p-0 material-symbols-outlined">add</i>
-          Follow
-      </a>`
+      `<button class="follow-tag button-clear px-2 pr-3 pb-2 d-flex" id="follow-tag-${tag.tag_id}" onClick="sendFollowTagRequest(event)">
+          <input type="hidden" value="${tag.tag_id}">
+          <i class="p-0 pt-2 material-symbols-outlined">add</i>
+          <p class="pb-2">Follow</p>
+      </button>`
   }
+
+  if (tag['manage']) {
+    html +=
+      `<div class="dropdown">
+          <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+              <i class="material-symbols-outlined">more_vert</i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+              <input type="hidden" name="question_id" value="${tag.tag_id}">
+              <button class="dropdown-item edit-tag" type="button" data-toggle="modal" data-target="#edit-tag-modal-${tag.tag_id}">
+                  <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                  Edit
+              </button>
+              <button class="dropdown-item" type="button" data-toggle="modal" data-target="#remove-tag-modal-${tag.tag_id}">
+                  <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                  Delete
+              </button>
+          </div>
+      </div>`
+  }
+
   html +=`</div>
+    </div>
     <div class="card-body">
         <p>${tag.tag_description}</p>
     </div>`;
+
+  html += createTagModals(tag, topics);
+  html += '</li>'
+
   new_tag.innerHTML = html;
   return new_tag;
+}
+
+function createTagModals(tag, topics) {
+  let csrf = document.querySelector('meta[name="csrf-token"]').content;
+
+  let html = '';
+  if (tag['manage']) {
+    html +=
+    `<!-- Delete tag modal box -->
+    <div class="modal fade" id="remove-tag-modal-${tag.tag_id}" tabindex="-1" aria-labelledby="questionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title" id="questionModalLabel">Delete tag</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <i class="material-symbols-outlined">close</i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete this tag?</p>
+        </div>
+        <div class="modal-footer border-0">
+            <button type="button" class="button-outline" data-dismiss="modal">Close</button>
+            <input type="hidden" value="${tag.tag_id}">
+            <button class="button delete-tag" data-dismiss="modal" type="button" onclick="sendRemoveTagsRequest(event)">
+                Confirm
+            </button>
+          </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Edit tag modal box -->
+    <div class="modal fade" id="edit-tag-modal-${tag.tag_id}" tabindex="-1" aria-labelledby="editTagModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title c-primary" id="editTagModalLabel">Edit tag</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <i class="material-symbols-outlined">close</i>
+            </button>
+          </div>
+            <div class="modal-body">
+                <input type="hidden" name="id" value=${tag.tag_id} required>
+                <h5>Name</h5>
+                <input type="text" name="name" value=${tag.tag_name} required>
+                <h5>Description</h5>
+                <input type="text" name="description" value="${tag.tag_description}" required>
+                <label class="title-blue" for="topics">Topics</label>
+                <select class="form-control" id="topics" name="topic" size="6">`
+
+    Object.values(topics).forEach(topic => {
+      html +=
+          `<option value="${topic.topic_id}"`
+      if (tag.topic_id == topic.topic_id) {
+        html += ' selected '
+      }
+      html += `>${topic.topic_name}</option>`
+    });
+
+    html +=
+                `</select>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="button-outline" data-dismiss="modal">Close</button>
+                <button class="button" data-dismiss="modal" type="submit" onclick="sendEditTagRequest(event)">
+                    Confirm
+                </button>
+            </form> 
+          </div>
+      </div>
+    </div>`
+  }
+  return html;
 }
 
 /*********** delete an answer ***********/

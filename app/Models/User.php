@@ -148,4 +148,13 @@ class User extends Authenticatable
     public function is_mod() {
       return ($this->is_admin || $this->is_moderator);
     }
+
+    /**
+     * Check if a user is an admin. 
+     * 
+     * @return True if the user is an admin, false otherwise.
+     */
+    public function is_admin() {
+      return ($this->is_admin);
+    }
 }

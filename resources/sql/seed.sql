@@ -96,7 +96,7 @@ CREATE TABLE comment(
 DROP TABLE IF EXISTS user_tag CASCADE;
 CREATE table user_tag(
         user_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE,
-        tag_id INTEGER REFERENCES tag (tag_id) ON UPDATE CASCADE,
+        tag_id INTEGER REFERENCES tag (tag_id) ON UPDATE CASCADE ON DELETE CASCADE,
         PRIMARY KEY (user_id, tag_id)
 );
 
@@ -435,11 +435,11 @@ INSERT INTO topic(topic_name,num_views) VALUES ('Jobs',116);
 INSERT INTO topic(topic_name,num_views) VALUES ('Languages',114);
 INSERT INTO topic(topic_name,num_views) VALUES ('Music',178);
 
-INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('javascript','Ut neque quaerat quiquia dolorem quiquia neque.',1);
-INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('python','Numquam amet quisquam voluptatem consectetur adipisci porro velit.',1);
-INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('java','Neque est amet ipsum tempora ut.',1);
-INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('c#','Labore magnam dolor porro sit.',1);
-INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('php','Consectetur adipisci modi adipisci ipsum consectetur amet sit.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('javascript','JavaScript is a programming language that is one of the core technologies of the World Wide Web.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('python','Python is a high-level, general-purpose programming language.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('java','Java is a high-level, class-based, object-oriented programming language.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('c#','C# is a general-purpose, high-level multi-paradigm programming language.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('php','PHP is a general-purpose scripting language geared toward web development.',1);
 INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('android','Ipsum amet ipsum quaerat ipsum dolor magnam.',1);
 INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('html','Ipsum non neque numquam.',1);
 INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('jquery','Dolorem velit adipisci ipsum adipisci est non ipsum.',1);
@@ -517,8 +517,8 @@ INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, pict
 INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('mshepherdsons','mshepherdsons@census.gov','Muriel Shepherdson','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',49,false,false, DEFAULT);
 INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('jbasellit','jbasellit@diigo.com','Jeannine Baselli','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',95,false,false, DEFAULT);
 
-INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How to center a div?', 'What method can I use to center a div horizontally to the middle of the screen?', 17, 282, 1, '2021-12-01 04:24:58', false, 1);
-INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How do I add multi-line comments in Python?', '# works for single line comments but Im wondering how to comment multiple lines of code', 5, 100, 0, '2021-01-01 05:26:58', false, 1);
+INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How to center a div?', 'What method can I use to center a div horizontally to the middle of the screen?', 17, 282, 1, '2022-12-01 04:24:58', false, 1);
+INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How do I add multi-line comments in Python?', '# works for single line comments but Im wondering how to comment multiple lines of code', 5, 100, 0, '2022-12-01 05:26:58', false, 1);
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'What is the difference between git pull and git fetch?', 'I don`t understand the difference between the two.', 96, 192, 1, '2022-01-19 04:52:59', false, 3);
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'fermentum donec ut mauris eget massa tempor convallis nulla', 'eu orci mauris lacinia sapien quis libero nullam sit amet', 71, 242, 1, '2022-04-14 23:56:49', false, 20);
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'justo in blandit ultrices enim lorem ipsum dolor sit', 'sit amet lobortis sapien sapien non mi integer ac neque duis bibendum morbi non quam nec dui luctus rutrum', 1, 75, 1, '2022-06-08 01:57:24', false, 3);

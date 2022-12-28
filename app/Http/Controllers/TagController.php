@@ -11,6 +11,7 @@ use App\Models\UserTag;
 
 class TagController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +19,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::all();
+        $tags = Tag::orderBy('tag_id')->get();
         $topics = Topic::all();
         return view('pages.tags', ['tags' => $tags, 'topics' => $topics]);
     }
@@ -30,9 +31,10 @@ class TagController extends Controller
         if (Auth::check()) {
             foreach($tags as $tag) {
                 $tag['following'] = Auth::user()->follows_tag($tag->tag_id);
+                $tag['manage'] = Auth::user()->can('manage', Tag::class);
             }
         }
-        return $tags;
+        return ['tags' => $tags, 'topics' => Topic::all()];
     }
 
     public function follow(Request $request, $tag_id) {
@@ -50,25 +52,34 @@ class TagController extends Controller
         return ['tag_id' => $tag_id];
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created tag in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response Tag json object.
      */
     public function store(Request $request)
     {
-        //
+        if(!Auth::check()) return redirect('/login');
+        $this->authorize('create', Tag::class);
+
+        $request->validate([
+            'name' => 'required|string|max:20',
+            'description' => 'required|string|max:255',
+            'topic' => 'int'
+        ]);
+
+        $tag = new Tag;
+        $tag->tag_name = $request->name;
+        $tag->tag_description = $request->description;
+        $tag->topic_id = $request->topic;
+
+        $tag->save();
+
+        $tag['manage'] = Auth::user()->can('manage', Tag::class);
+
+        return ['tag' => $tag, 'topics' => Topic::all()];
     }
 
     /**
@@ -102,7 +113,23 @@ class TagController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(!Auth::check()) return redirect('/login');
+        $this->authorize('manage', Tag::class);
+
+        $request->validate([
+            'name' => 'required|string|max:20',
+            'description' => 'required|string|max:255',
+            'topic' => 'int'
+        ]);
+        
+        $tag = Tag::find($id);
+        $tag->tag_name = $request->name;
+        $tag->tag_description = $request->description;
+        $tag->topic_id = $request->topic;
+
+        $tag->save();
+
+        return $tag;
     }
 
     /**
@@ -113,6 +140,10 @@ class TagController extends Controller
      */
     public function destroy($id)
     {
-        //
+      if(!Auth::check()) return redirect('/login');
+      $this->authorize('manage', Tag::class);
+      $tag = Tag::find($id);
+      $tag->delete();
+      return $tag;
     }
 }
