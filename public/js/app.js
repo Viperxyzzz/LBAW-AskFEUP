@@ -738,7 +738,6 @@ function reportDeletedHandler() {
   deletedReportElement.remove();
 }
 
-<<<<<<< HEAD
 /*********** create block ***********/
 
 function sendCreateBlockRequest(event) {
@@ -794,7 +793,8 @@ function blockRemovedHandler() {
   document.querySelector('.block-user').classList.toggle('tab-closed')
   document.querySelector('.unblock-user').classList.toggle('d-flex')
   document.querySelector('.unblock-user').classList.toggle('tab-closed')
-=======
+}
+
 /*********** create a report ***********/
 
 function sendCreateReportRequest(event) {
@@ -809,7 +809,6 @@ function sendCreateReportRequest(event) {
   if (body != null)
     sendAjaxRequest('post', '/api/report/create', data, () => {});
   event.preventDefault();
->>>>>>> e9db6aa181cce7d9171a69def9809054be1bab4e
 }
 
 /*********** filter questions ***********/
