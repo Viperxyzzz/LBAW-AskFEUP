@@ -29,6 +29,8 @@ Route::put('api/answer/{id}', 'QuestionController@answer');
 Route::get('question/{id}/edit', 'QuestionController@edit_view')->name('edit_question');
 Route::match(['put', 'patch'], 'api/question/update/{id}','QuestionController@update')->name('update_question');
 //Route::post('api/question/update', 'QuestionController@update')->name('update_question');
+Route::post('api/question/follow/{id}', 'QuestionController@follow');
+Route::delete('api/question/unFollow/{id}', 'QuestionController@unFollow');
 
 // Search
 Route::get('browse', 'SearchController@home')->name('browse');
@@ -43,11 +45,13 @@ Route::post('api/tag/create', 'TagController@store')->name('tag_create_api');
 Route::delete('api/tag/delete/{id}', 'TagController@destroy')->name('tag_delete_api');
 Route::put('api/tag/edit/{id}', 'TagController@update')->name('tag_update_api');
 
-// Admin
+// Admin / Reports
 Route::get('dashboard', 'ModController@index')->name('dashboard');
 Route::delete('api/report/delete/{id}', 'ModController@delete_report');
 Route::post('api/blocks/add/{id}', 'BlockController@store');
 Route::delete('api/blocks/delete/{id}', 'BlockController@destroy');
+Route::post('api/report/create', 'ModController@create_report');
+
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
@@ -70,3 +74,5 @@ Route::post('register', 'Auth\RegisterController@register');
 // Comments
 Route::post('api/comment/{id}', 'CommentController@create')->name('create_comment');
 Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comment_delete_api');
+Route::get('api/comment/edit/{id}', 'CommentController@edit_view')->name('edit_comment_form');
+Route::put('api/comment/update/{id}', 'CommentController@update')->name('update_comment');

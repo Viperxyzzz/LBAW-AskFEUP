@@ -29,4 +29,5 @@
             <a href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
         </p>
     </div>
+    @include('partials.admin.add_report', $question)
 </div>

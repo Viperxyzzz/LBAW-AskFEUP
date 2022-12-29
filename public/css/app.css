@@ -37,6 +37,10 @@ a {
     cursor: pointer;
 }
 
+form {
+    margin: 0;
+}
+
 .card .question-stats {
     float: right;
 }
