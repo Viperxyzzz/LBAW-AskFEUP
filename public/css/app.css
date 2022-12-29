@@ -146,6 +146,19 @@ input[type=radio]:checked + label {
     width: 25rem;
 }
 
+.dashboard-tab {
+    display: none;
+    animation: fadeIn 0.8s;
+}
+
+.tab-open {
+    display: block;
+}
+
+.tab-closed {
+    display: none;
+}
+
 input[type="checkbox"] {
     accent-color: var(--accent-color);
 }

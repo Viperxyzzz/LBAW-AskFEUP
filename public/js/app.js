@@ -149,6 +149,20 @@ function addEventListeners() {
       );
   }
 
+  let addBlock = document.querySelectorAll('.add-block');
+  if (addBlock != null) {
+    addBlock.forEach(
+      btn => btn.addEventListener('click', sendCreateBlockRequest)
+      );
+  }
+
+  let removeBlock = document.querySelectorAll('.unblock-user');
+  if (removeBlock != null) {
+    removeBlock.forEach(
+      btn => btn.addEventListener('click', sendRemoveBlockRequest)
+      );
+  }
+
   let addReport = document.querySelectorAll('.add-report');
   if (addReport != null) {
     addReport.forEach(
@@ -175,6 +189,16 @@ function addEventListeners() {
     button => {
       button.addEventListener('click', function(){
         toggleProfileTab(button.id + '-tab')
+        button.classList.add('active');
+      })
+    }
+  )
+
+  let dashboardTabs = document.querySelectorAll('.dashboard-tab-button')
+  dashboardTabs.forEach(
+    button => {
+      button.addEventListener('click', function(){
+        toggleDashboardTab(button.id + '-tab')
         button.classList.add('active');
       })
     }
@@ -221,6 +245,20 @@ function toggleProfileTab(tab) {
   let open = document.getElementById(tab);
   if (open != null)
     open.classList.add('profile-tab-open');
+}
+
+function closeDashboardTabs() {
+  let buttons = document.querySelectorAll('.dashboard-tab-button');
+  buttons.forEach(button => button.classList.remove('active'))
+  let tabs = document.querySelectorAll('.dashboard-tab');
+  tabs.forEach(tab => {tab.classList.remove('tab-open')});
+}
+
+function toggleDashboardTab(tab) {
+  closeDashboardTabs();
+  let open = document.getElementById(tab);
+  if (open != null)
+    open.classList.add('tab-open');
 }
 
 function encodeForAjax(data) {
@@ -698,6 +736,63 @@ function reportDeletedHandler() {
 
   let deletedReportElement = document.getElementById("report_" + deletedReport.report_id)
   deletedReportElement.remove();
+}
+
+/*********** create block ***********/
+
+function sendCreateBlockRequest(event) {
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let user_id = body.querySelector('input[name=user_id]').value
+  let reason = body.querySelector('input[name=reason]').value
+
+  if (user_id != null)
+    sendAjaxRequest('post', `/api/blocks/add/${user_id}`, {reason : reason}, blockCreatedHandler);
+
+  event.preventDefault()
+}
+
+function blockCreatedHandler() {
+  if (this.status != 201) return;
+
+  info = document.querySelector('.profile-info')
+
+  warning = document.createElement('a');
+  warning.href = '/dashboard'
+  warning.classList.add('warning-blocked', 'd-flex', 'ml-5', 'p-2', 'border', 'border-danger', 'rounded', 'align-items-baseline')
+  warning.innerHTML = 
+  `<h4 class="m-0 text-danger">
+        <i class="p-0 material-symbols-outlined">warning</i>
+        This user is blocked!
+    </h4>
+    `
+  info.prepend(warning)
+
+  document.querySelector('.block-user').classList.toggle('d-flex')
+  document.querySelector('.block-user').classList.toggle('tab-closed')
+  document.querySelector('.unblock-user').classList.toggle('d-flex')
+  document.querySelector('.unblock-user').classList.toggle('tab-closed')
+}
+
+/*********** remove block ***********/
+
+function sendRemoveBlockRequest(event) {
+  let user_id = event.target.querySelector('input[name=user_id]').value
+
+  if (user_id != null)
+    sendAjaxRequest('delete', `/api/blocks/delete/${user_id}`, {}, blockRemovedHandler);
+
+  event.preventDefault()
+}
+
+function blockRemovedHandler() {
+  if (this.status != 200) return;
+
+  document.querySelector('.warning-blocked').remove()
+
+  document.querySelector('.block-user').classList.toggle('d-flex')
+  document.querySelector('.block-user').classList.toggle('tab-closed')
+  document.querySelector('.unblock-user').classList.toggle('d-flex')
+  document.querySelector('.unblock-user').classList.toggle('tab-closed')
 }
 
 /*********** create a report ***********/

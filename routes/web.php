@@ -48,6 +48,8 @@ Route::put('api/tag/edit/{id}', 'TagController@update')->name('tag_update_api');
 // Admin / Reports
 Route::get('dashboard', 'ModController@index')->name('dashboard');
 Route::delete('api/report/delete/{id}', 'ModController@delete_report');
+Route::post('api/blocks/add/{id}', 'BlockController@store');
+Route::delete('api/blocks/delete/{id}', 'BlockController@destroy');
 Route::post('api/report/create', 'ModController@create_report');
 
 
