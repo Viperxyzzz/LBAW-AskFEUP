@@ -153,9 +153,13 @@ input[type=radio]:checked + label {
 
 span.red-circle-notification {
     font-size: 12px;
-    color: red;
+    color: var(--accent-color);
   }
 
-aside.sticky-top{
+aside.sticky-top {
     z-index: 999;
+}
+
+.badge {
+    background-color: var(--accent-color);
 }

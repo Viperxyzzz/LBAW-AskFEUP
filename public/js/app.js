@@ -509,9 +509,7 @@ function setInnerHTML(elm, html) {
 }
 
 function updateNotification(notification_id){
-  console.log(notification_id)
   let notification_button = document.getElementById("button-notification-" + notification_id)
-  console.log(notification_button)
   let red_circle = notification_button.getElementsByTagName("span")[0]
   if(!red_circle) return
   notification_button.removeChild(red_circle)
@@ -522,24 +520,22 @@ function updateNotification(notification_id){
     num_notifications_span.textContent = ""
   }
   else num_notifications_span.textContent = num
-
-  /*let strong_tag = notification_button.getElementsByTagName("strong")[0]
-  let text = strong_tag.textContent
-
-  let div_tag = notification_button.getElementsByTagName("div")[0]
-  if(!strong_tag) return 
-  div_tag.removeChild(strong_tag)
-  div_tag.prepend(text)*/
 }
 
 
 function sendUpdateNotificationRequest(event) {
-  let button_id = event.target.parentElement.parentElement.id
-  console.log(event.target.parentElement.parentElement)
-  console.log(event)
-  console.log(button_id)
+  let button_id
+  if(event.target.className === "btn bg-transparent shadow-none border-0 d-flex justify-content-between align-items-center w-100 button-notification"){
+    button_id = event.target.id
+  }
+  if(event.target.className === "d-flex flex-column" || event.target.className === "material-icons ml-4 red-circle-notification"){
+    button_id = event.target.parentElement.id
+  }
+  if(event.target.className === "text-left" || event.target.className === "h5 text-left"){
+    button_id = event.target.parentElement.parentElement.id
+  }
+   console.log(button_id)
   let notification_id = button_id.split('-').pop()
-  console.log(notification_id)
   if (notification_id != '')
     sendAjaxRequest('post', 
                     'api/notification/update/' + notification_id, 

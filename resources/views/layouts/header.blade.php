@@ -18,7 +18,7 @@
                 <button class="btn bg-transparent m-0 p-0 border-0 d-flex shadow-none" id="btn-notifications" type="button" data-toggle="dropdown" aria-expanded="true">
                     <div class="d-flex align-items-start">
                         @if($num = Auth::user()->num_non_viewed_notifications())
-                            <span class="badge rounded-pill bg-danger" id="num-notifications">
+                            <span class="badge rounded-pill" id="num-notifications">
                                 {{$num}}
                             </span>
                         @endif    
