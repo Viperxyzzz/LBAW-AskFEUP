@@ -3,6 +3,12 @@ function addEventListeners() {
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
+  let commentEdit = document.querySelectorAll('.edit_comment');
+  if (commentEdit != null) {
+    commentEdit.forEach(
+      btn => btn.addEventListener('click', editComment)
+      );
+  }
   let commentDelete = document.querySelectorAll('.delete-comment');
   if (commentDelete != null) {
     commentDelete.forEach(
@@ -198,7 +204,6 @@ function encodeForAjax(data) {
 
 function sendAjaxRequest(method, url, data, handler) {
   let request = new XMLHttpRequest();
-
   request.open(method, url, true);
   request.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
   request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -779,6 +784,7 @@ function editAnswer(event) {
   let answer = document.querySelector('#answer_' + answer_id);
   let text = answer.querySelector('.card-text').innerText;
   let full_text = answer.querySelector('.answer-full-text');
+  console.log(full_text)
   full_text.insertAdjacentElement("afterend", createAnswerForm(answer_id, text));
   full_text.innerHTML = '';
 }
@@ -829,8 +835,11 @@ function sendCreateAnswerUpdateRequest() {
   p.innerText = answer.full_text;
 
   let answer_element = document.querySelector('#answer_' + answer.answer_id);
+  console.log(answer_element)
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
+  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
+
   answer_form.remove();
 
 }
@@ -998,7 +1007,7 @@ function createComment(comment) {
       </div>
     </div>
   </div>
-  <div class="d-flex">
+  <div class="d-flex flex-fill">
   <div class="d-flex align-items-center flex-column p-1">
       <button class="button-clear p-0 m-0 mr-2" type="button">
           <i class="material-symbols-outlined">keyboard_arrow_up</i>
@@ -1008,7 +1017,7 @@ function createComment(comment) {
           <i class="material-symbols-outlined ">keyboard_arrow_down</i>
       </button>
   </div>
-  <div class="pt-3">
+  <div class="pt-3 flex-fill">
       <p class="m-0">
           <img src="/storage/${comment.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
           <a href="url("/users/${comment.user_id}")">${comment.author.name}</a>
@@ -1024,8 +1033,8 @@ function createComment(comment) {
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                 <data class="comment_id" hidden>${comment.comment_id}</data>
-                <button class="dropdown-item edit_comment" type="button">
-                    <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                <button class="dropdown-item edit_comment" type="button" onclick="editComment(event)">
+                    <i width="16" height="16" class="material-symbols-outlined">edit</i>
                     Edit
                 </button>
             <input type="hidden" name="comment_id" value="${comment.comment_id}">
@@ -1160,7 +1169,6 @@ function cancelCreateComment(){
 
 function sendDeleteCommentRequest(event) {
   let comment_id = event.target.parentElement.children[0].value;
-  console.log(comment_id)
 
   sendAjaxRequest('delete', '/api/comment/delete/' + comment_id, {}, commentDeletedHandler);
   event.preventDefault();
@@ -1168,11 +1176,79 @@ function sendDeleteCommentRequest(event) {
 
 function commentDeletedHandler() {
   console.log("comment_handler")
-  
+
   let deletedComment = JSON.parse(this.responseText);
 
   let deletedCommentElement = document.getElementById("comment_" + deletedComment.comment_id)
   deletedCommentElement.remove();
+}
+/*********** edit comment ***********/
+
+function editComment(event) {
+  let comment_id = event.target.parentElement.children[0].innerText;
+  let comment = document.querySelector('#comment_' + comment_id);
+
+  let text = comment.querySelector('.card-text').innerText;
+  let text_card = comment.querySelector('.card-text');
+  text_card.insertAdjacentElement("afterend", createCommentForm(comment_id, text));
+  text_card.innerHTML = '';
+}
+
+function createCommentForm(comment_id, text) {
+  let comment_form = document.createElement('div');
+  let comment = document.getElementById(comment_id);
+
+  // prevent duplicated edit form
+  let previous_comment_form = document.querySelector(`#comment_form_${comment_id}`)
+  if(previous_comment_form!=null&&previous_comment_form.innerHTML!='') return previous_comment_form;
+
+  comment_form.classList.add('comment-form')
+  comment_form.classList.add('py-2')
+  comment_form.classList.add('w-100')
+  comment_form.id = `comment_form_${comment_id}`
+
+  comment_form.innerHTML =
+    `
+    <input type="hidden" name="comment_id" id="comment_id" value="${comment_id}"></input>
+    <input type="hidden" name="comment" id="comment" value="${comment}"></input>
+    <textarea id="full_text" rows="4" type="text" name="full_text" class="edit-text mt-2" required/>${text}</textarea>
+  <div class="text-right">
+      <button id="update-comment-button" onclick="commentUpdater(event)" type="submit" class="m-0">
+          Save Changes
+      </button>
+  </div>
+      <script>
+      var input = document.getElementById("full_text");
+      input.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("update-comment-button").click();
+        }
+      });
+      </script>
+`
+  return comment_form;
+}
+
+function commentUpdater() {
+  let new_text = document.querySelector('#full_text').value;
+  let comment_id = document.querySelector('#comment_id').value;
+  sendAjaxRequest('put', '/api/comment/update/' + comment_id, { full_text: new_text }, sendCreateCommentUpdateRequest);
+}
+
+
+function sendCreateCommentUpdateRequest() {
+  let comment = JSON.parse(this.responseText);
+
+  let p = document.createElement('p');
+  p.classList.add('card-text', 'pb-5', 'pt-2');
+  p.innerText = comment.full_text;
+
+  let comment_element = document.querySelector('#comment_' + comment.comment_id);
+  let comment_form = comment_element.querySelector('.comment-form');
+  comment_form.parentElement.querySelector('.card-text').appendChild(p);
+  comment_form.remove();
+
 }
 
 addEventListeners();

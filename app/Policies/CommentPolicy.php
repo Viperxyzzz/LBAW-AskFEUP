@@ -24,6 +24,12 @@ class CommentPolicy
       return $user->user_id == $comment->user_id || $user->is_admin;
     }
 
+    public function update(User $user, Comment $comment)
+    {
+      // Only an comment's author can update it
+      return $user->user_id == $comment->user_id || $user->is_admin;
+    }
+
     public function delete(User $user, Comment $comment)
     {
       // Only a comment's author or admin can delete it
