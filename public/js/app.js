@@ -831,6 +831,7 @@ function createAnswerForm(answer_id, text) {
 function answerUpdater() {
   let new_text = document.querySelector('#full_text').value;
   let answer_id = document.querySelector('#answer_id').value;
+  addAnswerCard();
   sendAjaxRequest('post', '/api/answer/update/' + answer_id, {full_text: new_text, was_edited: true }, sendCreateAnswerUpdateRequest);
 }
 
@@ -849,6 +850,7 @@ function sendCreateAnswerUpdateRequest() {
   console.log(answer_form.parentElement.querySelector('.answer-full-text'))
 
   answer_form.remove();
+  addAnswerCard();
 
 }
 function cancelEditAnswer(answer_id,text){
@@ -1270,6 +1272,7 @@ function sendCreateCommentUpdateRequest() {
   let comment_form = comment_element.querySelector('.comment-form');
   comment_form.parentElement.querySelector('.card-text').appendChild(p);
   comment_form.remove();
+  addAnswerCard();
 
 }
 
