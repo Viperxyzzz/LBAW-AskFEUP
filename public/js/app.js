@@ -1304,4 +1304,9 @@ function removeOpenedForms(){
   if(document.querySelector('.add-comment-form')!=null) cancelCreateComment()
   document.querySelector('#add-answer-card').innerHTML = '';
 }
+
+function submitQuestionUpdate(){
+  document.getElementById("edit-question-form").submit();
+}
+
 addEventListeners();
