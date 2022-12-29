@@ -16,8 +16,17 @@ body {
     color: var(--primary-color);
 }
 
+.c-secondary {
+    color: var(--secondary-color);
+}
+
 .b-accent {
     background-color: var(--accent-color);
+}
+
+:target {
+    background-color: var(--background-color);
+
 }
 
 i {

@@ -3,6 +3,19 @@ function addEventListeners() {
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
+  let commentEdit = document.querySelectorAll('.edit_comment');
+  if (commentEdit != null) {
+    commentEdit.forEach(
+      btn => btn.addEventListener('click', editComment)
+      );
+  }
+  let commentDelete = document.querySelectorAll('.delete-comment');
+  if (commentDelete != null) {
+    commentDelete.forEach(
+      btn => btn.addEventListener('click', sendDeleteCommentRequest)
+    );
+  }
+
   let enterInputAnswerCreator = document.getElementById('answer');
   if(enterInputAnswerCreator != null)
     enterInputAnswerCreator.addEventListener('keypress', function(event) {
@@ -12,7 +25,7 @@ function addEventListeners() {
         sendCreateAnswerRequest(event);
       }
     });
-  
+
   let filterOptions = document.querySelectorAll('.filter-option');
   if (filterOptions != null) {
     filterOptions.forEach((btn) => {
@@ -22,6 +35,17 @@ function addEventListeners() {
     }
     )
   }
+
+  let commentFormCreator = document.querySelectorAll('.add-comment-answer-form-button');
+  if (commentFormCreator != null) {
+    commentFormCreator.forEach(button =>{
+      button.addEventListener('click', answerCommentForm);
+  });
+  }
+
+  let commentQuestionFormCreator = document.querySelectorAll('.add-comment-question-form-button');
+  if (commentQuestionFormCreator.length > 0)
+      commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
 
   let enterInputEditUserFullName = document.querySelector('#edit-full-name');
   if(enterInputEditUserFullName != null)
@@ -64,6 +88,25 @@ function addEventListeners() {
     );
   }
 
+  let createTag = document.querySelector('.add-tag');
+  if (createTag != null) {
+    createTag.addEventListener('click', sendCreateTagRequest)
+  }
+
+  let editTag = document.querySelectorAll('.edit-tag');
+  if (editTag != null) {
+    editTag.forEach(
+      tag => tag.addEventListener('click', sendEditTagRequest)
+    );
+  }
+
+  let removeTag = document.querySelectorAll('.delete-tag');
+  if (removeTag != null) {
+    removeTag.forEach(
+      rTag => rTag.addEventListener('click', sendRemoveTagsRequest)
+    );
+  }
+
   let orderUserRadio = document.querySelectorAll('input[name=order-users]');
   if (orderUserRadio != null) {
     orderUserRadio.forEach(orderUserButton => {
@@ -89,6 +132,13 @@ function addEventListeners() {
   if (answerDelete != null) {
     answerDelete.forEach(
       btn => btn.addEventListener('click', sendDeleteAnswerRequest)
+      );
+  }
+
+  let reportDelete = document.querySelectorAll('.delete-report');
+  if (reportDelete != null) {
+    reportDelete.forEach(
+      btn => btn.addEventListener('click', sendDeleteReportRequest)
       );
   }
 
@@ -161,7 +211,6 @@ function encodeForAjax(data) {
 
 function sendAjaxRequest(method, url, data, handler) {
   let request = new XMLHttpRequest();
-
   request.open(method, url, true);
   request.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
   request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -199,6 +248,7 @@ function answerAddedHandler() {
 }
 
 function createAnswer(answer) {
+  console.log(answer)
   let new_answer = document.createElement('div');
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
@@ -359,11 +409,11 @@ function sendSearchTagsRequest(event) {
 
 function tagsSearchHandler() {
   //if (this.status != 201) window.location = '/';
-  let tags = JSON.parse(this.responseText);
+  let response = JSON.parse(this.responseText);
 
 
   // Create the new tags
-  let new_element = createTags(tags);
+  let new_element = createTags(response);
 
   // Insert the new tags
   let old_element = document.getElementById('tags-list');
@@ -373,54 +423,221 @@ function tagsSearchHandler() {
   parent.appendChild(new_element);
 }
 
-function createTags(tags) {
-  let new_tags = document.createElement('div');
+/*********** create tags ***********/
+
+function sendCreateTagRequest(event) {
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let name = body.querySelector('input[name=name]').value
+  let description = body.querySelector('input[name=description]').value
+  let topic = body.querySelector('#topics > option:checked').value
+  let data = {name : name, description : description, topic : topic}
+
+  if (name != null)
+    sendAjaxRequest('post', `/api/tag/create`, data, tagCreatedHandler);
+
+  event.preventDefault()
+}
+
+function tagCreatedHandler() {
+  //if (this.status != 201) window.location = '/';
+  let response = JSON.parse(this.responseText);
+
+  let tag_element = createTag(response.tag, response.topics)
+
+  document.querySelector('#tags-list').prepend(tag_element)
+}
+
+/*********** edit tags ***********/
+
+function sendEditTagRequest(event) {
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let id = body.querySelector('input[name=id]').value
+  let name = body.querySelector('input[name=name]').value
+  let description = body.querySelector('input[name=description]').value
+  let topic = body.querySelector('#topics > option:checked').value
+  let data = {name : name, description : description, topic : topic}
+
+  if (id != null)
+    sendAjaxRequest('put', `/api/tag/edit/${id}`, data, tagEditedHandler);
+
+  event.preventDefault()
+}
+
+function tagEditedHandler() {
+  //if (this.status != 201) window.location = '/';
+  let tag = JSON.parse(this.responseText);
+
+  let tag_element = document.getElementById(`tag-${tag.tag_id}`)
+  tag_element.querySelector('.card-body > p').innerHTML = tag.tag_description
+  tag_element.querySelector('.card-header > p').innerHTML = tag.tag_name
+}
+
+/*********** remove tags ***********/
+
+function sendRemoveTagsRequest(event) {
+  let id = event.target.parentElement.children[1].value
+
+  if (id != null)
+    sendAjaxRequest('delete', `/api/tag/delete/${id}`, {}, tagDeletedHandler);
+
+  event.preventDefault();
+}
+
+function tagDeletedHandler() {
+  //if (this.status != 201) window.location = '/';
+  let tag = JSON.parse(this.responseText);
+
+  let tag_element = document.getElementById(`tag-${tag.tag_id}`)
+  tag_element.remove()
+  document.querySelector('.modal-backdrop').remove()
+}
+
+function createTags(response) {
+  let new_tags = document.createElement('ul');
   new_tags.className = 'd-flex'
   new_tags.classList.add('flex-wrap')
   new_tags.id = "tags-list"
-  if (tags.length == 0) {
+  if (response.tags.length == 0) {
     new_tags.innerHTML = '<p>No results match the criteria.</p>'
   }
-  Object.values(tags).forEach(tag => {
-    new_tags.appendChild(createTag(tag))
+  Object.values(response.tags).forEach(tag => {
+    new_tags.appendChild(createTag(tag, response.topics))
   });
   return new_tags;
 }
 
-function createTag(tag) {
-  let new_tag = document.createElement('div');
+function createTag(tag, topics) {
+  let new_tag = document.createElement('li');
   new_tag.className = 'card'
   new_tag.classList.add('m-3')
   new_tag.style = "width: 250px"
+  new_tag.id = `tag-${tag.tag_id}`
   let html = `
-  <div class="card-header d-flex justify-content-between">
-<<<<<<< HEAD
-      <a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-2 m-1">${tag.tag_name}</a>
-      <a href="#" class="p-0">
-=======
-      <p class="badge p-2 m-1">${tag.tag_name}</p>`
+  <div class="card-header d-flex align-items-start justify-content-between">
+      <a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-2">${tag.tag_name}</a>
+      <div class="d-flex justify-content-end">`
 
   if (tag['following']) {
     html +=
-      `<a href="#" class="p-0">
-          <i class="p-0 material-symbols-outlined">done</i>
-          Following
-      </a>`
+      `<button class="unFollow-tag button-clear px-2 pr-3 pb-2 d-flex" id="unFollow-tag-${tag.tag_id}" onClick="sendUnFollowTagRequest(event)">
+          <input type="hidden" value="${tag.tag_id}">
+          <i class="p-0 pt-2 material-symbols-outlined">done</i>
+          <p class="pb-2">Following</p>
+      </button>`
   }
   else {
     html +=
-      `<a href="#" class="p-0">
->>>>>>> 154660cdbc941b0497442ae0fae865c196cf22e3
-          <i class="p-0 material-symbols-outlined">add</i>
-          Follow
-      </a>`
+      `<button class="follow-tag button-clear px-2 pr-3 pb-2 d-flex" id="follow-tag-${tag.tag_id}" onClick="sendFollowTagRequest(event)">
+          <input type="hidden" value="${tag.tag_id}">
+          <i class="p-0 pt-2 material-symbols-outlined">add</i>
+          <p class="pb-2">Follow</p>
+      </button>`
   }
+
+  if (tag['manage']) {
+    html +=
+      `<div class="dropdown">
+          <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+              <i class="material-symbols-outlined">more_vert</i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+              <input type="hidden" name="question_id" value="${tag.tag_id}">
+              <button class="dropdown-item edit-tag" type="button" data-toggle="modal" data-target="#edit-tag-modal-${tag.tag_id}">
+                  <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                  Edit
+              </button>
+              <button class="dropdown-item" type="button" data-toggle="modal" data-target="#remove-tag-modal-${tag.tag_id}">
+                  <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                  Delete
+              </button>
+          </div>
+      </div>`
+  }
+
   html +=`</div>
+    </div>
     <div class="card-body">
         <p>${tag.tag_description}</p>
     </div>`;
+
+  html += createTagModals(tag, topics);
+  html += '</li>'
+
   new_tag.innerHTML = html;
   return new_tag;
+}
+
+function createTagModals(tag, topics) {
+
+  let html = '';
+  if (tag['manage']) {
+    html +=
+    `<!-- Delete tag modal box -->
+    <div class="modal fade" id="remove-tag-modal-${tag.tag_id}" tabindex="-1" aria-labelledby="questionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title" id="questionModalLabel">Delete tag</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <i class="material-symbols-outlined">close</i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete this tag?</p>
+        </div>
+        <div class="modal-footer border-0">
+            <button type="button" class="button-outline" data-dismiss="modal">Close</button>
+            <input type="hidden" value="${tag.tag_id}">
+            <button class="button delete-tag" data-dismiss="modal" type="button" onclick="sendRemoveTagsRequest(event)">
+                Confirm
+            </button>
+          </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Edit tag modal box -->
+    <div class="modal fade" id="edit-tag-modal-${tag.tag_id}" tabindex="-1" aria-labelledby="editTagModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title c-primary" id="editTagModalLabel">Edit tag</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <i class="material-symbols-outlined">close</i>
+            </button>
+          </div>
+            <div class="modal-body">
+                <input type="hidden" name="id" value=${tag.tag_id} required>
+                <h5>Name</h5>
+                <input type="text" name="name" value=${tag.tag_name} required>
+                <h5>Description</h5>
+                <input type="text" name="description" value="${tag.tag_description}" required>
+                <label class="title-blue" for="topics">Topics</label>
+                <select class="form-control" id="topics" name="topic" size="6">`
+
+    Object.values(topics).forEach(topic => {
+      html +=
+          `<option value="${topic.topic_id}"`
+      if (tag.topic_id == topic.topic_id) {
+        html += ' selected '
+      }
+      html += `>${topic.topic_name}</option>`
+    });
+
+    html +=
+                `</select>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="button-outline" data-dismiss="modal">Close</button>
+                <button class="button" data-dismiss="modal" type="submit" onclick="sendEditTagRequest(event)">
+                    Confirm
+                </button>
+            </form> 
+          </div>
+      </div>
+    </div>`
+  }
+  return html;
 }
 
 /*********** delete an answer ***********/
@@ -441,6 +658,24 @@ function answerDeletedHandler() {
 
   let deletedAnswerElement = document.getElementById("answer_" + deletedAnswer.answer_id)
   deletedAnswerElement.remove();
+}
+
+/*********** delete a report ***********/
+
+function sendDeleteReportRequest(event) {
+  let report_id = event.target.parentElement.children[0].innerText;
+
+  if (report_id != '')
+    sendAjaxRequest('delete', '/api/report/delete/' + report_id, {}, reportDeletedHandler);
+  event.preventDefault();
+}
+
+function reportDeletedHandler() {
+  //if (this.status != 202) window.location = '/';
+  let deletedReport = JSON.parse(this.responseText);
+
+  let deletedReportElement = document.getElementById("report_" + deletedReport.report_id)
+  deletedReportElement.remove();
 }
 
 /*********** filter questions ***********/
@@ -495,7 +730,7 @@ function createQuestion(question) {
 
   let tags = "";
   question.tags.forEach(tag => {
-    tags += `<a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-2">${tag.tag_name}</a>\n`
+    tags += `<a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-1">${tag.tag_name}</a>\n`
   })
   new_question.innerHTML =
   `
@@ -564,6 +799,7 @@ function editAnswer(event) {
   let answer = document.querySelector('#answer_' + answer_id);
   let text = answer.querySelector('.card-text').innerText;
   let full_text = answer.querySelector('.answer-full-text');
+  console.log(full_text)
   full_text.insertAdjacentElement("afterend", createAnswerForm(answer_id, text));
   full_text.innerHTML = '';
 }
@@ -576,7 +812,7 @@ function createAnswerForm(answer_id, text) {
   answer_form.classList.add('w-100')
   answer_form.id = `answer_form_${answer_id}`
 
-  setInnerHTML( answer_form,
+  answer_form.innerHTML =
     `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}"></input>
@@ -595,7 +831,7 @@ function createAnswerForm(answer_id, text) {
         }
       });
       </script>
-`)
+`
   return answer_form;
 }
 
@@ -614,8 +850,11 @@ function sendCreateAnswerUpdateRequest() {
   p.innerText = answer.full_text;
 
   let answer_element = document.querySelector('#answer_' + answer.answer_id);
+  console.log(answer_element)
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
+  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
+
   answer_form.remove();
 
 }
@@ -698,6 +937,335 @@ function setInnerHTML(elm, html) {
   });
 }
 
-/***********  ***********/
+/*********** create answer comment ***********/
+function answerCommentForm(event) {
+  let answer = event.target.parentElement.parentElement.parentElement
+  let answer_card_id = answer.parentElement.id;
+  answer.insertAdjacentElement('afterend', createAnswerCommentForm(answer_card_id))
+}
+
+function createAnswerCommentForm(answer_card_id) {
+  let answer_card_id_list = answer_card_id.split('_', 2);
+  let answer_id = answer_card_id_list[1]
+
+  let previous_comment_form = document.querySelector(`.comment-answer-${answer_id}-form`)
+  console.log(previous_comment_form)
+  if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
+
+  let comment_form = document.createElement('div');
+  comment_form.className = 'card';
+  comment_form.className = `comment-answer-${answer_id}-form`;
+  comment_form.innerHTML = `
+    <form method="POST" class="card-body m-0 p-0">
+        <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="3"
+            id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
+    </form>
+    <div class="card-footer text-right">
+        <button id="add-comment-button" type="submit" onclick="sendCreateAnswerCommentRequest(${answer_id})" class="m-0">
+            Comment
+        </button>
+    </div>
+  `;
+  return comment_form;
+}
+
+function sendCreateAnswerCommentRequest(answer_id) {
+  console.log("create request function")
+  let question_id = document.querySelector('#question_id').value;
+  let comment = document.querySelector('#comment').value;
+
+  if (comment != '')
+    sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id, answer_id: answer_id }, answerCommentAddedHandler);
+
+  event.preventDefault();
+}
+
+function answerCommentAddedHandler() {
+  let comment = JSON.parse(this.responseText);
+
+  //delete comment form
+  document.querySelector(`.comment-answer-${comment.answer_id}-form`).innerHTML = '';
+
+  // Create the new comment
+  let new_comment = createComment(comment);
+  console.log(new_comment)
+
+  // Insert the new comment
+  let comments = document.querySelector(`.answer-${comment.answer_id}-comments`);
+  console.log(comments)
+  comments.prepend(new_comment);
+}
+
+function createComment(comment) {
+  console.log(comment)
+  let new_comment = document.createElement('div');
+  new_comment.id = `comment_${comment.comment_id}`
+  new_comment.className = 'border-top'
+  new_comment.classList.add('d-flex')
+  new_comment.classList.add('justify-content-between')
+  new_comment.innerHTML = `
+  <div class="modal fade" id="commentModal_${comment.comment_id}" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="commentModalLabel">Delete comment</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <i class="material-symbols-outlined">close</i>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this comment?
+        </div>
+        <div class="modal-footer border-0">
+          <input type="hidden" name="comment_id" value="${comment.comment_id}">
+          <button type="button" class="button-outline" data-dismiss="modal">Close</button>
+          <button type="button" class="button delete-comment" data-dismiss="modal" onclick="sendDeleteCommentRequest(event)">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex flex-fill">
+  <div class="d-flex align-items-center flex-column p-1">
+      <button class="button-clear p-0 m-0 mr-2" type="button">
+          <i class="material-symbols-outlined">keyboard_arrow_up</i>
+      </button>
+      <p class="m-0 pr-2 text-nowrap">${comment.num_votes}</p>
+      <button class="button-clear d-block p-0 m-0 mr-2" type="button">
+          <i class="material-symbols-outlined ">keyboard_arrow_down</i>
+      </button>
+  </div>
+  <div class="pt-3 flex-fill">
+      <p class="m-0">
+          <img src="/storage/${comment.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
+          <a href="url("/users/${comment.user_id}")">${comment.author.name}</a>
+          ${comment.date}
+      </p>
+  <p class="card-text py-2">${comment.full_text}</p>
+  </div>
+</div>
+<div class="ml-5 d-flex align-items-end flex-column">
+    <div class="dropdown">
+        <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+            <i class="material-symbols-outlined">more_vert</i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                <data class="comment_id" hidden>${comment.comment_id}</data>
+                <button class="dropdown-item edit_comment" type="button" onclick="editComment(event)">
+                    <i width="16" height="16" class="material-symbols-outlined">edit</i>
+                    Edit
+                </button>
+            <input type="hidden" name="comment_id" value="${comment.comment_id}">
+            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#commentModal_${comment.comment_id}">
+                <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+  `;
+  return new_comment;
+}
+
+/*********** create question comment ***********/
+
+function questionCommentForm(event) {
+  let question = event.target.parentElement.parentElement.parentElement
+  console.log(question)
+
+  let question_id = document.querySelector('#question_id').value;
+  console.log(question_id)
+
+  //remove answer form
+  document.querySelector('#add-answer-card').innerHTML = '';
+
+  question.insertAdjacentElement('afterend', createQuestionCommentForm(question_id))
+
+}
+
+function createQuestionCommentForm(question_id) {
+  //prevent duplicated comment form
+  let previous_comment_form = document.querySelector('.comment-form')
+  console.log(previous_comment_form)
+  if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
+  if(previous_comment_form!=null) previous_comment_form.remove()
+
+  let comment_form = document.createElement('div')
+  comment_form.className = 'card'
+  comment_form.classList.add('comment-form')
+  comment_form.innerHTML = `
+    <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+    <form method="POST" class="card-body m-0 p-0">
+        <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+            id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
+    </form>
+    <div class=" card-footer">
+    <div class = "row justify-content-between" style="padding: 0.75rem 0.75rem;">
+        <button class="cancel-add-comment button-clear px-2 pr-3 pb-2 d-flex" style="margin: 0;" onclick="cancelCreateComment()">
+            <input type="hidden" value="{{ $tag->tag_id }}">
+            <p class="pb-2">Cancel</p>
+        </button>
+        <button id="add-comment-button" type="submit" style="margin: 0;" onclick="sendCreateQuestionCommentRequest()" class="m-0">
+            Comment
+        </button>
+        </div>
+    </div>
+  `;
+  return comment_form;
+}
+
+function sendCreateQuestionCommentRequest() {
+  console.log("create request function")
+  let question_id = document.querySelector('#question_id').value;
+  console.log(question_id);
+  let comment = document.querySelector('#comment').value;
+  console.log(comment)
+
+  if (comment != '')
+    sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id}, questionCommentAddedHandler);
+
+  event.preventDefault();
+}
+
+function  questionCommentAddedHandler() {
+  let comment = JSON.parse(this.responseText);
+
+  let question_id = document.querySelector('#question_id').value;
+
+  //delete comment form
+  document.querySelector('.comment-form').remove()
+
+  // Create the new comment
+  let new_comment = createComment(comment);
+  console.log(new_comment)
+
+  // Insert the new comment
+  let comments = document.querySelector(`.question-comments`);
+  console.log(comments)
+  comments.prepend(new_comment);
+
+  // Insert answer form back
+  let add_answer_card = document.querySelector('#add-answer-card');
+  add_answer_card.innerHTML = `
+  <form method="POST" class="card-body m-0 p-0">
+    <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+    <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+      id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
+  </form>
+<div class="card-footer text-right">
+  <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
+      Answer
+  </button>
+</div>
+  `
+}
+
+function cancelCreateComment(){
+  let question_id = document.querySelector('#question_id').value;
+
+  let commentForm = document.querySelector('.comment-form')
+  console.log(commentForm)
+  commentForm.remove()
+
+    // Insert answer form back
+    let add_answer_card = document.querySelector('#add-answer-card');
+    add_answer_card.innerHTML = `
+    <form method="POST" class="card-body m-0 p-0">
+      <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+      <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+        id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
+    </form>
+  <div class="card-footer text-right">
+    <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
+        Answer
+    </button>
+  </div>
+    `
+}
+
+/*********** delete an comment ***********/
+
+function sendDeleteCommentRequest(event) {
+  let comment_id = event.target.parentElement.children[0].value;
+
+  sendAjaxRequest('delete', '/api/comment/delete/' + comment_id, {}, commentDeletedHandler);
+  event.preventDefault();
+}
+
+function commentDeletedHandler() {
+  console.log("comment_handler")
+
+  let deletedComment = JSON.parse(this.responseText);
+
+  let deletedCommentElement = document.getElementById("comment_" + deletedComment.comment_id)
+  deletedCommentElement.remove();
+}
+/*********** edit comment ***********/
+
+function editComment(event) {
+  let comment_id = event.target.parentElement.children[0].innerText;
+  let comment = document.querySelector('#comment_' + comment_id);
+
+  let text = comment.querySelector('.card-text').innerText;
+  let text_card = comment.querySelector('.card-text');
+  text_card.insertAdjacentElement("afterend", createCommentForm(comment_id, text));
+  text_card.innerHTML = '';
+}
+
+function createCommentForm(comment_id, text) {
+  let comment_form = document.createElement('div');
+  let comment = document.getElementById(comment_id);
+
+  // prevent duplicated edit form
+  let previous_comment_form = document.querySelector(`#comment_form_${comment_id}`)
+  if(previous_comment_form!=null&&previous_comment_form.innerHTML!='') return previous_comment_form;
+
+  comment_form.classList.add('comment-form')
+  comment_form.classList.add('py-2')
+  comment_form.classList.add('w-100')
+  comment_form.id = `comment_form_${comment_id}`
+
+  comment_form.innerHTML =
+    `
+    <input type="hidden" name="comment_id" id="comment_id" value="${comment_id}"></input>
+    <input type="hidden" name="comment" id="comment" value="${comment}"></input>
+    <textarea id="full_text" rows="4" type="text" name="full_text" class="edit-text mt-2" required/>${text}</textarea>
+  <div class="text-right">
+      <button id="update-comment-button" onclick="commentUpdater(event)" type="submit" class="m-0">
+          Save Changes
+      </button>
+  </div>
+      <script>
+      var input = document.getElementById("full_text");
+      input.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          document.getElementById("update-comment-button").click();
+        }
+      });
+      </script>
+`
+  return comment_form;
+}
+
+function commentUpdater() {
+  let new_text = document.querySelector('#full_text').value;
+  let comment_id = document.querySelector('#comment_id').value;
+  sendAjaxRequest('put', '/api/comment/update/' + comment_id, { full_text: new_text }, sendCreateCommentUpdateRequest);
+}
+
+
+function sendCreateCommentUpdateRequest() {
+  let comment = JSON.parse(this.responseText);
+
+  let p = document.createElement('p');
+  p.classList.add('card-text', 'pb-5', 'pt-2');
+  p.innerText = comment.full_text;
+
+  let comment_element = document.querySelector('#comment_' + comment.comment_id);
+  let comment_form = comment_element.querySelector('.comment-form');
+  comment_form.parentElement.querySelector('.card-text').appendChild(p);
+  comment_form.remove();
+
+}
 
 addEventListeners();

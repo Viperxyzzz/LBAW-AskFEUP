@@ -77,6 +77,28 @@ class QuestionController extends Controller
 
       $question->save();
 
+      // Delete all question tags
+      $question_tags = QuestionTag::where('question_id', $question->question_id)->get();
+      foreach($question_tags as $question_tag){
+        $question_tag->delete();
+      }
+
+      // Add new question tags
+      $tags = $request->tags;
+
+      if($tags === null)
+        return redirect('/question/'.$question->question_id);
+
+      for($i = 0; $i < count($tags); $i++){
+        $question_tag = new QuestionTag;
+        $question_tag->question_id = $question->question_id;
+        $question_tag->tag_id = $tags[$i];
+        $question_tag->save();
+      }
+
+
+
+
       return redirect('/question/'.$question->question_id);
     }
 
