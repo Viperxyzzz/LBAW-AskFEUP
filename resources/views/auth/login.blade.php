@@ -26,11 +26,14 @@
         <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
     </label>
 
-    <div class="d-flex justify-content-end">
-        <a class="button button-outline mx-1" href="{{ route('register') }}">Register</a>
-        <button type="submit" class="mx-1">
-            Login
-        </button>
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="{{ route('password.request') }}" class="text-left">Forgot my password</a>
+        <div>
+            <a class="button button-outline mx-1" href="{{ route('register') }}">Register</a>
+            <button type="submit" class="mx-1">
+                Login
+            </button>
+        <div>
     </div>
 </form>
 @endsection

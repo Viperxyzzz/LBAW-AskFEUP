@@ -68,6 +68,10 @@ Route::post('login', 'Auth\LoginController@login');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
+Route::get('forgot-password', 'Auth\ResetPasswordController@show_forgot')->name('password.request');
+Route::post('forgot-password', 'Auth\ResetPasswordController@send')->name('password.email');
+Route::get('reset-password/{token}', 'Auth\ResetPasswordController@show_reset')->name('password.reset');
+Route::post('reset-password', 'Auth\ResetPasswordController@reset')->name('password.update');
 
 // Comments
 Route::post('api/comment/{id}', 'CommentController@create')->name('create_comment');
