@@ -966,15 +966,22 @@ function createAnswerCommentForm(answer_card_id) {
   let comment_form = document.createElement('div');
   comment_form.className = 'card';
   comment_form.className = `comment-answer-${answer_id}-form`;
+  comment_form.className = 'add-comment-form';
   comment_form.innerHTML = `
     <form method="POST" class="card-body m-0 p-0">
         <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="3"
             id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
     </form>
-    <div class="card-footer text-right">
+    <div class=" card-footer">
+    <div class = "row justify-content-between" style="padding: 0.75rem 0.75rem;">
+        <button class="cancel-add-comment button-clear px-2 pr-3 pb-2 d-flex" style="margin: 0;" onclick="cancelCreateComment()">
+            <input type="hidden" value="{{ $tag->tag_id }}">
+            <p class="pb-2">Cancel</p>
+        </button>
         <button id="add-comment-button" type="submit" onclick="sendCreateAnswerCommentRequest(${answer_id})" class="m-0">
             Comment
         </button>
+        </div>
     </div>
   `;
   return comment_form;
@@ -995,7 +1002,7 @@ function answerCommentAddedHandler() {
   let comment = JSON.parse(this.responseText);
 
   //delete comment form
-  document.querySelector(`.comment-answer-${comment.answer_id}-form`).innerHTML = '';
+  document.querySelector(`.add-comment-form`).innerHTML = '';
 
   // Create the new comment
   let new_comment = createComment(comment);
