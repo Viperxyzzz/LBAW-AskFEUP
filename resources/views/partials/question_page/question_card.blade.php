@@ -48,4 +48,5 @@
             </p>
         </div>
     </div>
+    @include('partials.admin.add_report', $question)
 </div>

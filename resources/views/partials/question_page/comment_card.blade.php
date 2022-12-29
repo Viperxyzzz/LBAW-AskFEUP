@@ -19,6 +19,7 @@
         <p class="card-text py-2">{{ $comment->full_text }}</p>
         </div>
     </div>
+    @include('partials.admin.add_report')
         <div class="ml-5 d-flex align-items-end flex-column">
             @can('edit', $comment)
                 <div class="dropdown">
@@ -35,6 +36,11 @@
                         <button class="dropdown-item" type="button" data-toggle="modal" data-target="#commentModal_{{$comment->comment_id}}">
                             <i width="16" height="16" class="material-symbols-outlined ">delete</i>
                             Delete
+                        </button>
+                        <button class="dropdown-item m-0" type="button" data-toggle="modal" 
+                            data-target="#add-report-modal-{{ $question->question_id }}-{{ $comment->answer_id }}-{{ $comment->comment_id }}">
+                            <i width="16" height="16" class="material-symbols-outlined ">flag</i>
+                            Report
                         </button>
                     </div>
                 </div>
