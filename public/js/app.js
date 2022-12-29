@@ -179,6 +179,20 @@ function addEventListeners() {
       button.addEventListener('click', sendUnFollowTagRequest)
     }
   )
+
+  let followQuestion = document.querySelectorAll('.follow-question')
+  followQuestion.forEach(
+    button => {
+      button.addEventListener('click', sendFollowQuestionRequest)
+    }
+  )
+
+  let unFollowQuestion = document.querySelectorAll('.un-follow-question')
+  unFollowQuestion.forEach(
+    button => {
+      button.addEventListener('click', sendUnFollowQuestionRequest)
+    }
+  )
 }
 
 function closeProfileTabs() {
@@ -891,6 +905,63 @@ function tagUnFollowHandler() {
   button.querySelector('i').innerHTML = 'add'
   button.querySelector('p').innerHTML = 'Follow'
 }
+
+/* Follow and un-follow questions */
+
+function sendFollowQuestionRequest(event) {
+  let question_id = event.currentTarget.querySelector('input[name=question]').value;
+
+  if (question_id != '')
+    sendAjaxRequest('post', `/api/question/follow/${question_id}`, {}, questionFollowHandler);
+    
+  event.preventDefault();
+}
+
+function questionFollowHandler() {
+  let follow = JSON.parse(this.responseText);
+  let question_id = follow['question_id'];
+
+  let button = document.getElementById(`follow-question-${question_id}`)
+
+  button.removeEventListener('click', sendFollowQuestionRequest)
+  button.onclick = sendUnFollowQuestionRequest
+
+  button.id = `un-follow-question-${question_id}`
+  button.classList.remove('follow-question')
+  button.classList.add('un-follow-question')
+  button.innerHTML = `
+    <input type="hidden" name="question" value="${question_id}">
+    <i width="16" height="16" class="material-symbols-outlined ">done</i>
+    Following`
+}
+
+function sendUnFollowQuestionRequest(event) {
+  let question_id = event.currentTarget.querySelector('input[name=question]').value;
+
+  if (question_id != '')
+    sendAjaxRequest('delete', `/api/question/unFollow/${question_id}`, {}, questionUnFollowHandler);
+    
+  event.preventDefault();
+}
+
+function questionUnFollowHandler() {
+  let follow = JSON.parse(this.responseText);
+  let question_id = follow['question_id'];
+
+  let button = document.getElementById(`un-follow-question-${question_id}`)
+
+  button.removeEventListener('click', sendUnFollowQuestionRequest)
+  button.onclick = sendFollowQuestionRequest
+
+  button.id = `follow-question-${question_id}`
+  button.classList.remove('un-follow-question')
+  button.classList.add('follow-question')
+  button.innerHTML = `
+    <input type="hidden" name="question" value="${question_id}">
+    <i width="16" height="16" class="material-symbols-outlined ">add</i>
+    Follow`
+}
+
 
 /** Multi-select dropdown */
 
