@@ -15,28 +15,38 @@
             <h4 class="text-secondary ml-5"><em>{{$user->username}}</em></h4>
             <h4 class="ml-5">{{$user->email}}</h4>
         </div>
-        <div>
-            @can('create', App\Block::class)
-                <button class="unblock-user button justify-content-center align-items-center
-                 {{ ($user->is_blocked()) ? ' d-flex ' : 'tab-closed' }}" type="button"
-                    style="width: 14rem">
-                    <input type="hidden" name="user_id" value="{{ $user->user_id }}">
-                    <i class="material-symbols-outlined mr-1">emergency_home</i>
-                    Unblock user
-                </button> 
-                <button class="block-user button justify-content-center align-items-center
-                {{ ($user->is_blocked()) ? 'tab-closed' : ' d-flex ' }}" type="button" 
-                    data-toggle="modal" data-target="#add-block-modal"
-                    style="width: 14rem">
-                    <i class="material-symbols-outlined mr-1">block</i>
-                    Block user
-                </button> 
-            @endcan
-            @can('edit', $user)
-                <a href="{{ url('/settings', ['id' => $user->user_id]) }}">
-                    <button style="width: 14rem">Edit Profile</button>
-                </a>
-            @endcan
+        <div class="text-right">
+            <div class="dropdown">
+                <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                    <i class="material-symbols-outlined">more_vert</i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                    @can('create', App\Block::class)
+                        <button class="unblock-user dropdown-item justify-content-center align-items-center
+                        {{ ($user->is_blocked()) ? ' d-flex ' : 'tab-closed' }}" type="button"
+                            style="width: 14rem">
+                            <input type="hidden" name="user_id" value="{{ $user->user_id }}">
+                            <i class="material-symbols-outlined mr-1">emergency_home</i>
+                            Unblock user
+                        </button> 
+                        @if(Auth::id() !== $user->user_id)
+                        <button class="block-user dropdown-item justify-content-center align-items-center
+                        {{ ($user->is_blocked()) ? 'tab-closed' : ' d-flex ' }}" type="button" 
+                            data-toggle="modal" data-target="#add-block-modal"
+                            style="width: 14rem">
+                            <i class="material-symbols-outlined mr-1">block</i>
+                            Block user
+                        </button> 
+                        @endif
+                    @endcan
+                    @can('edit', $user)
+                        <a class="dropdown-item" href="{{ url('/settings', ['id' => $user->user_id]) }}">
+                            <i class="material-symbols-outlined mr-1">edit</i>
+                            Edit Profile
+                        </a>
+                    @endcan
+                </div>
+            </div>
             <h4 class="text-right"><strong class="title-blue">{{$user->score}}</strong> points</h4>
         </div>
     </div>
