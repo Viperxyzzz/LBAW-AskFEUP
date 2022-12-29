@@ -3,10 +3,6 @@
             <i class="material-symbols-outlined">more_vert</i>
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <button class="dropdown-item m-0" type="button" data-toggle="modal" data-target="#add-report-modal-{{ $question->question_id }}--">
-                <i width="16" height="16" class="material-symbols-outlined ">flag</i>
-                Report
-            </button>
 @can('edit', $question)
             <form method="get" class="m-0" action="{{ route('edit_question', $question->question_id) }}">
                 @csrf
@@ -21,6 +17,10 @@
                 Delete
             </button>
 @endcan
+            <button class="dropdown-item m-0" type="button" data-toggle="modal" data-target="#add-report-modal-{{ $question->question_id }}--">
+                <i width="16" height="16" class="material-symbols-outlined ">flag</i>
+                Report
+            </button>
         </div>
     </div>
 

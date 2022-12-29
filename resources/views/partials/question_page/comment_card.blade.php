@@ -15,10 +15,6 @@
                 <img src="{{asset('storage/'.($comment->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
                 <a href="{{url("/users/$comment->user_id")}}"> {{ $comment->author->name }}</a>
                 {{ \Carbon\Carbon::parse($comment->date)->format('d/m/Y')}}
-                <button class="m-0 button button-clear p-0" type="button" data-toggle="modal" 
-                    data-target="#add-report-modal-{{ $question->question_id }}-{{ $comment->answer_id }}-{{ $comment->comment_id }}">
-                    <i width="16" height="16" class="material-symbols-outlined ">flag</i>
-                </button>
             </p>
         <p class="card-text py-2">{{ $comment->full_text }}</p>
         </div>
@@ -40,6 +36,11 @@
                         <button class="dropdown-item" type="button" data-toggle="modal" data-target="#commentModal_{{$comment->comment_id}}">
                             <i width="16" height="16" class="material-symbols-outlined ">delete</i>
                             Delete
+                        </button>
+                        <button class="dropdown-item m-0" type="button" data-toggle="modal" 
+                            data-target="#add-report-modal-{{ $question->question_id }}-{{ $comment->answer_id }}-{{ $comment->comment_id }}">
+                            <i width="16" height="16" class="material-symbols-outlined ">flag</i>
+                            Report
                         </button>
                     </div>
                 </div>

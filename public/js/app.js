@@ -46,7 +46,6 @@ function addEventListeners() {
   let commentQuestionFormCreator = document.querySelectorAll('.add-comment-question-form-button');
   if (commentQuestionFormCreator.length > 0)
       commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
-  }
 
   let commentCreator = document.querySelectorAll('#add-comment-button');
   if (commentCreator != null) {
