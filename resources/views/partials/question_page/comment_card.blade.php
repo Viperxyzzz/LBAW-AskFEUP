@@ -1,6 +1,6 @@
 <div id="comment_{{ $comment->comment_id }}" class="border-top d-flex justify-content-between">
     @include('partials.question_page.delete_comment_modal', ['comment' => $comment])
-    <div class="d-flex">
+    <div class="d-flex flex-fill">
         <div class="d-flex align-items-center flex-column p-1">
             <button class="button-clear p-0 m-0 mr-2" type="button">
                 <i class="material-symbols-outlined">keyboard_arrow_up</i>
@@ -10,7 +10,7 @@
                 <i class="material-symbols-outlined ">keyboard_arrow_down</i>
             </button>
         </div>
-        <div class="pt-3">
+        <div class="pt-3 flex-fill">
             <p class="m-0">
                 <img src="{{asset('storage/'.($comment->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
                 <a href="{{url("/users/$comment->user_id")}}"> {{ $comment->author->name }}</a>

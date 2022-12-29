@@ -39,6 +39,9 @@ Route::get('tags', 'TagController@index');
 Route::get('api/tags/', 'TagController@search');
 Route::post('api/tag/follow/{id}', 'TagController@follow');
 Route::post('api/tag/unFollow/{id}', 'TagController@unFollow');
+Route::post('api/tag/create', 'TagController@store')->name('tag_create_api');
+Route::delete('api/tag/delete/{id}', 'TagController@destroy')->name('tag_delete_api');
+Route::put('api/tag/edit/{id}', 'TagController@update')->name('tag_update_api');
 
 // Admin / Reports
 Route::get('dashboard', 'ModController@index')->name('dashboard');
@@ -67,3 +70,5 @@ Route::post('register', 'Auth\RegisterController@register');
 // Comments
 Route::post('api/comment/{id}', 'CommentController@create')->name('create_comment');
 Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comment_delete_api');
+Route::get('api/comment/edit/{id}', 'CommentController@edit_view')->name('edit_comment_form');
+Route::put('api/comment/update/{id}', 'CommentController@update')->name('update_comment');

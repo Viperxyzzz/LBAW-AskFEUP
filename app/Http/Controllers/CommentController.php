@@ -29,6 +29,7 @@ class CommentController extends Controller
       $comment->date = date('Y-m-d H:i:s');
       $comment->answer_id = $request->answer_id;
       $comment->user_id = auth::id();
+      $comment->was_edited = false;
       $comment->save();
 
       $comment['author']['name'] = Auth::user()->name;
@@ -42,6 +43,26 @@ class CommentController extends Controller
       $this->authorize('delete', $comment);
 
       $comment->delete();
+      return $comment;
+    }
+    public function edit_view(Request $request, $comment_id) {
+      if (!Auth::check()) return redirect('/login');
+      $comment = Comment::find($comment_id);
+      $this->authorize('edit', $comment);
+
+      return $comment;
+    }
+
+    public function update(Request $request, $comment_id) {
+      if (!Auth::check()) return redirect('/login');
+      $comment = Comment::find($comment_id);
+      $this->authorize('update', $comment);
+
+      $comment->full_text = $request->full_text;
+      $comment->was_edited = true;
+      $comment->date = date('Y-m-d H:i:s');
+
+      $comment->save();
       return $comment;
     }
 }
