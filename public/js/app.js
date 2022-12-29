@@ -780,6 +780,10 @@ function submitSettings(){
 
 function editAnswer(event) {
   console.log("edit answer")
+
+  //remove opened forms
+  document.querySelector('#add-answer-card').innerHTML = '';
+
   let answer_id = event.target.parentElement.children[0].innerText;
 
   let answer = document.querySelector('#answer_' + answer_id);
@@ -862,6 +866,9 @@ function cancelEditAnswer(answer_id,text){
   console.log(answer_form.parentElement.querySelector('.answer-full-text'))
 
   answer_form.remove();
+
+  // Insert answer form back
+  addAnswerCard();
 }
 /***********  ***********/
 function sendFollowTagRequest(event) {
@@ -1163,26 +1170,29 @@ function  questionCommentAddedHandler() {
 }
 
 function cancelCreateComment(){
-  let question_id = document.querySelector('#question_id').value;
-
   let commentForm = document.querySelector('.comment-form')
-  console.log(commentForm)
   commentForm.remove()
 
-    // Insert answer form back
-    let add_answer_card = document.querySelector('#add-answer-card');
-    add_answer_card.innerHTML = `
-    <form method="POST" class="card-body m-0 p-0">
-      <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
-      <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
-        id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
-    </form>
-  <div class="card-footer text-right">
-    <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
-        Answer
-    </button>
-  </div>
-    `
+  // Insert answer form back
+  addAnswerCard();
+}
+
+function addAnswerCard() {
+  let question_id = document.querySelector('#question_id').value;
+  console.log("add answer card")
+  let add_answer_card = document.querySelector('#add-answer-card');
+  add_answer_card.innerHTML = `
+  <form method="POST" class="card-body m-0 p-0">
+    <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+    <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+      id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
+  </form>
+<div class="card-footer text-right">
+  <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
+      Answer
+  </button>
+</div>
+`
 }
 
 /*********** delete an comment ***********/
@@ -1205,6 +1215,9 @@ function commentDeletedHandler() {
 /*********** edit comment ***********/
 
 function editComment(event) {
+  //remove opened forms
+  document.querySelector('#add-answer-card').innerHTML = '';
+
   let comment_id = event.target.parentElement.children[0].innerText;
   let comment = document.querySelector('#comment_' + comment_id);
 
@@ -1275,6 +1288,9 @@ function sendCreateCommentUpdateRequest() {
 }
 
 function cancelEditComment(comment_id, text) {
+  // Insert answer form back
+  addAnswerCard();
+
   console.log("cancel edit comment")
   let p = document.createElement('p');
   p.classList.add('card-text', 'pb-5', 'pt-2');
