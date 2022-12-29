@@ -859,10 +859,8 @@ function cancelEditAnswer(answer_id,text){
   p.innerText = text;
 
   let answer_element = document.querySelector('#answer_' + answer_id);
-  console.log(answer_element)
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
-  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
 
   answer_form.remove();
 
