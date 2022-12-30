@@ -20,6 +20,10 @@ body {
     color: var(--secondary-color);
 }
 
+.c-accent {
+    color: var(--accent-color);
+}
+
 .b-accent {
     background-color: var(--accent-color);
 }
@@ -27,6 +31,10 @@ body {
 :target {
     background-color: var(--background-color);
 
+}
+
+#content {
+    flex-grow: 1;
 }
 
 i {

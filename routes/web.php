@@ -12,6 +12,8 @@
 */
 // Home
 Route::get('/', 'Auth\LoginController@home');
+Route::get('/about', function () {
+    return view('pages.about');})->name('about');
 
 // User specific
 Route::get('feed', 'FeedController@home');

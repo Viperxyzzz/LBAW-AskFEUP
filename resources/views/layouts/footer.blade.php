@@ -5,7 +5,6 @@
         <a href="/browse" class="text-secondary mx-2">Questions</a>
         <a href="/users" class="text-secondary mx-2">Users</a>
         <a href="/question/create" class="text-secondary mx-2">New question</a>
-        <a href="#" class="text-secondary mx-2">FAQ</a>
-        <a href="#" class="text-secondary mx-2">About</a>
+        <a href="/about" class="text-secondary mx-2">About</a>
     </nav>
 </footer>
