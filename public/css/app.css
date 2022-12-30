@@ -91,6 +91,12 @@ form {
     color: var(--primary-color);
 }
 
+.error-code {
+    font-size: 17rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
 #tags option{
     font-size: 1.3rem;
 }
