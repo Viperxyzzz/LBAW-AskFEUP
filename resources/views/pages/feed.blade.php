@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+
+@include('partials.messages.feedback')
+
 <div class="row">
     @include('partials.feed.left_nav')
     <div class="col-lg-6 " >

@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+
+  @include('partials.messages.feedback')
+
   <div class="container py-5">
     <div class="row">
       @include('partials.profile.header', ['user' => $user])

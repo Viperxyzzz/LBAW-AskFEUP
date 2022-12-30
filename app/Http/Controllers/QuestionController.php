@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 use App\Models\Question;
 use App\Models\QuestionTag;
@@ -46,7 +47,7 @@ class QuestionController extends Controller
 
       $tags = $request->tags;
       if($tags === null)
-        return redirect('/question/'.$question->question_id);
+        return redirect('/question/'.$question->question_id)->with('message', 'Created question successfully!');
       for($i = 0; $i < count($tags); $i++){
         $question_tag = new QuestionTag;
         $question_tag->question_id = $question->question_id;
@@ -54,7 +55,7 @@ class QuestionController extends Controller
         $question_tag->save();
       }
 
-      return redirect('/question/'.$question->question_id);
+      return redirect('/question/'.$question->question_id)->with('message', 'Created question successfully!');
     }
 
     public function update(Request $request, $id)
@@ -76,7 +77,7 @@ class QuestionController extends Controller
 
       $question->save();
 
-      return redirect('/question/'.$question->question_id);
+      return redirect('/question/'.$question->question_id)->with('message', 'Changed question successfully!');
     }
 
     public function delete(Request $request)
@@ -85,7 +86,7 @@ class QuestionController extends Controller
       $question = Question::find($request->question_id);
       $this->authorize('delete', $question);
       $question->delete();
-      return redirect('/feed');
+      return redirect('/feed')->with('message', 'Deleted question successfully!');
     }
 
     public function edit_view(Request $request)

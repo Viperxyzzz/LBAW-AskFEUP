@@ -81,7 +81,7 @@ class ProfileController extends Controller
         ]);
       }
 
-      return redirect('users/'.$user->user_id);
+      return redirect('users/'.$user->user_id)->with('message', 'Changed profile information successfully!');
     }
 
 }
