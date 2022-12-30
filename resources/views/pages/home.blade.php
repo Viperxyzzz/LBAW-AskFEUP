@@ -7,9 +7,9 @@
     <a class="fade-3" href="{{ route('browse') }}">Browse Questions</a>
 </div>
 <div class="container">
-    <div class="row justify-content-around">
+    <div class="row justify-content-center">
         <div class="col-sm-5">
-            <div class="card slide-right card-header p-4 rounded d-flex justify-content-center align-items-center" style="min-height: 20rem">
+            <div class="card slide-right card-header p-4 m-3 rounded d-flex justify-content-center align-items-center" style="min-height: 20rem">
                 <a class="" href="{{ route('register') }}">
                     <h3>
                         Join the community!
@@ -21,7 +21,7 @@
             </div>
         </div>
         <div class="col-sm-5">
-            <div class="card slide-left card-header p-4 rounded d-flex justify-content-center align-items-center" style="min-height: 20rem">
+            <div class="card slide-left card-header p-4 m-3 mb-5 rounded d-flex justify-content-center align-items-center" style="min-height: 20rem">
                 <a class="" href="{{ route('about') }}">
                     <h3>
                         Learn more

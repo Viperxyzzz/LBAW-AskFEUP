@@ -2,14 +2,14 @@
 
 @section('content')
 <div class="row m-5">
-    <div class="col-sm-4 offset-md-2 p-5">
+    <div class="col-md-4 offset-md-2">
         <h3>About</h3>
         <p class="">
             <span class="c-primary">AskFeup</span> is a curricular project developed for the Database and Web Applications Laboratory Curricular Unit.
             It is a <strong>collaborative</strong> question system. It allows for people to ask questions about anything, provide answers and create collective knowledge.
         </p>
     </div>
-    <section class="col-sm-4 p-5">
+    <section class="col-md-4">
         <header class="d-flex justify-content-between align-items-baseline">
             <h3>Contacts</h3>
             <p class="text-right m-0"><em>lbaw2221</em></p>
@@ -23,7 +23,7 @@
     </section>
 </div>
 
-<div class="col-sm-8 offset-md-2">
+<div class="col-md-8 offset-md-2">
     <h3 class="text-center">Implemented Features</h3>
     <li class="d-flex flex-wrap justify-content-center">
         <ul class="card card-header p-3 m-1">Comment on Questions</ul>

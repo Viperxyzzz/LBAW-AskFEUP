@@ -278,3 +278,16 @@ input[type="checkbox"] {
         left: 0;
       }
     }
+
+
+/************************* Responsive **************************/
+
+@media (max-width: 576px) { 
+    .feed-index {
+        display: none;
+    }
+
+    .row {
+        width: inherit;
+    }
+}
