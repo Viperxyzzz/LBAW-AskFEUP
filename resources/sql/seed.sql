@@ -45,7 +45,7 @@ CREATE TABLE question (
     num_votes INTEGER NOT NULL CHECK (num_votes >= 0),
     num_views INTEGER NOT NULL CHECK (num_views >= 0),
     num_answers INTEGER NOT NULL CHECK (num_answers >= 0),
-    date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
+    date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
     was_edited BOOLEAN NOT NULL DEFAULT FALSE,
     author_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
 );
@@ -78,7 +78,7 @@ CREATE TABLE comment(
   full_text TEXT NOT NULL,
   num_votes INTEGER NOT NULL CONSTRAINT num_votes_ck CHECK (num_votes >= 0),
   was_edited BOOLEAN NOT NULL DEFAULT FALSE,
-  date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
+  date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
   question_id INTEGER NOT NULL REFERENCES question (question_id) ON UPDATE CASCADE ON DELETE CASCADE, 
   answer_id INTEGER REFERENCES answer (answer_id) ON UPDATE CASCADE ON DELETE CASCADE, 
   user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
@@ -99,7 +99,7 @@ create table blocks(
     block_id SERIAL PRIMARY KEY,
     user_id INTEGER UNIQUE NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
     reason TEXT NOT NULL,
-    date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
+    date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
 );
 
 DROP TABLE IF EXISTS user_tag CASCADE;
