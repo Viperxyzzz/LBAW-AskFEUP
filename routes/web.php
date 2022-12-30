@@ -14,13 +14,15 @@
 Route::get('/', 'Auth\LoginController@home');
 Route::get('/about', function () {
     return view('pages.about');})->name('about');
+Route::get('/sitemap', function () {
+    return view('pages.sitemap');})->name('sitemap');
 
 // User specific
-Route::get('feed', 'FeedController@home');
+Route::get('feed', 'FeedController@home')->name('feed');
 Route::get('settings/{id}', 'ProfileController@settings');
 
 // Users
-Route::get('users', 'UserController@home');
+Route::get('users', 'UserController@home')->name('users');
 Route::get('users/{id}', 'ProfileController@home')->name('users');
 Route::get('api/users/', 'UserController@search');
 
