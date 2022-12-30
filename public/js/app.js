@@ -280,11 +280,8 @@ function sendAjaxRequest(method, url, data, handler) {
 /*********** create an answer ***********/
 
 function sendCreateAnswerRequest(event) {
-  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
-  console.log(question_id)
   let answer = document.querySelector('#answer').value;
-  console.log(answer)
 
   if (answer != '')
     sendAjaxRequest('put', '/api/answer/' + question_id, { answer: answer }, answerAddedHandler);
@@ -307,7 +304,6 @@ function answerAddedHandler() {
 }
 
 function createAnswer(answer) {
-  console.log(answer)
   let new_answer = document.createElement('div');
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
@@ -798,7 +794,6 @@ function blockRemovedHandler() {
 /*********** create a report ***********/
 
 function sendCreateReportRequest(event) {
-  console.log(event.target.parentElement.parentElement)
   let body = event.target.parentElement.parentElement.querySelector('.modal-body')
   let reason = body.querySelector('input[name=reason]').value
   let question_id = body.querySelector('input[name=question_id]').value
@@ -923,7 +918,6 @@ function editAnswer(event) {
   let answer = document.querySelector('#answer_' + answer_id);
   let text = answer.querySelector('.card-text').innerText;
   let full_text = answer.querySelector('.answer-full-text');
-  console.log(full_text)
   full_text.insertAdjacentElement("afterend", createAnswerForm(answer_id, text));
   full_text.innerHTML = '';
 }
@@ -974,10 +968,8 @@ function sendCreateAnswerUpdateRequest() {
   p.innerText = answer.full_text;
 
   let answer_element = document.querySelector('#answer_' + answer.answer_id);
-  console.log(answer_element)
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
-  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
 
   answer_form.remove();
 
@@ -1128,7 +1120,6 @@ function createAnswerCommentForm(answer_card_id) {
   let answer_id = answer_card_id_list[1]
 
   let previous_comment_form = document.querySelector(`.comment-answer-${answer_id}-form`)
-  console.log(previous_comment_form)
   if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
 
   let comment_form = document.createElement('div');
@@ -1149,7 +1140,6 @@ function createAnswerCommentForm(answer_card_id) {
 }
 
 function sendCreateAnswerCommentRequest(answer_id) {
-  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
   let comment = document.querySelector('#comment').value;
 
@@ -1167,16 +1157,13 @@ function answerCommentAddedHandler() {
 
   // Create the new comment
   let new_comment = createComment(comment);
-  console.log(new_comment)
 
   // Insert the new comment
   let comments = document.querySelector(`.answer-${comment.answer_id}-comments`);
-  console.log(comments)
   comments.prepend(new_comment);
 }
 
 function createComment(comment) {
-  console.log(comment)
   let new_comment = document.createElement('div');
   new_comment.id = `comment_${comment.comment_id}`
   new_comment.className = 'border-top'
@@ -1249,10 +1236,8 @@ function createComment(comment) {
 
 function questionCommentForm(event) {
   let question = event.target.parentElement.parentElement.parentElement
-  console.log(question)
 
   let question_id = document.querySelector('#question_id').value;
-  console.log(question_id)
 
   //remove answer form
   document.querySelector('#add-answer-card').innerHTML = '';
@@ -1264,7 +1249,6 @@ function questionCommentForm(event) {
 function createQuestionCommentForm(question_id) {
   //prevent duplicated comment form
   let previous_comment_form = document.querySelector('.comment-form')
-  console.log(previous_comment_form)
   if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
   if(previous_comment_form!=null) previous_comment_form.remove()
 
@@ -1293,11 +1277,8 @@ function createQuestionCommentForm(question_id) {
 }
 
 function sendCreateQuestionCommentRequest() {
-  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
-  console.log(question_id);
   let comment = document.querySelector('#comment').value;
-  console.log(comment)
 
   if (comment != '')
     sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id}, questionCommentAddedHandler);
@@ -1315,11 +1296,9 @@ function  questionCommentAddedHandler() {
 
   // Create the new comment
   let new_comment = createComment(comment);
-  console.log(new_comment)
 
   // Insert the new comment
   let comments = document.querySelector(`.question-comments`);
-  console.log(comments)
   comments.prepend(new_comment);
 
   // Insert answer form back
@@ -1342,7 +1321,6 @@ function cancelCreateComment(){
   let question_id = document.querySelector('#question_id').value;
 
   let commentForm = document.querySelector('.comment-form')
-  console.log(commentForm)
   commentForm.remove()
 
     // Insert answer form back
@@ -1371,7 +1349,6 @@ function sendDeleteCommentRequest(event) {
 }
 
 function commentDeletedHandler() {
-  console.log("comment_handler")
 
   let deletedComment = JSON.parse(this.responseText);
 
@@ -1440,9 +1417,16 @@ function sendCreateCommentUpdateRequest() {
   p.classList.add('card-text', 'pb-5', 'pt-2');
   p.innerText = comment.full_text;
 
+  let em = document.createElement('em')
+  em.innerText = 'edited'
+
   let comment_element = document.querySelector('#comment_' + comment.comment_id);
   let comment_form = comment_element.querySelector('.comment-form');
   comment_form.parentElement.querySelector('.card-text').appendChild(p);
+
+  comment_head = comment_form.parentElement.children[0]
+  if (comment_head.lastElementChild.tagName != 'EM')
+    comment_head.appendChild(em)
   comment_form.remove();
 
 }

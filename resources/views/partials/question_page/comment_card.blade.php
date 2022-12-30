@@ -15,6 +15,9 @@
                 <img src="{{asset('storage/'.($comment->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
                 <a href="{{url("/users/$comment->user_id")}}"> {{ $comment->author->name }}</a>
                 {{ \Carbon\Carbon::parse($comment->date)->format('d/m/Y')}}
+                @if($comment->was_edited)
+                <em>edited</em>
+                @endif
             </p>
         <p class="card-text py-2">{{ $comment->full_text }}</p>
         </div>
