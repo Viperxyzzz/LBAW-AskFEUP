@@ -20,6 +20,10 @@ body {
     color: var(--secondary-color);
 }
 
+.c-accent {
+    color: var(--accent-color);
+}
+
 .b-accent {
     background-color: var(--accent-color);
 }
@@ -27,6 +31,10 @@ body {
 :target {
     background-color: var(--background-color);
 
+}
+
+#content {
+    flex-grow: 1;
 }
 
 i {
@@ -37,8 +45,20 @@ a {
     cursor: pointer;
 }
 
+footer * {
+    color: var(--light-color);
+}
+
 form {
     margin: 0;
+}
+
+.sitemap li {
+    list-style: none;
+}
+
+.sitemap li a {
+    color: var(--light-color);
 }
 
 .card .question-stats {
@@ -80,6 +100,12 @@ form {
 }
 
 .title-blue {
+    color: var(--primary-color);
+}
+
+.error-code {
+    font-size: 17rem;
+    font-weight: bold;
     color: var(--primary-color);
 }
 
@@ -170,11 +196,6 @@ input[type="checkbox"] {
     font-weight: normal;
 }
 
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
 .hide{
     display: none;
 }
@@ -198,4 +219,78 @@ input[type="checkbox"] {
 
 .filter-option > input {
     display: none;
+}
+
+/************************* Animations **************************/
+
+.fade-in {
+    animation: fadeIn 0.8s;
+}
+
+.fade-1 {
+    animation: fadeInDelay 0.8s;
+}
+
+.fade-2 {
+    animation: fadeInDelay 1.2s;
+}
+
+.fade-3 {
+    animation: fadeInDelay 1.6s;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeInDelay {
+  0% { opacity: 0; }
+  50% {opacity: 0;}
+  100% { opacity: 1; }
+}
+
+.slide-left {
+      position: relative;
+      animation: slideLeft 0.8s ease-out;
+    }
+
+@keyframes slideLeft {
+      0% {
+        opacity: 0;
+        right: -100px;
+      }
+    100% {
+        opacity: 1;
+        right: 0;
+      }
+    }
+
+.slide-right {
+      position: relative;
+      animation: slideRight 0.8s ease-out;
+    }
+
+@keyframes slideRight {
+      0% {
+        opacity: 0;
+        left: -100px;
+      }
+    100% {
+        opacity: 1;
+        left: 0;
+      }
+    }
+
+
+/************************* Responsive **************************/
+
+@media (max-width: 576px) { 
+    .feed-index {
+        display: none;
+    }
+
+    .row {
+        width: inherit;
+    }
 }

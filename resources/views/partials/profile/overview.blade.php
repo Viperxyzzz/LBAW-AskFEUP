@@ -1,5 +1,5 @@
 <div class="row">
-    <ul class="d-flex list-unstyled">
+    <ul class="d-flex list-unstyled flex-wrap">
     <li class="mr-4 text-center col-lg-3">
         <div class="d-flex flex-column">
         <strong>Nº asked<br>questions</strong>
