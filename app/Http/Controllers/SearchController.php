@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
+use App\Models\QuestionTag;
+use App\Models\Tag;
 
 class SearchController extends Controller
 {
@@ -30,10 +32,25 @@ class SearchController extends Controller
         ->orWhereRaw("title @@ to_tsquery('english', ?)", [$search])
         ->orWhereRaw("author_id IN (SELECT user_id FROM users WHERE name @@ to_tsquery('english', ?))", [$search])
         ->get();
+      $tags = $request->input('tags') ?? [];
+
+      if($request->input('searchText') != null){
+        $questions = Question::where('title', 'like', '%' . $request->input('searchText') . '%')
+          ->orWhere('full_text', 'like', '%' . $request->input('searchText') . '%')
+          ->orWhere('tsvectors', 'like', '%' . $request->input('searchText') . '%')
+          ->orderBy($order, $direction)->get();
       }
       else{
         $questions = Question::orderBy($order, $direction)->get();
       }
+
+      if ($tags != []) {
+        $questions = $questions->filter(function ($question) use($tags) {
+          return QuestionTag::where('question_id', '=', $question->question_id)
+            ->whereIn('tag_id', $tags)->exists();
+        });
+      }
+
       foreach($questions as $question) {
         $question['author_name'] = $question->author->name;
         $question['date_distance'] = $question->date_distance();
@@ -50,7 +67,8 @@ class SearchController extends Controller
     public function home(Request $request)
     {
       $questions = $this->get_questions($request);
-      return view('pages.browse', ['questions' => $questions ]);
+      $tags = Tag::all();
+      return view('pages.browse', ['questions' => $questions, 'tags' => $tags ]);
     }
 
     /**

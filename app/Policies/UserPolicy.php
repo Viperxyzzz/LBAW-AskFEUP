@@ -11,6 +11,17 @@ class UserPolicy
 {
     use HandlesAuthorization;
 
+    /**
+     * See if a user can view another users profile.
+     * This exists because blocked accounts are not available for regular users.
+     */
+    public function view(User $user, User $profile) {
+      if ($profile->is_blocked()) {
+        return $user->is_mod();
+      }
+      return true;
+    }
+
     public function delete(User $user, User $profile)
     {
       // Only an answer's author can delete it
