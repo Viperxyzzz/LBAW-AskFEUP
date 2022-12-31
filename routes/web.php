@@ -47,6 +47,7 @@ Route::post('api/answer/update/{id}','AnswerController@update')->name('update_an
 
 // Notifications
 Route::post('api/notification/update/{id}', 'NotificationController@update')->name('update_notification');
+Route::get('/notification/{id}', 'NotificationController@redirectNotification')->name('redirect_notification');
 
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');

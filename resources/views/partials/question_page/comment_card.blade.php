@@ -1,4 +1,4 @@
-<div class="border-top d-flex justify-content-between">
+<div class="border-top d-flex justify-content-between" id="{{'comment_'.$comment->comment_id}}">
     <div class="d-flex">
         <div class="d-flex align-items-center flex-column p-1">
             <button class="button-clear p-0 m-0 mr-2" type="button">

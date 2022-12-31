@@ -538,11 +538,15 @@ function sendUpdateNotificationRequest(event) {
   let notification_id = button_id.split('-').pop()
   if (notification_id != '')
     sendAjaxRequest('post', 
-                    'api/notification/update/' + notification_id, 
+                    '/api/notification/update/' + notification_id, 
                     {}, 
                     function(){return updateNotification(notification_id);})
   event.stopPropagation()
   event.preventDefault()
+}
+
+function redirect_notification(notification_id){
+  window.location.assign('/notification/' + notification_id);
 }
 /***********  ***********/
 

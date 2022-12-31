@@ -29,7 +29,7 @@
                     <ul>
                         @foreach(Auth::user()->notifications()->orderBy('date', 'DESC')->get() as $notification)
                             <li class="dropdown-item">
-                                <button class="btn bg-transparent shadow-none border-0 d-flex justify-content-between align-items-center w-100 button-notification" id="button-notification-{{$notification['notification_id']}}" aria-expanded="true">
+                                <button class="btn bg-transparent shadow-none border-0 d-flex justify-content-between align-items-center w-100 button-notification" id="button-notification-{{$notification['notification_id']}}" aria-expanded="true" onclick="redirect_notification({{$notification['notification_id']}})">
                                     <div class="d-flex flex-column">
                                         <strong class="h5 text-left">{{$notification["notification_text"]}}</strong>
                                         <small class="text-left">{{date("d/m/Y H:i:s", strtotime($notification["date"]))}}</small>
