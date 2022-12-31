@@ -245,6 +245,13 @@ function addEventListeners() {
       btn => btn.addEventListener('click', sendUpdateNotificationRequest)
       );
   }
+
+  let updateVotes = document.querySelectorAll('.update-votes');
+  if (updateVotes != null) {
+    updateVotes.forEach(
+      btn => btn.addEventListener('click', sendUpdateVotesRequest)
+      );
+  }
 }
 
 function closeProfileTabs() {
@@ -1494,6 +1501,26 @@ function sendUpdateNotificationRequest(event) {
 function redirect_notification(notification_id){
   window.location.assign('/notification/' + notification_id);
 }
+
+function sendUpdateVotesRequest(event) {
+  id = event.currentTarget.querySelectorAll('input')[1].value;
+  value = event.currentTarget.querySelectorAll('input')[0].value;
+
+  if (id != '')
+    sendAjaxRequest('post', `/api/question/${id}/vote`, {question_id : id, vote: value}, sendUpdateVotesHandler);
+  event.preventDefault();
+}
+
+function sendUpdateVotesHandler() {
+  let response = JSON.parse(this.responseText);
+  console.log(response);
+  let votes = response.num_votes;
+  let question_id = response.question_id;
+  let votesHTML = document.getElementById('num-votes-' + question_id);
+
+  votesHTML.innerHTML = votes;
+}
+
 /***********  ***********/
 
 addEventListeners();

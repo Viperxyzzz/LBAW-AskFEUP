@@ -1,22 +1,22 @@
 <div>
     <div class="d-flex">
-        <div>
-            <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
-                {{ csrf_field() }}
+        <div class="d-flex flex-column">
+            <!-- <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
+                {{ csrf_field() }} -->
+                <button class="button-clear p-1 mr-2 update-votes" type="submit">
                 <input type="hidden" name="vote" value="1"></input>
                 <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
-                <button class="button-clear p-1 mr-2" type="submit">
                     <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_up</i>
                 </button>
-            </form>
-            <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
-                {{ csrf_field() }}
+            <!-- </form> -->
+            <!-- <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
+                {{ csrf_field() }} -->
+                <button class="button-clear p-1 mr-2 update-votes" type="submit">
                 <input type="hidden" name="vote" value="-1"></input>
                 <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
-                <button class="button-clear p-1 mr-2" type="submit">
                     <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_down</i>
                 </button>
-            </form>
+            <!-- </form> -->
         </div>
         <div class="d-flex flex-fill justify-content-between">
             <div>
@@ -33,7 +33,7 @@
         @endforeach
         </div>
         <div class="d-flex">
-            <p class="m-2"><strong class="title-blue">{{$question->num_votes}}</strong> votes</p>
+            <p class="m-2"><strong class="title-blue" id="num-votes-{{$question->question_id}}">{{$question->num_votes}}</strong> votes</p>
             <p class="m-2"><strong class="title-blue">{{$question->num_views}}</strong> views</p>
             <p class="m-2"><strong class="title-blue">{{$question->num_answers}}</strong> answers</p>
         </div>

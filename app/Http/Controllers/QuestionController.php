@@ -123,25 +123,29 @@ class QuestionController extends Controller
     {
       if(!Auth::check()) return redirect('/login');
       $question = Question::find($request->question_id);
-      error_log($request->vote);
-      error_log($request->question_id);
       $this->authorize('vote', $question);
       //create a question vote
       //verify if user already voted
       $question_vote = QuestionVotes::where('question_id', $request->question_id)->where('user_id', Auth::user()->user_id)->first();
+      //se o user ja votou
       if($question_vote !== null){
+        if($question_vote->value == $request->value)
+          return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id];
+        $question->num_votes -= $question_vote->value;
+        $question->num_votes += $request->vote;
+        $question->save();
         $question_vote->value = $request->vote;
         $question_vote->save();
-        $question->save();
-        return redirect('/question/'.$question->question_id);
+        return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id];
       }
       $question_vote = new QuestionVotes;
       $question_vote->question_id = $request->question_id;
       $question_vote->user_id = Auth::user()->user_id;
       $question_vote->value = $request->vote;
       $question_vote->save();
+      $question->num_votes += $request->vote;
       $question->save();
-      return redirect('/question/'.$question->question_id);
+      return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id];;
     }
 
     public function create_view()
