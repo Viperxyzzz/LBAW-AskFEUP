@@ -47,6 +47,13 @@ function addEventListeners() {
   if (commentQuestionFormCreator.length > 0)
       commentQuestionFormCreator[0].addEventListener('click', questionCommentForm);
 
+  let commentCreator = document.querySelectorAll('#add-comment-button');
+  if (commentCreator != null) {
+    commentCreator.forEach(button =>{
+      button.addEventListener('click', function(){alert("test")});
+  });
+  }
+
   let enterInputEditUserFullName = document.querySelector('#edit-full-name');
   if(enterInputEditUserFullName != null)
     enterInputEditUserFullName.addEventListener('keypress', function(event) {
@@ -142,6 +149,27 @@ function addEventListeners() {
       );
   }
 
+  let addBlock = document.querySelectorAll('.add-block');
+  if (addBlock != null) {
+    addBlock.forEach(
+      btn => btn.addEventListener('click', sendCreateBlockRequest)
+      );
+  }
+
+  let removeBlock = document.querySelectorAll('.unblock-user');
+  if (removeBlock != null) {
+    removeBlock.forEach(
+      btn => btn.addEventListener('click', sendRemoveBlockRequest)
+      );
+  }
+
+  let addReport = document.querySelectorAll('.add-report');
+  if (addReport != null) {
+    addReport.forEach(
+      btn => btn.addEventListener('click', sendCreateReportRequest)
+      );
+  }
+
   let orderQuestionsRadio = document.querySelectorAll('input[name=order-questions]');
   if (orderQuestionsRadio != null) {
     orderQuestionsRadio.forEach(orderQuestionsButton => {
@@ -166,6 +194,16 @@ function addEventListeners() {
     }
   )
 
+  let dashboardTabs = document.querySelectorAll('.dashboard-tab-button')
+  dashboardTabs.forEach(
+    button => {
+      button.addEventListener('click', function(){
+        toggleDashboardTab(button.id + '-tab')
+        button.classList.add('active');
+      })
+    }
+  )
+
   let followTag = document.querySelectorAll('.follow-tag')
   followTag.forEach(
     button => {
@@ -177,6 +215,20 @@ function addEventListeners() {
   unFollowTag.forEach(
     button => {
       button.addEventListener('click', sendUnFollowTagRequest)
+    }
+  )
+
+  let followQuestion = document.querySelectorAll('.follow-question')
+  followQuestion.forEach(
+    button => {
+      button.addEventListener('click', sendFollowQuestionRequest)
+    }
+  )
+
+  let unFollowQuestion = document.querySelectorAll('.un-follow-question')
+  unFollowQuestion.forEach(
+    button => {
+      button.addEventListener('click', sendUnFollowQuestionRequest)
     }
   )
 }
@@ -193,6 +245,20 @@ function toggleProfileTab(tab) {
   let open = document.getElementById(tab);
   if (open != null)
     open.classList.add('profile-tab-open');
+}
+
+function closeDashboardTabs() {
+  let buttons = document.querySelectorAll('.dashboard-tab-button');
+  buttons.forEach(button => button.classList.remove('active'))
+  let tabs = document.querySelectorAll('.dashboard-tab');
+  tabs.forEach(tab => {tab.classList.remove('tab-open')});
+}
+
+function toggleDashboardTab(tab) {
+  closeDashboardTabs();
+  let open = document.getElementById(tab);
+  if (open != null)
+    open.classList.add('tab-open');
 }
 
 function encodeForAjax(data) {
@@ -672,6 +738,79 @@ function reportDeletedHandler() {
   deletedReportElement.remove();
 }
 
+/*********** create block ***********/
+
+function sendCreateBlockRequest(event) {
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let user_id = body.querySelector('input[name=user_id]').value
+  let reason = body.querySelector('input[name=reason]').value
+
+  if (user_id != null)
+    sendAjaxRequest('post', `/api/blocks/add/${user_id}`, {reason : reason}, blockCreatedHandler);
+
+  event.preventDefault()
+}
+
+function blockCreatedHandler() {
+  if (this.status != 201) return;
+
+  info = document.querySelector('.profile-info')
+
+  warning = document.createElement('a');
+  warning.href = '/dashboard'
+  warning.classList.add('warning-blocked', 'd-flex', 'ml-5', 'p-2', 'border', 'border-danger', 'rounded', 'align-items-baseline')
+  warning.innerHTML = 
+  `<h4 class="m-0 text-danger">
+        <i class="p-0 material-symbols-outlined">warning</i>
+        This user is blocked!
+    </h4>
+    `
+  info.prepend(warning)
+
+  document.querySelector('.block-user').classList.toggle('d-flex')
+  document.querySelector('.block-user').classList.toggle('tab-closed')
+  document.querySelector('.unblock-user').classList.toggle('d-flex')
+  document.querySelector('.unblock-user').classList.toggle('tab-closed')
+}
+
+/*********** remove block ***********/
+
+function sendRemoveBlockRequest(event) {
+  let user_id = event.target.querySelector('input[name=user_id]').value
+
+  if (user_id != null)
+    sendAjaxRequest('delete', `/api/blocks/delete/${user_id}`, {}, blockRemovedHandler);
+
+  event.preventDefault()
+}
+
+function blockRemovedHandler() {
+  if (this.status != 200) return;
+
+  document.querySelector('.warning-blocked').remove()
+
+  document.querySelector('.block-user').classList.toggle('d-flex')
+  document.querySelector('.block-user').classList.toggle('tab-closed')
+  document.querySelector('.unblock-user').classList.toggle('d-flex')
+  document.querySelector('.unblock-user').classList.toggle('tab-closed')
+}
+
+/*********** create a report ***********/
+
+function sendCreateReportRequest(event) {
+  console.log(event.target.parentElement.parentElement)
+  let body = event.target.parentElement.parentElement.querySelector('.modal-body')
+  let reason = body.querySelector('input[name=reason]').value
+  let question_id = body.querySelector('input[name=question_id]').value
+  let answer_id = body.querySelector('input[name=answer_id]').value
+  let comment_id = body.querySelector('input[name=comment_id]').value
+  data = {reason: reason, question_id : question_id, answer_id : answer_id, comment_id : comment_id}
+
+  if (body != null)
+    sendAjaxRequest('post', '/api/report/create', data, () => {});
+  event.preventDefault();
+}
+
 /*********** filter questions ***********/
 
 function sendOrderQuestionsRequest(event) {
@@ -918,6 +1057,63 @@ function tagUnFollowHandler() {
   button.querySelector('p').innerHTML = 'Follow'
 }
 
+/* Follow and un-follow questions */
+
+function sendFollowQuestionRequest(event) {
+  let question_id = event.currentTarget.querySelector('input[name=question]').value;
+
+  if (question_id != '')
+    sendAjaxRequest('post', `/api/question/follow/${question_id}`, {}, questionFollowHandler);
+    
+  event.preventDefault();
+}
+
+function questionFollowHandler() {
+  let follow = JSON.parse(this.responseText);
+  let question_id = follow['question_id'];
+
+  let button = document.getElementById(`follow-question-${question_id}`)
+
+  button.removeEventListener('click', sendFollowQuestionRequest)
+  button.onclick = sendUnFollowQuestionRequest
+
+  button.id = `un-follow-question-${question_id}`
+  button.classList.remove('follow-question')
+  button.classList.add('un-follow-question')
+  button.innerHTML = `
+    <input type="hidden" name="question" value="${question_id}">
+    <i width="16" height="16" class="material-symbols-outlined ">done</i>
+    Following`
+}
+
+function sendUnFollowQuestionRequest(event) {
+  let question_id = event.currentTarget.querySelector('input[name=question]').value;
+
+  if (question_id != '')
+    sendAjaxRequest('delete', `/api/question/unFollow/${question_id}`, {}, questionUnFollowHandler);
+    
+  event.preventDefault();
+}
+
+function questionUnFollowHandler() {
+  let follow = JSON.parse(this.responseText);
+  let question_id = follow['question_id'];
+
+  let button = document.getElementById(`un-follow-question-${question_id}`)
+
+  button.removeEventListener('click', sendUnFollowQuestionRequest)
+  button.onclick = sendFollowQuestionRequest
+
+  button.id = `follow-question-${question_id}`
+  button.classList.remove('un-follow-question')
+  button.classList.add('follow-question')
+  button.innerHTML = `
+    <input type="hidden" name="question" value="${question_id}">
+    <i width="16" height="16" class="material-symbols-outlined ">add</i>
+    Follow`
+}
+
+
 /** Multi-select dropdown */
 
 let options = document.querySelectorAll('option');
@@ -1042,7 +1238,7 @@ function createComment(comment) {
       </div>
     </div>
   </div>
-  <div class="d-flex">
+  <div class="d-flex flex-fill">
   <div class="d-flex align-items-center flex-column p-1">
       <button class="button-clear p-0 m-0 mr-2" type="button">
           <i class="material-symbols-outlined">keyboard_arrow_up</i>
@@ -1052,7 +1248,7 @@ function createComment(comment) {
           <i class="material-symbols-outlined ">keyboard_arrow_down</i>
       </button>
   </div>
-  <div class="pt-3">
+  <div class="pt-3 flex-fill">
       <p class="m-0">
           <img src="/storage/${comment.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
           <a href="url("/users/${comment.user_id}")">${comment.author.name}</a>
@@ -1068,8 +1264,8 @@ function createComment(comment) {
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                 <data class="comment_id" hidden>${comment.comment_id}</data>
-                <button class="dropdown-item edit_comment" type="button">
-                    <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                <button class="dropdown-item edit_comment" type="button" onclick="editComment(event)">
+                    <i width="16" height="16" class="material-symbols-outlined">edit</i>
                     Edit
                 </button>
             <input type="hidden" name="comment_id" value="${comment.comment_id}">

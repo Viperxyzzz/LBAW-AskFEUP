@@ -130,6 +130,19 @@ class User extends Authenticatable
       ])->exists();
     }
 
+    /**
+     * Determine if a user is following a question
+     * 
+     * @param question_id Id of the question to check
+     * @return Boolean True if user follows the question, false otherwise.
+     */
+    public function follows_question($question_id) {
+      return QuestionUser::where([
+        ['user_id', '=', $this->user_id],
+        ['question_id', '=', $question_id]
+      ])->exists();
+    }
+
     public function answers()
     {
         return $this->hasMany(Answer::class, 'user_id', 'user_id');
@@ -156,5 +169,14 @@ class User extends Authenticatable
      */
     public function is_admin() {
       return ($this->is_admin);
+    }
+
+    /**
+     * Check if a user is blocked.
+     * 
+     * @return True if the user is blocked, false otherwise.
+     */
+    public function is_blocked() {
+      return $this->hasOne(Block::class, 'user_id', 'user_id')->exists();
     }
 }

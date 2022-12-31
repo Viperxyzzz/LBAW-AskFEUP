@@ -37,6 +37,10 @@ a {
     cursor: pointer;
 }
 
+form {
+    margin: 0;
+}
+
 .card .question-stats {
     float: right;
 }
@@ -140,6 +144,19 @@ input[type=radio]:checked + label {
 
 .profile-nav {
     width: 25rem;
+}
+
+.dashboard-tab {
+    display: none;
+    animation: fadeIn 0.8s;
+}
+
+.tab-open {
+    display: block;
+}
+
+.tab-closed {
+    display: none;
 }
 
 input[type="checkbox"] {
