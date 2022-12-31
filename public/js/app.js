@@ -184,6 +184,13 @@ function addEventListeners() {
     });
   }
 
+  let tagFilter = document.querySelectorAll('.tag-filter');
+  if (tagFilter != null) {
+    tagFilter.forEach(tag => {
+      tag.addEventListener('click', sendOrderQuestionsRequest);
+    });
+  }
+
   let profileTabs = document.querySelectorAll('.profile-nav')
   profileTabs.forEach(
     button => {
@@ -231,6 +238,13 @@ function addEventListeners() {
       button.addEventListener('click', sendUnFollowQuestionRequest)
     }
   )
+  
+  let notificationUpdate = document.querySelectorAll('.button-notification');
+  if (notificationUpdate != null) {
+    notificationUpdate.forEach(
+      btn => btn.addEventListener('click', sendUpdateNotificationRequest)
+      );
+  }
 }
 
 function closeProfileTabs() {
@@ -280,11 +294,8 @@ function sendAjaxRequest(method, url, data, handler) {
 /*********** create an answer ***********/
 
 function sendCreateAnswerRequest(event) {
-  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
-  console.log(question_id)
   let answer = document.querySelector('#answer').value;
-  console.log(answer)
 
   if (answer != '')
     sendAjaxRequest('put', '/api/answer/' + question_id, { answer: answer }, answerAddedHandler);
@@ -307,7 +318,6 @@ function answerAddedHandler() {
 }
 
 function createAnswer(answer) {
-  console.log(answer)
   let new_answer = document.createElement('div');
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
@@ -573,7 +583,7 @@ function createTag(tag, topics) {
   new_tag.id = `tag-${tag.tag_id}`
   let html = `
   <div class="card-header d-flex align-items-start justify-content-between">
-      <p class="badge p-3 m-1 mt-2">${tag.tag_name}</p>
+      <a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-2">${tag.tag_name}</a>
       <div class="d-flex justify-content-end">`
 
   if (tag['following']) {
@@ -627,7 +637,6 @@ function createTag(tag, topics) {
 }
 
 function createTagModals(tag, topics) {
-  let csrf = document.querySelector('meta[name="csrf-token"]').content;
 
   let html = '';
   if (tag['manage']) {
@@ -798,7 +807,6 @@ function blockRemovedHandler() {
 /*********** create a report ***********/
 
 function sendCreateReportRequest(event) {
-  console.log(event.target.parentElement.parentElement)
   let body = event.target.parentElement.parentElement.querySelector('.modal-body')
   let reason = body.querySelector('input[name=reason]').value
   let question_id = body.querySelector('input[name=question_id]').value
@@ -816,11 +824,20 @@ function sendCreateReportRequest(event) {
 function sendOrderQuestionsRequest(event) {
   let order = document.querySelector('input[name="order-questions"]:checked').id;
   let direction = document.querySelector('input[name="direction-questions"]:checked').id;
+  let tags = document.querySelectorAll('.tag-filter');
+  let tagsStr = '';
+  tags.forEach(
+    tag => {
+      tagsStr += (tag.hasAttribute('selected')) ? `&tags[]=${tag.value}` : '';
+    }
+  )
+
   const urlParams = new URLSearchParams(window.location.search);
   const search = urlParams.get('searchText');
+  console.log(search)
 
   if (order != '')
-    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}&searchText=${search}`, {}, orderedQuestionsHandler);
+    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}${(search !== null) ? '&searchText=' + search : ''}${tagsStr}`, {}, orderedQuestionsHandler);
     
   event.preventDefault();
 }
@@ -828,7 +845,7 @@ function sendOrderQuestionsRequest(event) {
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);
 
-  if (questions.length > 0) {
+  if (Object.keys(questions).length > 0) {
     let newQuestions = createQuestions(questions);
 
     let parent = document.querySelector('#questions');
@@ -854,7 +871,7 @@ function createQuestion(question) {
 
   let tags = "";
   question.tags.forEach(tag => {
-    tags += `<span class="badge p-2">${tag.tag_name}</span>\n`
+    tags += `<a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-1">${tag.tag_name}</a>\n`
   })
   new_question.innerHTML =
   `
@@ -983,10 +1000,8 @@ function sendCreateAnswerUpdateRequest() {
   p.innerText = answer.full_text;
 
   let answer_element = document.querySelector('#answer_' + answer.answer_id);
-  console.log(answer_element)
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
-  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
 
   answer_form.remove();
   addAnswerCard();
@@ -1118,13 +1133,15 @@ function questionUnFollowHandler() {
 
 let options = document.querySelectorAll('option');
 options.forEach(
-  (option) => option.addEventListener('click', (e) => {
+  (option) => option.onmousedown = (e) => {
     e.preventDefault();
-    if (e.target.hasAttribute('selected')) e.target.removeAttribute('selected');
-    else e.target.setAttribute('selected', '');
-    return false;
+    if (e.target.hasAttribute('selected')) {
+      e.target.removeAttribute('selected');
+    }
+    else {
+      e.target.setAttribute('selected', '');
+    }
   })
-  )
 
 function setInnerHTML(elm, html) {
   elm.innerHTML = html;
@@ -1156,7 +1173,6 @@ function createAnswerCommentForm(answer_card_id) {
   let answer_id = answer_card_id_list[1]
 
   let previous_comment_form = document.querySelector(`.comment-answer-${answer_id}-form`)
-  console.log(previous_comment_form)
   if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
 
   let comment_form = document.createElement('div');
@@ -1184,7 +1200,6 @@ function createAnswerCommentForm(answer_card_id) {
 }
 
 function sendCreateAnswerCommentRequest(answer_id) {
-  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
   let comment = document.querySelector('#comment').value;
 
@@ -1202,16 +1217,13 @@ function answerCommentAddedHandler() {
 
   // Create the new comment
   let new_comment = createComment(comment);
-  console.log(new_comment)
 
   // Insert the new comment
   let comments = document.querySelector(`.answer-${comment.answer_id}-comments`);
-  console.log(comments)
   comments.prepend(new_comment);
 }
 
 function createComment(comment) {
-  console.log(comment)
   let new_comment = document.createElement('div');
   new_comment.id = `comment_${comment.comment_id}`
   new_comment.className = 'border-top'
@@ -1284,10 +1296,8 @@ function createComment(comment) {
 
 function questionCommentForm(event) {
   let question = event.target.parentElement.parentElement.parentElement
-  console.log(question)
 
   let question_id = document.querySelector('#question_id').value;
-  console.log(question_id)
 
   removeOpenedForms()
 
@@ -1326,7 +1336,6 @@ function createQuestionCommentForm(question_id) {
 }
 
 function sendCreateQuestionCommentRequest() {
-  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
   let comment = document.querySelector('#comment').value;
 
@@ -1344,11 +1353,9 @@ function  questionCommentAddedHandler() {
 
   // Create the new comment
   let new_comment = createComment(comment);
-  console.log(new_comment)
 
   // Insert the new comment
   let comments = document.querySelector(`.question-comments`);
-  console.log(comments)
   comments.prepend(new_comment);
 
   addAnswerCard()
@@ -1377,7 +1384,29 @@ function addAnswerCard() {
       Answer
   </button>
 </div>
-`
+  `
+}
+
+function cancelCreateComment(){
+  let question_id = document.querySelector('#question_id').value;
+
+  let commentForm = document.querySelector('.comment-form')
+  commentForm.remove()
+
+    // Insert answer form back
+    let add_answer_card = document.querySelector('#add-answer-card');
+    add_answer_card.innerHTML = `
+    <form method="POST" class="card-body m-0 p-0">
+      <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+      <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+        id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
+    </form>
+  <div class="card-footer text-right">
+    <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
+        Answer
+    </button>
+  </div>
+    `
 }
 
 /*********** delete an comment ***********/
@@ -1390,7 +1419,6 @@ function sendDeleteCommentRequest(event) {
 }
 
 function commentDeletedHandler() {
-  console.log("comment_handler")
 
   let deletedComment = JSON.parse(this.responseText);
 
@@ -1464,9 +1492,16 @@ function sendCreateCommentUpdateRequest() {
   p.classList.add('card-text', 'pb-5', 'pt-2');
   p.innerText = comment.full_text;
 
+  let em = document.createElement('em')
+  em.innerText = 'edited'
+
   let comment_element = document.querySelector('#comment_' + comment.comment_id);
   let comment_form = comment_element.querySelector('.comment-form');
   comment_form.parentElement.querySelector('.card-text').appendChild(p);
+
+  comment_head = comment_form.parentElement.children[0]
+  if (comment_head.lastElementChild.tagName != 'EM')
+    comment_head.appendChild(em)
   comment_form.remove();
   addAnswerCard();
 
@@ -1507,5 +1542,46 @@ function removeOpenedForms(){
 function submitQuestionUpdate(){
   document.getElementById("edit-question-form").submit();
 }
+function updateNotification(notification_id){
+  let notification_button = document.getElementById("button-notification-" + notification_id)
+  let red_circle = notification_button.getElementsByTagName("span")[0]
+  if(!red_circle) return
+  notification_button.removeChild(red_circle)
+
+  let num_notifications_span = document.getElementById("num-notifications")
+  let num = parseInt(num_notifications_span.textContent) - 1
+  if(num === 0) {
+    num_notifications_span.textContent = ""
+  }
+  else num_notifications_span.textContent = num
+}
+
+
+function sendUpdateNotificationRequest(event) {
+  let button_id
+  if(event.target.className === "btn bg-transparent shadow-none border-0 d-flex justify-content-between align-items-center w-100 button-notification"){
+    button_id = event.target.id
+  }
+  if(event.target.className === "d-flex flex-column" || event.target.className === "material-icons ml-4 red-circle-notification"){
+    button_id = event.target.parentElement.id
+  }
+  if(event.target.className === "text-left" || event.target.className === "h5 text-left"){
+    button_id = event.target.parentElement.parentElement.id
+  }
+   console.log(button_id)
+  let notification_id = button_id.split('-').pop()
+  if (notification_id != '')
+    sendAjaxRequest('post', 
+                    '/api/notification/update/' + notification_id, 
+                    {}, 
+                    function(){return updateNotification(notification_id);})
+  event.stopPropagation()
+  event.preventDefault()
+}
+
+function redirect_notification(notification_id){
+  window.location.assign('/notification/' + notification_id);
+}
+/***********  ***********/
 
 addEventListeners();
