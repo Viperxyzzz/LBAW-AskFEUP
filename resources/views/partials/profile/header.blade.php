@@ -1,4 +1,5 @@
 <div class="d-flex border p-5 col-md-12">
+    @include('partials.profile.delete_user_modal', ['user' => $user])
     <img src="{{asset('storage/'.($user->picture_path).'.jpeg')}}" alt="avatar"
               class="rounded-circle">
     <div class="d-flex justify-content-between w-100">
@@ -44,6 +45,10 @@
                             <i class="material-symbols-outlined mr-1">edit</i>
                             Edit Profile
                         </a>
+                        <button class="dropdown-item m-0" type="button" data-toggle="modal" data-target="#userModal_{{$user->user_id}}">
+                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                            Delete
+                        </button>
                     @endcan
                 </div>
             </div>

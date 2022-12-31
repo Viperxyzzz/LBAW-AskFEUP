@@ -21,6 +21,8 @@ Route::get('settings/{id}', 'ProfileController@settings');
 Route::get('users', 'UserController@home');
 Route::get('users/{id}', 'ProfileController@home')->name('users');
 Route::get('api/users/', 'UserController@search');
+Route::put('api/user/delete/{id}', 'ProfileController@delete')->name('user_delete');
+Route::post('api/disable/create/{id}', 'DisableController@store');
 
 // Questions
 Route::get('question/create', 'QuestionController@create_view')->name('question_create');

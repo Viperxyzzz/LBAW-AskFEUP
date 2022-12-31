@@ -3,6 +3,13 @@ function addEventListeners() {
   if (answerCreator != null)
     answerCreator.addEventListener('click', sendCreateAnswerRequest);
 
+    let userDelete = document.querySelectorAll('.delete-user');
+  if (userDelete != null) {
+    userDelete.forEach(
+      btn => btn.addEventListener('click', sendDeleteUserRequest)
+      );
+  }
+
   let commentEdit = document.querySelectorAll('.edit_comment');
   if (commentEdit != null) {
     commentEdit.forEach(
@@ -1445,6 +1452,25 @@ function sendCreateCommentUpdateRequest() {
   comment_form.parentElement.querySelector('.card-text').appendChild(p);
   comment_form.remove();
 
+}
+
+/*********** delete an account ***********/
+
+function sendDeleteUserRequest(event) {
+  let user_id = event.target.parentElement.children[0].value;
+  sendAjaxRequest('put', '/api/user/delete/' + user_id, {user_id : user_id}, logout);
+  event.preventDefault();
+
+  sendDisableUserRequest(user_id);
+}
+
+function sendDisableUserRequest(user_id) {
+  sendAjaxRequest('post', '/api/disable/create/' + user_id, {user_id : user_id}, () => {} );
+
+}
+
+function logout(){
+  window.location.href = "/";
 }
 
 addEventListeners();

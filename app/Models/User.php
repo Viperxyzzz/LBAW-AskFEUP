@@ -179,4 +179,7 @@ class User extends Authenticatable
     public function is_blocked() {
       return $this->hasOne(Block::class, 'user_id', 'user_id')->exists();
     }
+    public function is_disable() {
+      return $this->hasOne(Disable::class, 'user_id', 'user_id')->exists();
+    }
 }
