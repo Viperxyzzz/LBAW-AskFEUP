@@ -1,8 +1,8 @@
-<div class="d-flex border p-5 col-md-12">
+<div class="d-flex flex-wrap border p-5 col-md-12">
     @include('partials.profile.delete_user_modal', ['user' => $user])
     <img src="{{asset('storage/'.($user->picture_path).'.jpeg')}}" alt="avatar"
               class="rounded-circle">
-    <div class="d-flex justify-content-between w-100">
+    <div class="d-flex justify-content-between" style="flex-grow: 1">
         <div class='profile-info'>
             @if ($user->is_blocked())
             <a href={{ url('dashboard') }} class='warning-blocked d-flex ml-5 p-2 border border-danger rounded align-items-baseline'>
