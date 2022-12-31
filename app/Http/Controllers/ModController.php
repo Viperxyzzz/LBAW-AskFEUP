@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\Report;
+use App\Models\Block;
 
 class ModController extends Controller
 {
@@ -20,7 +21,8 @@ class ModController extends Controller
         if (!Auth::check()) return redirect('/login');
         if (!Auth::user()->is_mod()) return redirect('/');
         $reports = Report::all();
-        return view('pages.dashboard', ['reports' => $reports]);
+        $blocks = Block::all();
+        return view('pages.dashboard', ['reports' => $reports, 'blocks' => $blocks]);
     }
 
     /**
@@ -41,13 +43,28 @@ class ModController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Create a new report.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response Returns a new report object.
      */
-    public function create()
+    public function create_report(Request $request)
     {
-        //
+        if (!Auth::check()) return redirect('/login');
+
+        $request->validate([
+            'reason' => 'required|string'
+        ]);
+
+        $report = new Report;
+        $report->reason = $request->reason;
+        $report->date = date('Y-m-d H:i:s');
+        $report->question_id = $request->question_id;
+        $report->answer_id = $request->answer_id;
+        $report->comment_id = $request->comment_id;
+
+        $report->save();
+
+        return $report;
     }
 
     /**

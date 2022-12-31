@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="h-100" lang="{{ app()->getLocale() }}">
+<html lang="{{ app()->getLocale() }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -23,7 +23,8 @@
 
     <!-- Google icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"> <!-- Filled Icons -->
 
     <script type="text/javascript">
         // Fix for Firefox autofocus CSS bug
@@ -32,12 +33,12 @@
     <script type="text/javascript" src={{ asset('js/app.js') }} defer>
     </script>
   </head>
-  <body class="min-vh-100" data-spy="scroll" data-target="#feed-nav" data-offset="0"  data-bs-smooth-scroll="true">
-    <main>
-      @include('layouts.header')
-      <section id="content" class="min-vh-100">
-        @yield('content')
-      </section>
+  <body class="" data-spy="scroll" data-target="#feed-nav" data-offset="0"  data-bs-smooth-scroll="true">
+    <main class="min-vh-100 d-flex flex-column justify-content-between">
+        @include('layouts.header')
+        <section id="content">
+          @yield('content')
+        </section>
       @include('layouts.footer')
     </main>
   </body>

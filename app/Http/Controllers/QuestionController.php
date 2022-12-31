@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
 use App\Models\QuestionTag;
+use App\Models\QuestionUser;
 use App\Models\Tag;
 use App\Models\Answer;
 use App\Models\QuestionVotes;
@@ -97,9 +98,6 @@ class QuestionController extends Controller
         $question_tag->save();
       }
 
-
-
-
       return redirect('/question/'.$question->question_id);
     }
 
@@ -153,4 +151,31 @@ class QuestionController extends Controller
       return view('pages.create_question',['tags' => $tags]);
     }
 
+    /**
+     * Follow a question
+     * @param Request $request 
+     * @param mixed $question_id Question id to be followed.
+     * @return QuestionUser Returns JSON object of the new relation.
+     */
+    public function follow(Request $request, $question_id) {
+        if (!Auth::check()) redirect('/login');
+        if ($question_id == NULL) return;
+        return QuestionUser::follow(Auth::id(), $question_id);
+    }
+
+
+    /**
+     * Un-Follow a question
+     * @param Request $request 
+     * @param mixed $question_id Question id to be un-followed.
+     * @return QuestionUser Returns JSON object of the deleted relation.
+     */
+    public function unFollow(Request $request, $question_id) {
+        $follow = QuestionUser::where([
+            ['user_id', '=', Auth::id()],
+            ['question_id', '=', $question_id]
+        ]);
+        $follow->delete();
+        return ['question_id' => $question_id];
+    }
 }
