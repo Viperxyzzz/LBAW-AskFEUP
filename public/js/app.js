@@ -238,6 +238,13 @@ function addEventListeners() {
       button.addEventListener('click', sendUnFollowQuestionRequest)
     }
   )
+  
+  let notificationUpdate = document.querySelectorAll('.button-notification');
+  if (notificationUpdate != null) {
+    notificationUpdate.forEach(
+      btn => btn.addEventListener('click', sendUpdateNotificationRequest)
+      );
+  }
 }
 
 function closeProfileTabs() {
@@ -1447,5 +1454,46 @@ function sendCreateCommentUpdateRequest() {
   comment_form.remove();
 
 }
+function updateNotification(notification_id){
+  let notification_button = document.getElementById("button-notification-" + notification_id)
+  let red_circle = notification_button.getElementsByTagName("span")[0]
+  if(!red_circle) return
+  notification_button.removeChild(red_circle)
+
+  let num_notifications_span = document.getElementById("num-notifications")
+  let num = parseInt(num_notifications_span.textContent) - 1
+  if(num === 0) {
+    num_notifications_span.textContent = ""
+  }
+  else num_notifications_span.textContent = num
+}
+
+
+function sendUpdateNotificationRequest(event) {
+  let button_id
+  if(event.target.className === "btn bg-transparent shadow-none border-0 d-flex justify-content-between align-items-center w-100 button-notification"){
+    button_id = event.target.id
+  }
+  if(event.target.className === "d-flex flex-column" || event.target.className === "material-icons ml-4 red-circle-notification"){
+    button_id = event.target.parentElement.id
+  }
+  if(event.target.className === "text-left" || event.target.className === "h5 text-left"){
+    button_id = event.target.parentElement.parentElement.id
+  }
+   console.log(button_id)
+  let notification_id = button_id.split('-').pop()
+  if (notification_id != '')
+    sendAjaxRequest('post', 
+                    '/api/notification/update/' + notification_id, 
+                    {}, 
+                    function(){return updateNotification(notification_id);})
+  event.stopPropagation()
+  event.preventDefault()
+}
+
+function redirect_notification(notification_id){
+  window.location.assign('/notification/' + notification_id);
+}
+/***********  ***********/
 
 addEventListeners();

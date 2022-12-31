@@ -3,7 +3,7 @@
 
 <div class="row">
     @include('partials.users.filter')
-    <div class="col-lg-10 mt-5 m-3">
+    <div class="col-lg-10 mt-5">
         <h2>Users</h2>
         <input id="user-search" name="user-search" value="" autocomplete="off" class="col-sm-3" type="text" placeholder="Search...">
         <div id="users-list" class="d-flex flex-wrap">

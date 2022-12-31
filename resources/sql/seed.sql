@@ -69,7 +69,9 @@ CREATE TABLE notification (
     notification_text TEXT NOT NULL,
     date TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
     viewed BOOLEAN NOT NULL DEFAULT FALSE,
-    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    event_id INTEGER NOT NULL,
+    event_type TEXT NOT NULL
 );
 
 DROP TABLE IF EXISTS comment CASCADE;
@@ -379,6 +381,80 @@ CREATE TRIGGER was_edited
     AFTER UPDATE ON question
     FOR EACH ROW EXECUTE FUNCTION was_edited();
 
+--
+CREATE OR REPLACE FUNCTION new_answer_notification() RETURNS TRIGGER AS
+$FUNC9$
+BEGIN
+    INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
+    ('New answers to your question', DEFAULT, 'No', 
+        (SELECT author_id FROM question FULL OUTER JOIN answer USING(question_id) WHERE answer_id = NEW.answer_id),
+        NEW.answer_id,
+        'new answer'
+    );
+    RETURN NULL;
+END
+$FUNC9$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_answer_notification ON answer CASCADE;
+CREATE TRIGGER new_answer_notification
+    AFTER INSERT ON answer
+    FOR EACH ROW EXECUTE FUNCTION new_answer_notification();
+
+
+--
+CREATE OR REPLACE FUNCTION new_vote_notification() RETURNS TRIGGER AS
+$FUNC10$
+BEGIN
+    IF OLD.num_votes < NEW.num_votes THEN
+        INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
+        ('New vote on your comment', DEFAULT, 'No', NEW.user_id, NEW.comment_id, 'new vote');
+    END IF;
+    RETURN NEW;
+END
+$FUNC10$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_vote_notification ON comment CASCADE;
+CREATE TRIGGER new_vote_notification
+    BEFORE UPDATE ON comment
+    FOR EACH ROW EXECUTE FUNCTION new_vote_notification();
+
+
+--
+CREATE OR REPLACE FUNCTION new_correct_answer_notification() RETURNS TRIGGER AS
+$FUNC11$
+BEGIN
+    IF OLD.is_correct = 'No' AND NEW.is_correct = 'Yes' THEN
+        INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
+        ('Your answer was marked as correct', DEFAULT, 'No', NEW.user_id, NEW. answer_id, 'correct answer');
+    END IF;
+    RETURN NEW;
+END
+$FUNC11$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_correct_answer_notification ON answer CASCADE;
+CREATE TRIGGER new_correct_answer_notification
+    BEFORE UPDATE ON answer
+    FOR EACH ROW EXECUTE FUNCTION new_correct_answer_notification();
+
+
+--
+CREATE OR REPLACE FUNCTION new_badge_notification() RETURNS TRIGGER AS
+$FUNC12$
+BEGIN
+    INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
+    ('You received a badge', DEFAULT, 'No', NEW.user_id, NEW.badge_id, 'new badge');
+    RETURN NULL;
+END
+$FUNC12$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_badge_notification ON user_badge CASCADE;
+CREATE TRIGGER new_badge_notification
+    AFTER INSERT ON user_badge
+    FOR EACH ROW EXECUTE FUNCTION new_badge_notification();
 
 --INDEXES
 
@@ -617,14 +693,6 @@ INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'amet lobortis sapien sapien non mi integer ac neque duis bibendum morbi non', 2, true, false, '2022-02-05 13:10:19', 26, 10);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'posuere cubilia curae donec pharetra magna vestibulum aliquet ultrices erat tortor sollicitudin mi sit amet lobortis', 44, false, true, '2022-05-12 11:45:34', 10, 16);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'sem praesent id massa id nisl venenatis lacinia aenean sit amet justo morbi ut', 3, false, true, '2022-09-28 16:09:01', 4, 6);
-
-INSERT INTO notification(notification_text,date,viewed,user_id)
-VALUES
-  ('New answers to your question','May 25, 2022','No',1),
-  ('New vote on your comment','Mar 4, 2022','No',2),
-  ('Your answer was marked as correct','Aug 4, 2022','No',3),
-  ('New answers to your question','Apr 26, 2022','No',4),
-  ('You received a badge','Jun 1, 2022','No',5);
 
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Altough it might work, this should only be used with text.', 24, false, '2022-08-29 09:49:24',1, 1, 3);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Awesome! This worked just fine.', 48, true, '2022-09-15 22:50:46',1, 2, 2);
