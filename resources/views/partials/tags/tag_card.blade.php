@@ -1,6 +1,6 @@
 <li id='tag-{{ $tag->tag_id }}' class="card m-3" style="width: 250px;">
     <div class="card-header d-flex align-items-start justify-content-between">
-        <p class="badge p-3 m-1 mt-2">{{ $tag->tag_name }}</p>
+        <a href="/browse/?tags[]={{ $tag->tag_id }}" class="badge p-3 m-1 mt-2">{{ $tag->tag_name }}</a>
         <div class="d-flex justify-content-end">
             @if (Auth::user()->follows_tag($tag->tag_id))
             <button class="unFollow-tag button-clear px-2 pr-3 pb-2 d-flex" id="unFollow-tag-{{ $tag->tag_id }}">

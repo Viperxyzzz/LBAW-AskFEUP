@@ -33,9 +33,10 @@
         </label>
     </form>
     <hr>
-    <h3>Filter</h3>
-    <div>
-        <h6>Tags</h6>
-        <input type="text" placeholder="Search for tags...">
-    </div>
+    <h3>Tags</h3>
+    <select class="form-control" id="tags" name="tags[]" multiple size="6">
+        @foreach ($tags as $tag)
+            <option class="tag-filter" value="{{ $tag->tag_id }}">{{ $tag->tag_name }}</option>
+        @endforeach
+    </select>
 </nav>

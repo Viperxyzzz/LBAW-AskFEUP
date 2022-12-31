@@ -184,6 +184,13 @@ function addEventListeners() {
     });
   }
 
+  let tagFilter = document.querySelectorAll('.tag-filter');
+  if (tagFilter != null) {
+    tagFilter.forEach(tag => {
+      tag.addEventListener('click', sendOrderQuestionsRequest);
+    });
+  }
+
   let profileTabs = document.querySelectorAll('.profile-nav')
   profileTabs.forEach(
     button => {
@@ -573,7 +580,7 @@ function createTag(tag, topics) {
   new_tag.id = `tag-${tag.tag_id}`
   let html = `
   <div class="card-header d-flex align-items-start justify-content-between">
-      <p class="badge p-3 m-1 mt-2">${tag.tag_name}</p>
+      <a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-2">${tag.tag_name}</a>
       <div class="d-flex justify-content-end">`
 
   if (tag['following']) {
@@ -627,7 +634,6 @@ function createTag(tag, topics) {
 }
 
 function createTagModals(tag, topics) {
-  let csrf = document.querySelector('meta[name="csrf-token"]').content;
 
   let html = '';
   if (tag['manage']) {
@@ -816,11 +822,20 @@ function sendCreateReportRequest(event) {
 function sendOrderQuestionsRequest(event) {
   let order = document.querySelector('input[name="order-questions"]:checked').id;
   let direction = document.querySelector('input[name="direction-questions"]:checked').id;
+  let tags = document.querySelectorAll('.tag-filter');
+  let tagsStr = '';
+  tags.forEach(
+    tag => {
+      tagsStr += (tag.hasAttribute('selected')) ? `&tags[]=${tag.value}` : '';
+    }
+  )
+
   const urlParams = new URLSearchParams(window.location.search);
   const search = urlParams.get('searchText');
+  console.log(search)
 
   if (order != '')
-    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}&searchText=${search}`, {}, orderedQuestionsHandler);
+    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}${(search !== null) ? '&searchText=' + search : ''}${tagsStr}`, {}, orderedQuestionsHandler);
     
   event.preventDefault();
 }
@@ -828,7 +843,7 @@ function sendOrderQuestionsRequest(event) {
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);
 
-  if (questions.length > 0) {
+  if (Object.keys(questions).length > 0) {
     let newQuestions = createQuestions(questions);
 
     let parent = document.querySelector('#questions');
@@ -854,7 +869,7 @@ function createQuestion(question) {
 
   let tags = "";
   question.tags.forEach(tag => {
-    tags += `<span class="badge p-2">${tag.tag_name}</span>\n`
+    tags += `<a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-1">${tag.tag_name}</a>\n`
   })
   new_question.innerHTML =
   `
@@ -1092,13 +1107,15 @@ function questionUnFollowHandler() {
 
 let options = document.querySelectorAll('option');
 options.forEach(
-  (option) => option.addEventListener('click', (e) => {
+  (option) => option.onmousedown = (e) => {
     e.preventDefault();
-    if (e.target.hasAttribute('selected')) e.target.removeAttribute('selected');
-    else e.target.setAttribute('selected', '');
-    return false;
+    if (e.target.hasAttribute('selected')) {
+      e.target.removeAttribute('selected');
+    }
+    else {
+      e.target.setAttribute('selected', '');
+    }
   })
-  )
 
 function setInnerHTML(elm, html) {
   elm.innerHTML = html;

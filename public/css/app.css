@@ -84,7 +84,10 @@ form {
 }
 
 #tags option{
-    font-size: 1.3rem;
+    font-size: 1.6rem;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 0.2rem;
 }
 
 textarea {
