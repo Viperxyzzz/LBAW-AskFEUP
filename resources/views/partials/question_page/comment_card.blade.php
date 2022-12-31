@@ -1,5 +1,6 @@
-<div class="border-top d-flex justify-content-between" id="{{'comment_'.$comment->comment_id}}">
-    <div class="d-flex">
+<div id="comment_{{ $comment->comment_id }}" class="border-top d-flex justify-content-between">
+    @include('partials.question_page.delete_comment_modal', ['comment' => $comment])
+    <div class="d-flex flex-fill">
         <div class="d-flex align-items-center flex-column p-1">
             <button class="button-clear p-0 m-0 mr-2" type="button">
                 <i class="material-symbols-outlined">keyboard_arrow_up</i>
@@ -9,13 +10,43 @@
                 <i class="material-symbols-outlined ">keyboard_arrow_down</i>
             </button>
         </div>
-        <div class="pt-3">
+        <div class="pt-3 flex-fill">
             <p class="m-0">
                 <img src="{{asset('storage/'.($comment->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
                 <a href="{{url("/users/$comment->user_id")}}"> {{ $comment->author->name }}</a>
                 {{ \Carbon\Carbon::parse($comment->date)->format('d/m/Y')}}
+                @if($comment->was_edited)
+                <em>edited</em>
+                @endif
             </p>
         <p class="card-text py-2">{{ $comment->full_text }}</p>
         </div>
     </div>
+    @include('partials.admin.add_report')
+        <div class="ml-5 d-flex align-items-end flex-column">
+            @can('edit', $comment)
+                <div class="dropdown">
+                    <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
+                        <i class="material-symbols-outlined">more_vert</i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                            <data class="comment_id" hidden>{{ $comment->comment_id }}</data>
+                            <button class="dropdown-item edit_comment" type="button">
+                                <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                                Edit
+                            </button>
+                        <input type="hidden" name="comment_id" value="{{$comment->comment_id}}">
+                        <button class="dropdown-item" type="button" data-toggle="modal" data-target="#commentModal_{{$comment->comment_id}}">
+                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                            Delete
+                        </button>
+                        <button class="dropdown-item m-0" type="button" data-toggle="modal" 
+                            data-target="#add-report-modal-{{ $question->question_id }}-{{ $comment->answer_id }}-{{ $comment->comment_id }}">
+                            <i width="16" height="16" class="material-symbols-outlined ">flag</i>
+                            Report
+                        </button>
+                    </div>
+                </div>
+            @endcan
+        </div>
 </div>

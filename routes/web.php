@@ -12,13 +12,17 @@
 */
 // Home
 Route::get('/', 'Auth\LoginController@home');
+Route::get('/about', function () {
+    return view('pages.about');})->name('about');
+Route::get('/sitemap', function () {
+    return view('pages.sitemap');})->name('sitemap');
 
 // User specific
-Route::get('feed', 'FeedController@home');
+Route::get('feed', 'FeedController@home')->name('feed');
 Route::get('settings/{id}', 'ProfileController@settings');
 
 // Users
-Route::get('users', 'UserController@home');
+Route::get('users', 'UserController@home')->name('users');
 Route::get('users/{id}', 'ProfileController@home')->name('users');
 Route::get('api/users/', 'UserController@search');
 
@@ -29,10 +33,29 @@ Route::put('api/answer/{id}', 'QuestionController@answer');
 Route::get('question/{id}/edit', 'QuestionController@edit_view')->name('edit_question');
 Route::match(['put', 'patch'], 'api/question/update/{id}','QuestionController@update')->name('update_question');
 //Route::post('api/question/update', 'QuestionController@update')->name('update_question');
+Route::post('api/question/follow/{id}', 'QuestionController@follow');
+Route::delete('api/question/unFollow/{id}', 'QuestionController@unFollow');
 
 // Search
 Route::get('browse', 'SearchController@home')->name('browse');
 Route::get('api/browse', 'SearchController@browse');
+
+// Tags
+Route::get('tags', 'TagController@index');
+Route::get('api/tags/', 'TagController@search');
+Route::post('api/tag/follow/{id}', 'TagController@follow');
+Route::post('api/tag/unFollow/{id}', 'TagController@unFollow');
+Route::post('api/tag/create', 'TagController@store')->name('tag_create_api');
+Route::delete('api/tag/delete/{id}', 'TagController@destroy')->name('tag_delete_api');
+Route::put('api/tag/edit/{id}', 'TagController@update')->name('tag_update_api');
+
+// Admin / Reports
+Route::get('dashboard', 'ModController@index')->name('dashboard');
+Route::delete('api/report/delete/{id}', 'ModController@delete_report');
+Route::post('api/blocks/add/{id}', 'BlockController@store');
+Route::delete('api/blocks/delete/{id}', 'BlockController@destroy');
+Route::post('api/report/create', 'ModController@create_report');
+
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
@@ -55,3 +78,9 @@ Route::post('login', 'Auth\LoginController@login');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
+
+// Comments
+Route::post('api/comment/{id}', 'CommentController@create')->name('create_comment');
+Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comment_delete_api');
+Route::get('api/comment/edit/{id}', 'CommentController@edit_view')->name('edit_comment_form');
+Route::put('api/comment/update/{id}', 'CommentController@update')->name('update_comment');

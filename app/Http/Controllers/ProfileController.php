@@ -20,11 +20,17 @@ class ProfileController extends Controller
      */
     public function home($user_id)
     {
-      //$this->authorize('list', Question::class);
       $user = User::find($user_id);
+      $this->authorize('view', $user);
       $questions = $user->questions()->orderBy('question_id', 'DESC')->get();
       $answers = $user->answers()->orderBy('answer_id', 'DESC')->get();
-      return view('pages.profile', ['user' => $user, 'questions' => $questions, 'answers' => $answers]);
+      $tags = $user->tags_following()->get();
+      return view('pages.profile', [
+        'user' => $user,
+        'questions' => $questions,
+        'answers' => $answers,
+        'tags' => $tags
+      ]);
     }
 
     /**

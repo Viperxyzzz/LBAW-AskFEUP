@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
 use App\Models\QuestionTag;
+use App\Models\QuestionUser;
 use App\Models\Tag;
-use App\Models\Answer;
 
 class QuestionController extends Controller
 {
@@ -25,7 +25,8 @@ class QuestionController extends Controller
       $question = Question::find($question_id);
       $answers = $question->answers();
       $comments = $question->comments();
-      return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments]);
+      $question_comments = $question->question_comments();
+      return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments, 'question_comments' => $question_comments]);
     }
 
     public function create(Request $request)
@@ -76,6 +77,25 @@ class QuestionController extends Controller
 
       $question->save();
 
+      // Delete all question tags
+      $question_tags = QuestionTag::where('question_id', $question->question_id)->get();
+      foreach($question_tags as $question_tag){
+        $question_tag->delete();
+      }
+
+      // Add new question tags
+      $tags = $request->tags;
+
+      if($tags === null)
+        return redirect('/question/'.$question->question_id);
+
+      for($i = 0; $i < count($tags); $i++){
+        $question_tag = new QuestionTag;
+        $question_tag->question_id = $question->question_id;
+        $question_tag->tag_id = $tags[$i];
+        $question_tag->save();
+      }
+
       return redirect('/question/'.$question->question_id);
     }
 
@@ -104,4 +124,31 @@ class QuestionController extends Controller
       return view('pages.create_question',['tags' => $tags]);
     }
 
+    /**
+     * Follow a question
+     * @param Request $request 
+     * @param mixed $question_id Question id to be followed.
+     * @return QuestionUser Returns JSON object of the new relation.
+     */
+    public function follow(Request $request, $question_id) {
+        if (!Auth::check()) redirect('/login');
+        if ($question_id == NULL) return;
+        return QuestionUser::follow(Auth::id(), $question_id);
+    }
+
+
+    /**
+     * Un-Follow a question
+     * @param Request $request 
+     * @param mixed $question_id Question id to be un-followed.
+     * @return QuestionUser Returns JSON object of the deleted relation.
+     */
+    public function unFollow(Request $request, $question_id) {
+        $follow = QuestionUser::where([
+            ['user_id', '=', Auth::id()],
+            ['question_id', '=', $question_id]
+        ]);
+        $follow->delete();
+        return ['question_id' => $question_id];
+    }
 }
