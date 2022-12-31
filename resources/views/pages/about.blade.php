@@ -16,7 +16,7 @@
         </header>
         <ul class="list-group ist-group-flush">
             <li class="list-group-item d-flex justify-content-between">Igor Diniz<a href = "mailto:up202000162@edu.fe.up.pt">up202000162@edu.fe.up.pt</a></li>
-            <li class="list-group-item d-flex justify-content-between">Isabella Colombarolli<a href = "mailto:up201900162@edu.fe.up.pt">up201900162@edu.fe.up.pt</a></li>
+            <li class="list-group-item d-flex justify-content-between">Isabella Colombarolli<a href = "mailto:up201902617@edu.fe.up.pt">up201902617@edu.fe.up.pt</a></li>
             <li class="list-group-item d-flex justify-content-between">José Luís Rodrigues <a href = "mailto:up202008462@edu.fe.up.pt">up202008462@edu.fe.up.pt</a></li>
             <li class="list-group-item d-flex justify-content-between">Pedro Nunes<a href = "mailto:up201905396@edu.fe.up.pt">up201905396@edu.fe.up.pt</a></li>
         </ul>
