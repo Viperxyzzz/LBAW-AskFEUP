@@ -4,6 +4,11 @@
 
 <form method="POST" action="{{ route('login') }}" class="col-md-4 mx-auto my-5 border rounded bg-light p-5">
     {{ csrf_field() }}
+    @if (session('blocked'))
+        <span class="error">
+          {{ session('blocked') }}
+        </span>
+    @endif
     
     <h2>Login</h2>
     <label for="email">E-mail</label>

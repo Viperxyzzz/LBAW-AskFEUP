@@ -20,8 +20,8 @@ class ProfileController extends Controller
      */
     public function home($user_id)
     {
-      //$this->authorize('list', Question::class);
       $user = User::find($user_id);
+      $this->authorize('view', $user);
       $questions = $user->questions()->orderBy('question_id', 'DESC')->get();
       $answers = $user->answers()->orderBy('answer_id', 'DESC')->get();
       $tags = $user->tags_following()->get();
