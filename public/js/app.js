@@ -982,6 +982,26 @@ function createAnswerForm(answer_id, text) {
   return answer_form;
 }
 
+function cancelEditAnswer(answer_id,text){
+  console.log("cancel edit answer")
+
+  let p = document.createElement('p');
+  p.classList.add('card-text', 'pb-5', 'pt-2');
+  p.innerText = text;
+
+  let answer_element = document.querySelector('#answer_' + answer_id);
+  console.log(answer_element)
+  let answer_form = answer_element.querySelector('.answer-form');
+  answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
+  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
+
+  answer_form.remove();
+
+  // Insert answer form back
+  addAnswerCard();
+
+}
+
 function answerUpdater() {
   let new_text = document.querySelector('#full_text').value;
   let answer_id = document.querySelector('#answer_id').value;
@@ -1473,6 +1493,22 @@ function createCommentForm(comment_id, text) {
   return comment_form;
 }
 
+function cancelEditComment(comment_id, text) {
+  // Insert answer form back
+  addAnswerCard();
+
+  console.log("cancel edit comment")
+  let p = document.createElement('p');
+  p.classList.add('card-text', 'pb-5', 'pt-2');
+  p.innerText = text;
+
+  let comment_element = document.querySelector('#comment_' + comment_id);
+  let comment_form = comment_element.querySelector('.comment-form');
+  comment_form.parentElement.querySelector('.card-text').appendChild(p);
+  comment_form.remove();
+}
+
+
 function commentUpdater() {
   let new_text = document.querySelector('#full_text').value;
   let comment_id = document.querySelector('#comment_id').value;
@@ -1573,6 +1609,29 @@ function sendUpdateNotificationRequest(event) {
 function redirect_notification(notification_id){
   window.location.assign('/notification/' + notification_id);
 }
+/***********  ***********/
+
+function removeOpenedForms(){
+  if(document.querySelector('.answer-form')!=null){
+    let answer_id = document.querySelector('#answer_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditAnswer(answer_id, text)
+    console.log("opened answer form")
+  }
+  if(document.querySelector('.comment-form')!=null){
+    let comment_id = document.querySelector('#comment_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditComment(comment_id, text)
+    console.log("opened comment form")
+  }
+  if(document.querySelector('.add-comment-form')!=null) cancelCreateComment()
+  document.querySelector('#add-answer-card').innerHTML = '';
+}
+
+function submitQuestionUpdate(){
+  document.getElementById("edit-question-form").submit();
+}
+
 /***********  ***********/
 
 addEventListeners();
