@@ -935,22 +935,7 @@ function submitSettings(){
 /*********** create an edit answer card ***********/
 
 function editAnswer(event) {
-
-  //remove opened forms
-  if(document.querySelector('.answer-form')!=null){
-    let answer_id = document.querySelector('#answer_id').value
-    let text = document.querySelector('#full_text').textContent
-    cancelEditAnswer(answer_id, text)
-    console.log("opened answer form")
-  }
-  if(document.querySelector('.comment-form')!=null){
-    let comment_id = document.querySelector('#comment_id').value
-    let text = document.querySelector('#full_text').textContent
-    cancelEditComment(comment_id, text)
-    console.log("opened comment form")
-  }
-
-  document.querySelector('#add-answer-card').innerHTML = '';
+  removeOpenedForms()
 
   let answer_id = event.target.parentElement.children[0].innerText;
 
@@ -1175,6 +1160,7 @@ function setInnerHTML(elm, html) {
 
 /*********** create answer comment ***********/
 function answerCommentForm(event) {
+  removeOpenedForms()
   let answer = event.target.parentElement.parentElement.parentElement
   let answer_card_id = answer.parentElement.id;
   answer.insertAdjacentElement('afterend', createAnswerCommentForm(answer_card_id))
@@ -1305,7 +1291,7 @@ function questionCommentForm(event) {
   let question_id = document.querySelector('#question_id').value;
 
   //remove answer form
-  document.querySelector('#add-answer-card').innerHTML = '';
+  removeOpenedForms()
 
   question.insertAdjacentElement('afterend', createQuestionCommentForm(question_id))
 
@@ -1354,8 +1340,6 @@ function sendCreateQuestionCommentRequest() {
 function  questionCommentAddedHandler() {
   let comment = JSON.parse(this.responseText);
 
-  let question_id = document.querySelector('#question_id').value;
-
   //delete comment form
   document.querySelector('.add-comment-form').remove()
 
@@ -1366,20 +1350,7 @@ function  questionCommentAddedHandler() {
   let comments = document.querySelector(`.question-comments`);
   comments.prepend(new_comment);
 
-  // Insert answer form back
-  let add_answer_card = document.querySelector('#add-answer-card');
-  add_answer_card.innerHTML = `
-  <form method="POST" class="card-body m-0 p-0">
-    <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
-    <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
-      id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
-  </form>
-<div class="card-footer text-right">
-  <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
-      Answer
-  </button>
-</div>
-  `
+  addAnswerCard()
 }
 
 function cancelCreateComment(){
@@ -1390,6 +1361,7 @@ function cancelCreateComment(){
 }
 
 function addAnswerCard() {
+  console.log("answer card")
   let question_id = document.querySelector('#question_id').value;
   console.log("add answer card")
   let add_answer_card = document.querySelector('#add-answer-card');
@@ -1426,21 +1398,7 @@ function commentDeletedHandler() {
 /*********** edit comment ***********/
 
 function editComment(event) {
-  //remove opened forms
-  if(document.querySelector('.answer-form')!=null){
-    let answer_id = document.querySelector('#answer_id').value
-    let text = document.querySelector('#full_text').textContent
-    cancelEditAnswer(answer_id, text)
-    console.log("opened answer form")
-  }
-  if(document.querySelector('.comment-form')!=null){
-    let comment_id = document.querySelector('#comment_id').value
-    let text = document.querySelector('#full_text').textContent
-    cancelEditComment(comment_id, text)
-    console.log("opened comment form")
-  }
-
-  document.querySelector('#add-answer-card').innerHTML = '';
+  removeOpenedForms()
 
   let comment_id = event.target.parentElement.children[0].innerText;
   let comment = document.querySelector('#comment_' + comment_id);
@@ -1573,6 +1531,24 @@ function sendUpdateNotificationRequest(event) {
 function redirect_notification(notification_id){
   window.location.assign('/notification/' + notification_id);
 }
+
+function removeOpenedForms(){
+  if(document.querySelector('.answer-form')!=null){
+    let answer_id = document.querySelector('#answer_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditAnswer(answer_id, text)
+    console.log("opened answer form")
+  }
+  if(document.querySelector('.comment-form')!=null){
+    let comment_id = document.querySelector('#comment_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditComment(comment_id, text)
+    console.log("opened comment form")
+  }
+  if(document.querySelector('.add-comment-form')!=null) cancelCreateComment()
+  document.querySelector('#add-answer-card').innerHTML = '';
+}
+
 /***********  ***********/
 
 addEventListeners();
