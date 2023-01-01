@@ -865,7 +865,6 @@ function sendOrderQuestionsRequest(event) {
 
   const urlParams = new URLSearchParams(window.location.search);
   const search = urlParams.get('searchText');
-  console.log(search)
 
   if (order != '')
     sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}${(search !== null) ? '&searchText=' + search : ''}${tagsStr}`, {}, orderedQuestionsHandler);
@@ -1077,7 +1076,6 @@ function tagUnFollowHandler() {
 }
 
 function sendMarkValidAnswerRequest(event){
-  console.log(event.currentTarget);
   let answer_id = event.currentTarget.querySelector('input').value;
 
   if (answer_id != '')
@@ -1092,10 +1090,6 @@ function markValidAnswerHandler() {
 
   let button = document.getElementById(`valid-answer-tag-${answer_id}`)
   button.removeEventListener('click', sendMarkValidAnswerRequest);
-  console.log("?");
-  console.log(`valid-answer-tag-${answer_id}`)
-  console.log(button);
-  console.log("enddebug");
   button.id = `invalid-answer-tag-${answer_id}`;
   button.classList.remove('valid-answer-tag');
   button.classList.add('invalid-answer-tag');
@@ -1106,12 +1100,10 @@ function markValidAnswerHandler() {
 
   //find answer 
   let answer_element = document.querySelector(`#answer_${answer_id}`);
-  console.log(answer_element);
   answer_element.classList.add('border-success');
 }
 
 function sendMarkInvalidAnswerRequest(event){
-  console.log(event.currentTarget);
   let answer_id = event.currentTarget.querySelector('input').value;
 
   if (answer_id != '')
@@ -1137,7 +1129,6 @@ function markInvalidAnswerHandler() {
 
   //find answer
   let answer_element = document.querySelector(`#answer_${answer_id}`);
-  console.log(answer_element);
   answer_element.classList.remove('border-success');
 }
 
@@ -1577,7 +1568,6 @@ function sendUpdateNotificationRequest(event) {
   if(event.target.className === "text-left" || event.target.className === "h5 text-left"){
     button_id = event.target.parentElement.parentElement.id
   }
-   console.log(button_id)
   let notification_id = button_id.split('-').pop()
   if (notification_id != '')
     sendAjaxRequest('post', 
