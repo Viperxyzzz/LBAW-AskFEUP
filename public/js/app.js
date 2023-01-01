@@ -232,6 +232,13 @@ function addEventListeners() {
     }
   )
 
+  let markInvalidAnswer = document.querySelectorAll('.mark-invalid-answer')
+  markInvalidAnswer.forEach(
+    button => {
+      button.addEventListener('click', sendMarkInvalidAnswerRequest)
+    }
+  )
+
   let followQuestion = document.querySelectorAll('.follow-question')
   followQuestion.forEach(
     button => {
@@ -1084,6 +1091,11 @@ function markValidAnswerHandler() {
   let answer_id = answer['answer_id'];
 
   let button = document.getElementById(`valid-answer-tag-${answer_id}`)
+  button.removeEventListener('click', sendMarkValidAnswerRequest);
+  console.log("?");
+  console.log(`valid-answer-tag-${answer_id}`)
+  console.log(button);
+  console.log("enddebug");
   button.id = `invalid-answer-tag-${answer_id}`;
   button.classList.remove('valid-answer-tag');
   button.classList.add('invalid-answer-tag');
@@ -1113,6 +1125,7 @@ function markInvalidAnswerHandler() {
   let answer_id = answer['answer_id'];
 
   let button = document.getElementById(`invalid-answer-tag-${answer_id}`)
+  button.removeEventListener('click', sendMarkInvalidAnswerRequest);
   button.id = `valid-answer-tag-${answer_id}`;
   button.classList.remove('invalid-answer-tag');
   button.classList.add('valid-answer-tag');

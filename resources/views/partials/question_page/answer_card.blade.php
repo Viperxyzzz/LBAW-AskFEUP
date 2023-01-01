@@ -1,5 +1,8 @@
-
-<div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+@if ($answer->is_correct)
+    <div class="card my-5 answer border-success" id="answer_{{$answer->answer_id}}">
+@else
+    <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+@endif
     @include('partials.question_page.delete_answer_modal', ['answer' => $answer])
     <div class="card-body d-flex justify-content-between">
         <div class="flex-fill">
@@ -62,7 +65,7 @@
                     <!-- </form> -->
                 @endcan
             @else
-                <button class="button-clear m-0 px-1 mark-invalid-answer" id="invalid-answer-tag-{{ $answer->answerid }}" type="submit">
+                <button class="button-clear m-0 px-1 mark-invalid-answer" id="invalid-answer-tag-{{ $answer->answer_id }}" type="submit">
                     <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
                     <i width="16" height="16" class="material-symbols-outlined c-primary b-accent rounded-circle">check</i>
                 </button>
