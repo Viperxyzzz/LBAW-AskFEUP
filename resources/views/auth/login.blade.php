@@ -9,7 +9,13 @@
           {{ session('blocked') }}
         </span>
     @endif
-    
+
+    @if (session('disable'))
+        <span class="error">
+          {{ session('disable') }}
+        </span>
+    @endif
+
     <h2>Login</h2>
     <label for="email">E-mail</label>
     <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus>
