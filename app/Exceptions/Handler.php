@@ -3,7 +3,6 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -29,32 +28,14 @@ class Handler extends ExceptionHandler
     ];
 
     /**
-     * Get an error message for an HTTP exception.
-     * @param HttpException $e
-     * @return string Tailored error message for each HTTP error.
-     */
-    public static function getMessage(HttpException $e) {
-        switch ($e->getStatusCode()) {
-            case 404:
-                return 'This page does not exist.';
-            case 403:
-                return "You don't have permission to see this content.";
-            case 500:
-                return "Oops. Server error!";
-        }
-        return 'An error occurred';
-    }
-
-    /**
      * Register the exception handling callbacks for the application.
      *
      * @return void
      */
     public function register()
     {
-        $this->renderable(function (HttpException $e, $request) {
-            return response()->view('errors.default', ['exception' => $e, 'message' => $this->getMessage($e)]);
+        $this->reportable(function (Throwable $e) {
+            //
         });
     }
-
 }

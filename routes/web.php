@@ -12,17 +12,13 @@
 */
 // Home
 Route::get('/', 'Auth\LoginController@home');
-Route::get('/about', function () {
-    return view('pages.about');})->name('about');
-Route::get('/sitemap', function () {
-    return view('pages.sitemap');})->name('sitemap');
 
 // User specific
-Route::get('feed', 'FeedController@home')->name('feed');
+Route::get('feed', 'FeedController@home');
 Route::get('settings/{id}', 'ProfileController@settings');
 
 // Users
-Route::get('users', 'UserController@home')->name('users');
+Route::get('users', 'UserController@home');
 Route::get('users/{id}', 'ProfileController@home')->name('users');
 Route::get('api/users/', 'UserController@search');
 
@@ -67,10 +63,6 @@ Route::put('api/answer/{id}', 'AnswerController@create');
 Route::delete('api/answer/delete/{id}', 'AnswerController@delete')->name('answer_delete_api');
 Route::get('api/answer/edit/{id}', 'AnswerController@edit_view')->name('edit_answer_form');
 Route::post('api/answer/update/{id}','AnswerController@update')->name('update_answer');
-
-// Notifications
-Route::post('api/notification/update/{id}', 'NotificationController@update')->name('update_notification');
-Route::get('/notification/{id}', 'NotificationController@redirectNotification')->name('redirect_notification');
 
 // Authentication
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
