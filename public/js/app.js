@@ -184,6 +184,13 @@ function addEventListeners() {
     });
   }
 
+  let tagFilter = document.querySelectorAll('.tag-filter');
+  if (tagFilter != null) {
+    tagFilter.forEach(tag => {
+      tag.addEventListener('click', sendOrderQuestionsRequest);
+    });
+  }
+
   let profileTabs = document.querySelectorAll('.profile-nav')
   profileTabs.forEach(
     button => {
@@ -231,6 +238,13 @@ function addEventListeners() {
       button.addEventListener('click', sendUnFollowQuestionRequest)
     }
   )
+  
+  let notificationUpdate = document.querySelectorAll('.button-notification');
+  if (notificationUpdate != null) {
+    notificationUpdate.forEach(
+      btn => btn.addEventListener('click', sendUpdateNotificationRequest)
+      );
+  }
 }
 
 function closeProfileTabs() {
@@ -569,7 +583,7 @@ function createTag(tag, topics) {
   new_tag.id = `tag-${tag.tag_id}`
   let html = `
   <div class="card-header d-flex align-items-start justify-content-between">
-      <p class="badge p-3 m-1 mt-2">${tag.tag_name}</p>
+      <a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-2">${tag.tag_name}</a>
       <div class="d-flex justify-content-end">`
 
   if (tag['following']) {
@@ -623,7 +637,6 @@ function createTag(tag, topics) {
 }
 
 function createTagModals(tag, topics) {
-  let csrf = document.querySelector('meta[name="csrf-token"]').content;
 
   let html = '';
   if (tag['manage']) {
@@ -811,11 +824,20 @@ function sendCreateReportRequest(event) {
 function sendOrderQuestionsRequest(event) {
   let order = document.querySelector('input[name="order-questions"]:checked').id;
   let direction = document.querySelector('input[name="direction-questions"]:checked').id;
+  let tags = document.querySelectorAll('.tag-filter');
+  let tagsStr = '';
+  tags.forEach(
+    tag => {
+      tagsStr += (tag.hasAttribute('selected')) ? `&tags[]=${tag.value}` : '';
+    }
+  )
+
   const urlParams = new URLSearchParams(window.location.search);
   const search = urlParams.get('searchText');
+  console.log(search)
 
   if (order != '')
-    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}&searchText=${search}`, {}, orderedQuestionsHandler);
+    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}${(search !== null) ? '&searchText=' + search : ''}${tagsStr}`, {}, orderedQuestionsHandler);
     
   event.preventDefault();
 }
@@ -823,7 +845,7 @@ function sendOrderQuestionsRequest(event) {
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);
 
-  if (questions.length > 0) {
+  if (Object.keys(questions).length > 0) {
     let newQuestions = createQuestions(questions);
 
     let parent = document.querySelector('#questions');
@@ -849,7 +871,7 @@ function createQuestion(question) {
 
   let tags = "";
   question.tags.forEach(tag => {
-    tags += `<span class="badge p-2">${tag.tag_name}</span>\n`
+    tags += `<a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-1">${tag.tag_name}</a>\n`
   })
   new_question.innerHTML =
   `
@@ -1127,13 +1149,15 @@ function questionUnFollowHandler() {
 
 let options = document.querySelectorAll('option');
 options.forEach(
-  (option) => option.addEventListener('click', (e) => {
+  (option) => option.onmousedown = (e) => {
     e.preventDefault();
-    if (e.target.hasAttribute('selected')) e.target.removeAttribute('selected');
-    else e.target.setAttribute('selected', '');
-    return false;
+    if (e.target.hasAttribute('selected')) {
+      e.target.removeAttribute('selected');
+    }
+    else {
+      e.target.setAttribute('selected', '');
+    }
   })
-  )
 
 function setInnerHTML(elm, html) {
   elm.innerHTML = html;
@@ -1289,7 +1313,9 @@ function createComment(comment) {
 
 function questionCommentForm(event) {
   let question = event.target.parentElement.parentElement.parentElement
+
   let question_id = document.querySelector('#question_id').value;
+  
   removeOpenedForms()
 
   question.insertAdjacentElement('afterend', createQuestionCommentForm(question_id))
@@ -1373,7 +1399,29 @@ function addAnswerCard() {
       Answer
   </button>
 </div>
-`
+  `
+}
+
+function cancelCreateComment(){
+  let question_id = document.querySelector('#question_id').value;
+
+  let commentForm = document.querySelector('.comment-form')
+  commentForm.remove()
+
+    // Insert answer form back
+    let add_answer_card = document.querySelector('#add-answer-card');
+    add_answer_card.innerHTML = `
+    <form method="POST" class="card-body m-0 p-0">
+      <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
+      <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
+        id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
+    </form>
+  <div class="card-footer text-right">
+    <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
+        Answer
+    </button>
+  </div>
+    `
 }
 
 /*********** delete an comment ***********/
@@ -1475,9 +1523,16 @@ function sendCreateCommentUpdateRequest() {
   p.classList.add('card-text', 'pb-5', 'pt-2');
   p.innerText = comment.full_text;
 
+  let em = document.createElement('em')
+  em.innerText = 'edited'
+
   let comment_element = document.querySelector('#comment_' + comment.comment_id);
   let comment_form = comment_element.querySelector('.comment-form');
   comment_form.parentElement.querySelector('.card-text').appendChild(p);
+
+  comment_head = comment_form.parentElement.children[0]
+  if (comment_head.lastElementChild.tagName != 'EM')
+    comment_head.appendChild(em)
   comment_form.remove();
   addAnswerCard();
 
@@ -1514,6 +1569,47 @@ function removeOpenedForms(){
 function submitQuestionUpdate(){
   document.getElementById("edit-question-form").submit();
 }
+function updateNotification(notification_id){
+  let notification_button = document.getElementById("button-notification-" + notification_id)
+  let red_circle = notification_button.getElementsByTagName("span")[0]
+  if(!red_circle) return
+  notification_button.removeChild(red_circle)
+
+  let num_notifications_span = document.getElementById("num-notifications")
+  let num = parseInt(num_notifications_span.textContent) - 1
+  if(num === 0) {
+    num_notifications_span.textContent = ""
+  }
+  else num_notifications_span.textContent = num
+}
+
+
+function sendUpdateNotificationRequest(event) {
+  let button_id
+  if(event.target.className === "btn bg-transparent shadow-none border-0 d-flex justify-content-between align-items-center w-100 button-notification"){
+    button_id = event.target.id
+  }
+  if(event.target.className === "d-flex flex-column" || event.target.className === "material-icons ml-4 red-circle-notification"){
+    button_id = event.target.parentElement.id
+  }
+  if(event.target.className === "text-left" || event.target.className === "h5 text-left"){
+    button_id = event.target.parentElement.parentElement.id
+  }
+   console.log(button_id)
+  let notification_id = button_id.split('-').pop()
+  if (notification_id != '')
+    sendAjaxRequest('post', 
+                    '/api/notification/update/' + notification_id, 
+                    {}, 
+                    function(){return updateNotification(notification_id);})
+  event.stopPropagation()
+  event.preventDefault()
+}
+
+function redirect_notification(notification_id){
+  window.location.assign('/notification/' + notification_id);
+}
+/***********  ***********/
 
 function removeOpenedForms(){
   if(document.querySelector('.answer-form')!=null){

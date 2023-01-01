@@ -1,4 +1,4 @@
-<div class="card p-3 my-5">
+<div class="card p-3 my-5 m-3">
   <div class="form-group">
     <label class="title-blue" for="title">Title</label>
     <small id="title_help" class="form-text text-muted">Be specific and imagine you’re asking a question to another person. </small>
