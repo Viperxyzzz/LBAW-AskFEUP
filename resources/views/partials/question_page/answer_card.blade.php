@@ -41,11 +41,15 @@
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center answer-footer">
         <div class="d-flex align-items-start mt-2">
-            <button class="button-clear m-0 px-1" type="button">
+            <button class="button-clear m-0 px-1 update-votes-answer" type="button">
+                <input type="hidden" name="vote" value="1"></input>
+                <input type="hidden" name="answer_id" value="{{$answer->answer_id}}"></input>
                 <i width="16" height="16" class="material-symbols-outlined ">arrow_upward</i>
             </button>
-            <p class="m-0 px-1 pt-1">{{ $answer->num_votes }}</p>
-            <button class="button-clear d-block m-0 px-1" type="button">
+            <p class="m-0 px-1 pt-1" id="num-votes-answer-{{$answer->answer_id}}">{{ $answer->num_votes }}</p>
+            <button class="button-clear m-0 px-1 update-votes-answer" type="button">
+                <input type="hidden" name="vote" value="-1"></input>
+                <input type="hidden" name="answer_id" value="{{$answer->answer_id}}"></input>
                 <i width="16" height="16" class="material-symbols-outlined ">arrow_downward</i>
             </button>
             <button class="add-comment-answer-form-button button button-clear m-0 px-1" type="button">

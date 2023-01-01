@@ -42,7 +42,7 @@ CREATE TABLE question (
     question_id SERIAL PRIMARY KEY, 
     title TEXT NOT NULL,
     full_text TEXT NOT NULL, 
-    num_votes INTEGER NOT NULL,
+    num_votes INTEGER NOT NULL CHECK (num_votes >= 0),
     num_views INTEGER NOT NULL CHECK (num_views >= 0),
     num_answers INTEGER NOT NULL CHECK (num_answers >= 0),
     date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
@@ -478,6 +478,7 @@ DROP TRIGGER IF EXISTS new_badge_notification ON user_badge CASCADE;
 CREATE TRIGGER new_badge_notification
     AFTER INSERT ON user_badge
     FOR EACH ROW EXECUTE FUNCTION new_badge_notification();
+
 
 --INDEXES
 

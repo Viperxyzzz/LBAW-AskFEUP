@@ -133,11 +133,15 @@ class QuestionController extends Controller
         // User has already voted
         if ($questionVote->value == $request->vote) {
           // User is trying to cancel their vote
-          $question->num_votes -= $request->vote;
+          if ($question->num_votes > 0 || $request->vote != -1) {
+            // Only decrement the num_votes if it is above 0 or if the user is not downvoting
+            $question->num_votes -= $request->vote;
+          }
           $questionVote->delete();
         } else {
           // User is updating their vote
-          $question->num_votes -= $questionVote->value;
+          if($question->num_votes != 0 || $questionVote->value != -1)
+            $question->num_votes -= $questionVote->value;
           $question->num_votes += $request->vote;
           $questionVote->value = $request->vote;
           $questionVote->save();
@@ -151,6 +155,7 @@ class QuestionController extends Controller
         $questionVote->save();
         $question->num_votes += $request->vote;
       }
+      if($question->num_votes < 0) $question->num_votes = 0;
       $question->save();
       return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id];
     }
