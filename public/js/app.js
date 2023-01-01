@@ -1004,6 +1004,7 @@ function cancelEditAnswer(answer_id,text){
 function answerUpdater() {
   let new_text = document.querySelector('#full_text').value;
   let answer_id = document.querySelector('#answer_id').value;
+  addAnswerCard();
   sendAjaxRequest('post', '/api/answer/update/' + answer_id, {full_text: new_text, was_edited: true }, sendCreateAnswerUpdateRequest);
 }
 
@@ -1020,7 +1021,7 @@ function sendCreateAnswerUpdateRequest() {
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
 
   answer_form.remove();
-
+  addAnswerCard();
 }
 
 function sendFollowTagRequest(event) {
@@ -1496,7 +1497,7 @@ function sendCreateCommentUpdateRequest() {
   if (comment_head.lastElementChild.tagName != 'EM')
     comment_head.appendChild(em)
   comment_form.remove();
-
+  addAnswerCard();
 }
 function updateNotification(notification_id){
   let notification_button = document.getElementById("button-notification-" + notification_id)
