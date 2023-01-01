@@ -2,11 +2,11 @@
 @section('content')
 <div class="row">
     @include('partials.tags.tag_filter')
-    <div class="col-lg-10 mt-5">
+    <div class="col-md-9 mt-5 m-3">
         <div class="row">
-            <h2 class="col col-md-9">Tags</h2>
+            <h2 class="col-sm-9">Tags</h2>
             @can('create', App\Tag::class)
-            <button class="col col-md-2 d-flex align-items-center" type="button" data-toggle="modal" data-target="#add-tag-modal">
+            <button class="d-flex align-items-center mx-5" style="width: 15rem" type="button" data-toggle="modal" data-target="#add-tag-modal">
                 <i class="material-symbols-outlined">add</i>
                 Create Tag
             </button>
