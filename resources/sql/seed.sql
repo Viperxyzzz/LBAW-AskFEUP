@@ -104,6 +104,13 @@ create table blocks(
     date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
 );
 
+DROP TABLE IF EXISTS disable_user CASCADE;
+create table disable_user(
+    disable_id SERIAL PRIMARY KEY,
+    user_id INTEGER UNIQUE NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
+);
+
 DROP TABLE IF EXISTS user_tag CASCADE;
 CREATE table user_tag(
         user_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE,
@@ -601,6 +608,7 @@ INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, pict
 INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('lhryniewiczr','lhryniewiczr@discovery.com','Lazaro Hryniewicz','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',74,false,false, DEFAULT);
 INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('mshepherdsons','mshepherdsons@census.gov','Muriel Shepherdson','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',49,false,false, DEFAULT);
 INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('jbasellit','jbasellit@diigo.com','Jeannine Baselli','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',95,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('jbassjsdn','jbassjsdn@diigo.com','anonymous','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',95,false,false, DEFAULT);
 
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How to center a div?', 'What method can I use to center a div horizontally to the middle of the screen?', 17, 282, 1, '2022-12-01 04:24:58', false, 1);
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How do I add multi-line comments in Python?', '# works for single line comments but Im wondering how to comment multiple lines of code', 5, 100, 0, '2022-12-01 05:26:58', false, 1);
@@ -825,6 +833,11 @@ VALUES
   (11,'Too much activity','2021-08-27 04:16:57'),
   (12,'User repeatedly asked same questions in order to gain votes','2022-03-12 04:16:56');
 
+
+INSERT INTO disable_user(user_id, date)
+VALUES
+  (31, '2022-06-11 03:16:56');
+  
 insert into user_tag (user_id, tag_id) values (1, 1);
 insert into user_tag (user_id, tag_id) values (1, 2);
 insert into user_tag (user_id, tag_id) values (3, 19);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Answer extends Model
 {
@@ -46,5 +47,14 @@ class Answer extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class, 'answer_id', 'answer_id');
+    }
+
+    public function is_accessible_user(){
+        $author = User::find($this->user_id);
+        if (Auth::user()->is_admin)
+            return true;
+        if ($author->is_disable())
+            return false;
+        return true;
     }
 }
