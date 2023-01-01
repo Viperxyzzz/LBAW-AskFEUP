@@ -1313,13 +1313,13 @@ function questionCommentForm(event) {
 
 function createQuestionCommentForm(question_id) {
   //prevent duplicated comment form
-  let previous_comment_form = document.querySelector('.comment-form')
+  let previous_comment_form = document.querySelector('.add-comment-form')
   if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
   if(previous_comment_form!=null) previous_comment_form.remove()
 
   let comment_form = document.createElement('div')
   comment_form.className = 'card'
-  comment_form.classList.add('comment-form')
+  comment_form.classList.add('add-comment-form')
   comment_form.innerHTML = `
     <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
     <form method="POST" class="card-body m-0 p-0">
@@ -1357,7 +1357,7 @@ function  questionCommentAddedHandler() {
   let question_id = document.querySelector('#question_id').value;
 
   //delete comment form
-  document.querySelector('.comment-form').remove()
+  document.querySelector('.add-comment-form').remove()
 
   // Create the new comment
   let new_comment = createComment(comment);
@@ -1383,7 +1383,7 @@ function  questionCommentAddedHandler() {
 }
 
 function cancelCreateComment(){
-  let commentForm = document.querySelector('.comment-form')
+  let commentForm = document.querySelector('.add-comment-form')
   commentForm.remove()
 
   addAnswerCard();
