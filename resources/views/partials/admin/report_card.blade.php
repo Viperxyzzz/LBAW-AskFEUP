@@ -27,7 +27,7 @@
     </div>
     <div class="card-footer d-flex p-4 justify-content-between">
         <p class="m-0">
-            <img src="{{asset('storage/'.($report->author()->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
+            <img src="{{asset('storage/'.($report->author()->picture_path).'.jpeg')}}" class="img-fluid rounded-circle keep-ratio" alt="user image" width="25px">
             <a href="{{url("/users/" . strval($report->author()->user_id))}}"> {{ $report->author()->name }}</a>
         </p>
         <p class="m-0">{{ $report->date }}</p>

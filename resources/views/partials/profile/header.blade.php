@@ -1,6 +1,6 @@
 <div class="d-flex flex-wrap border p-5 col-md-12">
     <img src="{{asset('storage/'.($user->picture_path).'.jpeg')}}" alt="avatar"
-              class="rounded-circle">
+              class="rounded-circle keep-ratio" width="225px">
     <div class="d-flex justify-content-between" style="flex-grow: 1">
         <div class='profile-info'>
             @if ($user->is_blocked())

@@ -12,7 +12,7 @@
         </div>
         <div class="pt-3 flex-fill">
             <p class="m-0">
-                <img src="{{asset('storage/'.($comment->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
+                <img src="{{asset('storage/'.($comment->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle keep-ratio" alt="user image" width="25px">
                 <a href="{{url("/users/$comment->user_id")}}"> {{ $comment->author->name }}</a>
                 {{ \Carbon\Carbon::parse($comment->date)->format('d/m/Y')}}
                 @if($comment->was_edited)

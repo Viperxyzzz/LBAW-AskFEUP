@@ -13,7 +13,7 @@
             <th class="px-3" scope="row">{{ $block->block_id }}</th>
             <td> 
                 <p class="m-0">
-                    <img src="{{asset('storage/'.($block->user()->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
+                    <img src="{{asset('storage/'.($block->user()->picture_path).'.jpeg')}}" class="img-fluid rounded-circle keep-ratio" alt="user image" width="25px">
                     <a href="{{url("/users/" . strval($block->user()->user_id))}}"> {{ $block->user()->name }}</a>
                 </p>
             </td>
