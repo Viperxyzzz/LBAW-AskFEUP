@@ -280,11 +280,8 @@ function sendAjaxRequest(method, url, data, handler) {
 /*********** create an answer ***********/
 
 function sendCreateAnswerRequest(event) {
-  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
-  console.log(question_id)
   let answer = document.querySelector('#answer').value;
-  console.log(answer)
 
   if (answer != '')
     sendAjaxRequest('put', '/api/answer/' + question_id, { answer: answer }, answerAddedHandler);
@@ -307,7 +304,6 @@ function answerAddedHandler() {
 }
 
 function createAnswer(answer) {
-  console.log(answer)
   let new_answer = document.createElement('div');
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
@@ -798,7 +794,6 @@ function blockRemovedHandler() {
 /*********** create a report ***********/
 
 function sendCreateReportRequest(event) {
-  console.log(event.target.parentElement.parentElement)
   let body = event.target.parentElement.parentElement.querySelector('.modal-body')
   let reason = body.querySelector('input[name=reason]').value
   let question_id = body.querySelector('input[name=question_id]').value
@@ -918,8 +913,6 @@ function submitSettings(){
 /*********** edit answer ***********/
 
 function editAnswer(event) {
-  console.log("edit answer")
-
   removeOpenedForms()
 
   let answer_id = event.target.parentElement.children[0].innerText;
@@ -983,18 +976,14 @@ function sendCreateAnswerUpdateRequest() {
   p.innerText = answer.full_text;
 
   let answer_element = document.querySelector('#answer_' + answer.answer_id);
-  console.log(answer_element)
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
-  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
 
   answer_form.remove();
   addAnswerCard();
 
 }
 function cancelEditAnswer(answer_id,text){
-  console.log("cancel edit answer")
-
   let p = document.createElement('p');
   p.classList.add('card-text', 'pb-5', 'pt-2');
   p.innerText = text;
@@ -1156,7 +1145,6 @@ function createAnswerCommentForm(answer_card_id) {
   let answer_id = answer_card_id_list[1]
 
   let previous_comment_form = document.querySelector(`.comment-answer-${answer_id}-form`)
-  console.log(previous_comment_form)
   if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
 
   let comment_form = document.createElement('div');
@@ -1184,7 +1172,6 @@ function createAnswerCommentForm(answer_card_id) {
 }
 
 function sendCreateAnswerCommentRequest(answer_id) {
-  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
   let comment = document.querySelector('#comment').value;
 
@@ -1202,16 +1189,13 @@ function answerCommentAddedHandler() {
 
   // Create the new comment
   let new_comment = createComment(comment);
-  console.log(new_comment)
 
   // Insert the new comment
   let comments = document.querySelector(`.answer-${comment.answer_id}-comments`);
-  console.log(comments)
   comments.prepend(new_comment);
 }
 
 function createComment(comment) {
-  console.log(comment)
   let new_comment = document.createElement('div');
   new_comment.id = `comment_${comment.comment_id}`
   new_comment.className = 'border-top'
@@ -1277,6 +1261,7 @@ function createComment(comment) {
     </div>
 </div>
   `;
+  addAnswerCard();
   return new_comment;
 }
 
@@ -1284,15 +1269,10 @@ function createComment(comment) {
 
 function questionCommentForm(event) {
   let question = event.target.parentElement.parentElement.parentElement
-  console.log(question)
-
   let question_id = document.querySelector('#question_id').value;
-  console.log(question_id)
-
   removeOpenedForms()
 
   question.insertAdjacentElement('afterend', createQuestionCommentForm(question_id))
-
 }
 
 function createQuestionCommentForm(question_id) {
@@ -1326,7 +1306,6 @@ function createQuestionCommentForm(question_id) {
 }
 
 function sendCreateQuestionCommentRequest() {
-  console.log("create request function")
   let question_id = document.querySelector('#question_id').value;
   let comment = document.querySelector('#comment').value;
 
@@ -1344,11 +1323,9 @@ function  questionCommentAddedHandler() {
 
   // Create the new comment
   let new_comment = createComment(comment);
-  console.log(new_comment)
 
   // Insert the new comment
   let comments = document.querySelector(`.question-comments`);
-  console.log(comments)
   comments.prepend(new_comment);
 
   addAnswerCard()
@@ -1364,7 +1341,6 @@ function cancelCreateComment(){
 
 function addAnswerCard() {
   let question_id = document.querySelector('#question_id').value;
-  console.log("add answer card")
   let add_answer_card = document.querySelector('#add-answer-card');
   add_answer_card.innerHTML = `
   <form method="POST" class="card-body m-0 p-0">
@@ -1390,7 +1366,6 @@ function sendDeleteCommentRequest(event) {
 }
 
 function commentDeletedHandler() {
-  console.log("comment_handler")
 
   let deletedComment = JSON.parse(this.responseText);
 
@@ -1473,10 +1448,8 @@ function sendCreateCommentUpdateRequest() {
 }
 
 function cancelEditComment(comment_id, text) {
-  // Insert answer form back
   addAnswerCard();
 
-  console.log("cancel edit comment")
   let p = document.createElement('p');
   p.classList.add('card-text', 'pb-5', 'pt-2');
   p.innerText = text;
@@ -1492,13 +1465,11 @@ function removeOpenedForms(){
     let answer_id = document.querySelector('#answer_id').value
     let text = document.querySelector('#full_text').textContent
     cancelEditAnswer(answer_id, text)
-    console.log("opened answer form")
   }
   if(document.querySelector('.comment-form')!=null){
     let comment_id = document.querySelector('#comment_id').value
     let text = document.querySelector('#full_text').textContent
     cancelEditComment(comment_id, text)
-    console.log("opened comment form")
   }
   if(document.querySelector('.add-comment-form')!=null) cancelCreateComment()
   document.querySelector('#add-answer-card').innerHTML = '';
