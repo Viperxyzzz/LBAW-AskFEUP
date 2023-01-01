@@ -36,11 +36,16 @@
                     </select>
                 </div>
             </div>
-            <button class="my-5" type="submit" class="btn btn-primary">Submit</button>
+            <div class="row justify-content-between">
+              <a href="{{ route('question', array('id' => $question->question_id)) }}">
+                  <button class=" button-clear my-5 d-flex">
+                      <p class="pb-2">Cancel</p>
+                  </button>
+              </a>
+              <button class="my-5" type="submit" class="btn btn-primary">Submit</button>
+            </div>
+
         </form>
     </div>
 </div>
 @endsection
-<script>
-    //@include('partials.create_question.question_tags')
-</script>

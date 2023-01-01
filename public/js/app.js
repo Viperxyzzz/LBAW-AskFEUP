@@ -947,21 +947,25 @@ function editAnswer(event) {
 function createAnswerForm(answer_id, text) {
   let answer_form = document.createElement('div');
   let answer = document.getElementById(answer_id);
-  //answer_form.classList.add('mt-5')
   answer_form.classList.add('answer-form')
   answer_form.classList.add('w-100')
   answer_form.id = `answer_form_${answer_id}`
+
+  let previous_comment_form = document.querySelector(`#answer_form_${answer_id}`)
+  if(previous_comment_form!=null&&previous_comment_form.innerHTML!='') return previous_comment_form;
 
   answer_form.innerHTML =
     `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}"></input>
     <textarea id="full_text" rows="4" type="text" name="full_text" class="edit-text mt-2" required/>${text}</textarea>
-  <div class="text-right">
-      <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
-          Save Changes
-      </button>
-  </div>
+    <div class = "row justify-content-between" style="padding: 0.75rem 0.75rem;">
+    <button class="cancel-add-comment button-clear px-2 pr-3 pb-2 d-flex" style="margin: 0;" onclick="cancelEditAnswer(${answer_id},'${text}')">
+        <p class="pb-2">Cancel</p>
+    </button>
+    <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
+    Save Changes
+    </button>
       <script>
       var input = document.getElementById("full_text");
       input.addEventListener("keypress", function(event) {
@@ -973,6 +977,22 @@ function createAnswerForm(answer_id, text) {
       </script>
 `
   return answer_form;
+}
+
+function cancelEditAnswer(answer_id,text){
+  console.log("cancel edit answer")
+
+  let p = document.createElement('p');
+  p.classList.add('card-text', 'pb-5', 'pt-2');
+  p.innerText = text;
+
+  let answer_element = document.querySelector('#answer_' + answer_id);
+  console.log(answer_element)
+  let answer_form = answer_element.querySelector('.answer-form');
+  answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
+  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
+
+  answer_form.remove();
 }
 
 function answerUpdater() {
@@ -1409,11 +1429,14 @@ function createCommentForm(comment_id, text) {
     <input type="hidden" name="comment_id" id="comment_id" value="${comment_id}"></input>
     <input type="hidden" name="comment" id="comment" value="${comment}"></input>
     <textarea id="full_text" rows="4" type="text" name="full_text" class="edit-text mt-2" required/>${text}</textarea>
-  <div class="text-right">
-      <button id="update-comment-button" onclick="commentUpdater(event)" type="submit" class="m-0">
-          Save Changes
-      </button>
-  </div>
+    <div class = "row justify-content-between" style="padding: 0.75rem 0.75rem;">
+        <button class="cancel-add-comment button-clear px-2 pr-3 pb-2 d-flex" style="margin: 0;" onclick="cancelEditComment(${comment_id},'${text}')">
+            <p class="pb-2">Cancel</p>
+        </button>
+        <button id="update-comment-button" onclick="commentUpdater(event)" type="submit" class="m-0">
+            Save Changes
+        </button>
+    </div>
       <script>
       var input = document.getElementById("full_text");
       input.addEventListener("keypress", function(event) {
@@ -1426,6 +1449,19 @@ function createCommentForm(comment_id, text) {
 `
   return comment_form;
 }
+
+function cancelEditComment(comment_id, text) {
+  console.log("cancel edit comment")
+  let p = document.createElement('p');
+  p.classList.add('card-text', 'pb-5', 'pt-2');
+  p.innerText = text;
+
+  let comment_element = document.querySelector('#comment_' + comment_id);
+  let comment_form = comment_element.querySelector('.comment-form');
+  comment_form.parentElement.querySelector('.card-text').appendChild(p);
+  comment_form.remove();
+}
+
 
 function commentUpdater() {
   let new_text = document.querySelector('#full_text').value;
