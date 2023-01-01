@@ -1,21 +1,19 @@
 <li id='tag-{{ $tag->tag_id }}' class="card m-3" style="width: 250px;">
     <div class="card-header d-flex align-items-start justify-content-between">
-        <a href="/browse/?tags[]={{ $tag->tag_id }}" class="badge p-3 m-1 mt-2">{{ $tag->tag_name }}</a>
+        <p class="badge p-3 m-1 mt-2">{{ $tag->tag_name }}</p>
         <div class="d-flex justify-content-end">
-            @if(Auth::check())
-                @if (Auth::user()->follows_tag($tag->tag_id))
-                <button class="unFollow-tag button-clear px-2 pr-3 pb-2 d-flex" id="unFollow-tag-{{ $tag->tag_id }}">
-                    <input type="hidden" value="{{ $tag->tag_id }}">
-                    <i class="p-0 pt-2 material-symbols-outlined">done</i>
-                    <p class="pb-2">Following</p>
-                </button>
-                @else
-                <button class="follow-tag button-clear px-2 pr-3 pb-2 d-flex" id="follow-tag-{{ $tag->tag_id }}">
-                    <input type="hidden" value="{{ $tag->tag_id }}">
-                    <i class="p-0 pt-2 material-symbols-outlined">add</i>
-                    <p class="pb-2">Follow</p>
-                </button>
-                @endif
+            @if (Auth::user()->follows_tag($tag->tag_id))
+            <button class="unFollow-tag button-clear px-2 pr-3 pb-2 d-flex" id="unFollow-tag-{{ $tag->tag_id }}">
+                <input type="hidden" value="{{ $tag->tag_id }}">
+                <i class="p-0 pt-2 material-symbols-outlined">done</i>
+                <p class="pb-2">Following</p>
+            </button>
+            @else
+            <button class="follow-tag button-clear px-2 pr-3 pb-2 d-flex" id="follow-tag-{{ $tag->tag_id }}">
+                <input type="hidden" value="{{ $tag->tag_id }}">
+                <i class="p-0 pt-2 material-symbols-outlined">add</i>
+                <p class="pb-2">Follow</p>
+            </button>
             @endif
 
             @can('manage', App\Tag::class)
