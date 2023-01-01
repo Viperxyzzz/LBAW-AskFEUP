@@ -937,6 +937,19 @@ function submitSettings(){
 function editAnswer(event) {
 
   //remove opened forms
+  if(document.querySelector('.answer-form')!=null){
+    let answer_id = document.querySelector('#answer_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditAnswer(answer_id, text)
+    console.log("opened answer form")
+  }
+  if(document.querySelector('.comment-form')!=null){
+    let comment_id = document.querySelector('#comment_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditComment(comment_id, text)
+    console.log("opened comment form")
+  }
+
   document.querySelector('#add-answer-card').innerHTML = '';
 
   let answer_id = event.target.parentElement.children[0].innerText;
@@ -1414,6 +1427,19 @@ function commentDeletedHandler() {
 
 function editComment(event) {
   //remove opened forms
+  if(document.querySelector('.answer-form')!=null){
+    let answer_id = document.querySelector('#answer_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditAnswer(answer_id, text)
+    console.log("opened answer form")
+  }
+  if(document.querySelector('.comment-form')!=null){
+    let comment_id = document.querySelector('#comment_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditComment(comment_id, text)
+    console.log("opened comment form")
+  }
+
   document.querySelector('#add-answer-card').innerHTML = '';
 
   let comment_id = event.target.parentElement.children[0].innerText;
