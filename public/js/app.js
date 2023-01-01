@@ -1556,6 +1556,10 @@ function removeOpenedForms(){
   document.querySelector('#add-answer-card').innerHTML = '';
 }
 
+function submitQuestionUpdate(){
+  document.getElementById("edit-question-form").submit();
+}
+
 /***********  ***********/
 
 addEventListeners();

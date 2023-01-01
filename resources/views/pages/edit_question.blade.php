@@ -7,7 +7,7 @@
             <h2>Edit question</h2>
         </div>
         <!--include the form-->
-        <form method="post" action="{{ route('update_question', array('id' => $question->question_id)) }}" enctype="multipart/form-data">
+        <form id="edit-question-form" method="post" action="{{ route('update_question', array('id' => $question->question_id)) }}" enctype="multipart/form-data">
             @method('PATCH')
             @csrf
             <div class="card p-3 my-5">
@@ -36,16 +36,15 @@
                     </select>
                 </div>
             </div>
-            <div class="row justify-content-between">
-              <a href="{{ route('question', array('id' => $question->question_id)) }}">
+          </form>
+          <div class="row justify-content-between">
+              <a method="get" href="{{ route('question', array('id' => $question->question_id)) }}">
                   <button class=" button-clear my-5 d-flex">
                       <p class="pb-2">Cancel</p>
                   </button>
               </a>
-              <button class="my-5" type="submit" class="btn btn-primary">Submit</button>
-            </div>
-
-        </form>
-    </div>
-</div>
+              <button class="my-5" type="submit" class="btn btn-primary" onclick="submitQuestionUpdate()">Submit</button>
+          </div>
+      </div>
+  </div>
 @endsection
