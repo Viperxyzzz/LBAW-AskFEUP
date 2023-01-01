@@ -5,7 +5,7 @@
 <div data-id="{{$question->question_id}}" class="row">
     @include('partials.feed.left_nav')
 
-    <div class="col-lg-7 m-3 mt-5">
+    <div class="col-lg-7 mt-5">
         @include('partials.question_page.question_card', ['question' => $question])
         <div class="question-comments">
             @foreach($question->question_comments()->sortByDesc('num_votes')->all() as $comment)

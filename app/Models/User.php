@@ -179,20 +179,7 @@ class User extends Authenticatable
     public function is_blocked() {
       return $this->hasOne(Block::class, 'user_id', 'user_id')->exists();
     }
-
     public function is_disable() {
       return $this->hasOne(Disable::class, 'user_id', 'user_id')->exists();
-
-    
-    public function notifications(){
-      return $this->hasMany(Notification::class, 'user_id', 'user_id');
-    }
-
-    public function num_non_viewed_notifications(){
-      $num = DB::table('notification')
-                    ->where([['viewed', 'No'], ['user_id', $this->user_id]])
-                    ->count();
-      return $num;
-
     }
 }

@@ -45,7 +45,7 @@ CREATE TABLE question (
     num_votes INTEGER NOT NULL CHECK (num_votes >= 0),
     num_views INTEGER NOT NULL CHECK (num_views >= 0),
     num_answers INTEGER NOT NULL CHECK (num_answers >= 0),
-    date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
+    date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
     was_edited BOOLEAN NOT NULL DEFAULT FALSE,
     author_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
 );
@@ -69,9 +69,7 @@ CREATE TABLE notification (
     notification_text TEXT NOT NULL,
     date TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
     viewed BOOLEAN NOT NULL DEFAULT FALSE,
-    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
-    event_id INTEGER NOT NULL,
-    event_type TEXT NOT NULL
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 DROP TABLE IF EXISTS comment CASCADE;
@@ -80,7 +78,7 @@ CREATE TABLE comment(
   full_text TEXT NOT NULL,
   num_votes INTEGER NOT NULL CONSTRAINT num_votes_ck CHECK (num_votes >= 0),
   was_edited BOOLEAN NOT NULL DEFAULT FALSE,
-  date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
+  date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
   question_id INTEGER NOT NULL REFERENCES question (question_id) ON UPDATE CASCADE ON DELETE CASCADE, 
   answer_id INTEGER REFERENCES answer (answer_id) ON UPDATE CASCADE ON DELETE CASCADE, 
   user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
@@ -101,7 +99,7 @@ create table blocks(
     block_id SERIAL PRIMARY KEY,
     user_id INTEGER UNIQUE NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
     reason TEXT NOT NULL,
-    date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
+    date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
 );
 
 
@@ -389,80 +387,6 @@ CREATE TRIGGER was_edited
     AFTER UPDATE ON question
     FOR EACH ROW EXECUTE FUNCTION was_edited();
 
---
-CREATE OR REPLACE FUNCTION new_answer_notification() RETURNS TRIGGER AS
-$FUNC9$
-BEGIN
-    INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
-    ('New answers to your question', DEFAULT, 'No', 
-        (SELECT author_id FROM question FULL OUTER JOIN answer USING(question_id) WHERE answer_id = NEW.answer_id),
-        NEW.answer_id,
-        'new answer'
-    );
-    RETURN NULL;
-END
-$FUNC9$
-LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS new_answer_notification ON answer CASCADE;
-CREATE TRIGGER new_answer_notification
-    AFTER INSERT ON answer
-    FOR EACH ROW EXECUTE FUNCTION new_answer_notification();
-
-
---
-CREATE OR REPLACE FUNCTION new_vote_notification() RETURNS TRIGGER AS
-$FUNC10$
-BEGIN
-    IF OLD.num_votes < NEW.num_votes THEN
-        INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
-        ('New vote on your comment', DEFAULT, 'No', NEW.user_id, NEW.comment_id, 'new vote');
-    END IF;
-    RETURN NEW;
-END
-$FUNC10$
-LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS new_vote_notification ON comment CASCADE;
-CREATE TRIGGER new_vote_notification
-    BEFORE UPDATE ON comment
-    FOR EACH ROW EXECUTE FUNCTION new_vote_notification();
-
-
---
-CREATE OR REPLACE FUNCTION new_correct_answer_notification() RETURNS TRIGGER AS
-$FUNC11$
-BEGIN
-    IF OLD.is_correct = 'No' AND NEW.is_correct = 'Yes' THEN
-        INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
-        ('Your answer was marked as correct', DEFAULT, 'No', NEW.user_id, NEW. answer_id, 'correct answer');
-    END IF;
-    RETURN NEW;
-END
-$FUNC11$
-LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS new_correct_answer_notification ON answer CASCADE;
-CREATE TRIGGER new_correct_answer_notification
-    BEFORE UPDATE ON answer
-    FOR EACH ROW EXECUTE FUNCTION new_correct_answer_notification();
-
-
---
-CREATE OR REPLACE FUNCTION new_badge_notification() RETURNS TRIGGER AS
-$FUNC12$
-BEGIN
-    INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
-    ('You received a badge', DEFAULT, 'No', NEW.user_id, NEW.badge_id, 'new badge');
-    RETURN NULL;
-END
-$FUNC12$
-LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS new_badge_notification ON user_badge CASCADE;
-CREATE TRIGGER new_badge_notification
-    AFTER INSERT ON user_badge
-    FOR EACH ROW EXECUTE FUNCTION new_badge_notification();
 
 --INDEXES
 
@@ -644,8 +568,8 @@ INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date,
 
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'You can use the `text-align` property with the value `center`.', 31, true, false, '2022-05-18 00:01:14', 1, 2);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'Best way to do this is to use the `margin` property and set it to `0 auto`. This will make the horizontal margin equally divided', 41, true, false, '2021-11-08 13:01:18', 1, 3);
-INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'Use triple quotes for multi line comments.', 39, true, true, '2022-04-15 18:47:13', 2, 26);
-INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'git fetch is similar to pull but doesnt merge. i.e. it fetches remote updates but your local stays the same', 41, true, false, '2022-02-22 09:48:22', 3, 2);
+INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'git fetch is similar to pull but doesnt merge. i.e. it fetches remote updates but your local stays the same', 41, true, false, '2022-02-22 09:48:22', 2, 2);
+INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'eget congue eget semper rutrum nulla nunc purus phasellus in felis donec semper sapien a libero nam dui proin', 39, true, true, '2022-04-15 18:47:13', 12, 26);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'rutrum neque aenean auctor gravida sem praesent id massa id nisl venenatis', 30, true, false, '2021-12-15 03:02:19', 30, 1);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'risus auctor sed tristique in tempus sit amet sem fusce consequat nulla', 41, true, false, '2022-06-01 14:27:04', 11, 13);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'vitae quam suspendisse potenti nullam porttitor lacus at turpis donec posuere metus vitae ipsum', 42, true, true, '2022-08-12 16:38:46', 26, 5);
@@ -703,9 +627,17 @@ INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'posuere cubilia curae donec pharetra magna vestibulum aliquet ultrices erat tortor sollicitudin mi sit amet lobortis', 44, false, true, '2022-05-12 11:45:34', 10, 16);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'sem praesent id massa id nisl venenatis lacinia aenean sit amet justo morbi ut', 3, false, true, '2022-09-28 16:09:01', 4, 6);
 
-INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Altough it might work, this should only be used with text.', 24, false, '2022-08-29 09:49:24',1, 1, 3);
-INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Awesome! This worked just fine.', 48, true, '2022-09-15 22:50:46',1, 2, 2);
-INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'You probably want to skip the pull and just do a "git rebase origin" as the last step since you already fetched the changes.', 43, false, '2021-10-26 06:24:38',3, 4, 1);
+INSERT INTO notification(notification_text,date,viewed,user_id)
+VALUES
+  ('New answers to your question','May 25, 2022','No',1),
+  ('New vote on your comment','Mar 4, 2022','No',2),
+  ('Your answer was marked as correct','Aug 4, 2022','No',3),
+  ('New answers to your question','Apr 26, 2022','No',4),
+  ('You received a badge','Jun 1, 2022','No',5);
+
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Altough it might work, this should only be used with text.', 24, false, '2022-08-29 09:49:24',30, 1, 3);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Awesome! This worked just fine.', 48, false, '2022-09-15 22:50:46',29, 2, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'You probably want to skip the pull and just do a "git rebase origin" as the last step since you already fetched the changes.', 43, false, '2021-10-26 06:24:38',28, 3, 1);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'in magna bibendum imperdiet nullam orci pede venenatis non sodales sed tincidunt eu felis', 19, false, '2022-05-13 23:57:52',27, 52, 27);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel nulla eget eros elementum pellentesque quisque', 24, false, '2022-07-26 08:48:54',26, 50, 12);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'magna at nunc commodo placerat praesent blandit nam nulla integer pede justo lacinia eget', 31, false, '2022-05-13 14:47:21',25, 48, 2);
@@ -716,7 +648,7 @@ INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'viverra eget congue eget semper rutrum nulla nunc purus phasellus in felis donec semper sapien a libero nam', 27, false, '2022-06-19 17:25:50',20, 26, 27);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'amet consectetuer adipiscing elit proin risus praesent lectus vestibulum quam sapien varius', 43, false, '2022-06-09 15:32:10',19, 26, 2);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'posuere cubilia curae donec pharetra magna vestibulum aliquet ultrices erat', 48, true, '2022-01-22 04:34:43',23, 52, 12);
-INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Yes, Linus is right', 7, false, '2021-12-18 22:08:37',18, 1, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'curabitur convallis duis consequat dui nec nisi volutpat eleifend donec ut dolor morbi vel lectus in quam fringilla', 7, false, '2021-12-18 22:08:37',18, 1, 1);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae mauris viverra diam vitae quam suspendisse potenti', 35, false, '2021-11-23 01:59:06',17, 13, 10);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'lorem vitae mattis nibh ligula nec sem duis aliquam convallis nunc proin at turpis', 22, false, '2022-10-03 16:12:43',17, 28, 26);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'orci luctus et ultrices posuere cubilia curae donec pharetra magna vestibulum', 23, false, '2021-10-23 13:09:07',5, 11, 1);
@@ -751,6 +683,7 @@ INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'lacus morbi sem mauris laoreet ut rhoncus aliquet pulvinar sed nisl nunc', 37, false, '2022-05-21 09:37:44',6, 31, 25);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'est donec odio justo sollicitudin ut suscipit a feugiat et', 1, false, '2022-09-11 17:17:15',7, 59, 8);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'mauris vulputate elementum nullam varius nulla facilisi cras non velit nec nisi vulputate nonummy', 22, true, '2022-04-16 21:38:30',8, 31, 20);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'pellentesque volutpat dui maecenas tristique est et tempus semper est', 41, false, '2021-12-12 12:23:19',9, 2, 1);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'potenti in eleifend quam a odio in hac habitasse platea dictumst maecenas ut massa quis augue luctus', 33, false, '2022-02-03 07:32:11',10, 39, 29);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'lacinia eget tincidunt eget tempus vel pede morbi porttitor lorem id', 42, false, '2021-11-27 01:18:51',11, 3, 24);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'tempus sit amet sem fusce consequat nulla nisl nunc nisl duis bibendum felis sed interdum venenatis', 27, false, '2022-03-04 16:30:59',12, 57, 18);
@@ -799,7 +732,8 @@ INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Vivamus viverra et est vitae iaculis. Morbi ultrices nulla facilisis ex mattis eleifend. ', 32, false, '2022-04-18 19:09:49',3, null, 7);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Quisque ac mauris at risus vestibulum rhoncus sit amet eu mauris. Maecenas placerat blandit finibus.', 26, false, '2021-11-13 21:27:31',2, null, 22);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Maecenas commodo ante vitae risus sollicitudin, vel tempor enim interdum. Morbi et rutrum ligula.', 33, false, '2022-07-13 21:24:18',12, null, 25);
-INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Again with this question?', 30, false, '2021-11-11 11:18:43',1, null, 3);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Aenean dignissim dolor vitae massa sollicitudin convallis quis et tellus.', 30, false, '2021-11-11 11:18:43',1, null, 3);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Sed sagittis neque quis accumsan fermentum. Phasellus tempor egestas leo, et iaculis dolor auctor et. Suspendisse nec enim metus.', 8, true, '2022-09-30 21:04:43',1, null, 8);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Pellentesque suscipit nunc nec eleifend porttitor. Sed vel nisi rhoncus, rutrum dolor sed, aliquet est.', 50, false, '2021-10-29 04:24:32',2, null, 21);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Vivamus non commodo leo, non lobortis sem. Aenean risus ante, faucibus at odio id, gravida euismod nisl.', 13, false, '2022-10-08 03:40:53',3, null, 8);
 INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Nulla porta magna dolor, eu luctus velit dapibus at. Duis at mi fermentum, sagittis metus sit amet, vehicula nunc.', 18, false, '2022-09-27 22:19:34',4, null, 23);
