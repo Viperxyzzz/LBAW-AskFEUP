@@ -1,4 +1,4 @@
-<div class="col-lg-2 p-5 border-right">
+<div class="col-md-2 p-5 border-right">
     <h3>Topics</h3>
     <div class="mt-3 d-flex flex-wrap">
             @foreach ($topics as $topic)
