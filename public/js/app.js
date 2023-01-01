@@ -322,29 +322,17 @@ function answerAddedHandler() {
   // Insert the new answer
   let answers = document.querySelector('#answers');
   answers.prepend(new_answer);
-  let markValidAnswer = document.querySelectorAll('.mark-valid-answer')
-  markValidAnswer.forEach(
-    button => {
-      button.addEventListener('click', sendMarkValidAnswerRequest)
-    }
-  )
 }
 
 function createAnswer(answer) {
   //verify if answer is from the guy creating the question
-  console.log(answer)
   let new_answer = document.createElement('div');
-  //find class author in document
-  let question_author = document.querySelector('.author');
-  // split link to get the id of the user(last element)
-  let link_list = question_author.href.split('/');
-  //make question_author_id an int
-  let question_author_id = link_list[link_list.length - 1];
+  let question_author_id = answer.question_author_id;
   let markValidQuestionHtml = "";
   if(question_author_id == answer.user_id){
     markValidQuestionHtml = 
     `                        
-    <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-${answer.answer_id}" type="submit">
+    <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-${answer.answer_id}" type="submit" onclick="sendMarkValidAnswerRequest(event)">
     <input type="hidden" name="answer_id" value="${answer.answer_id}">
     <i id="mark-valid-button" width="16" height="16" class="material-symbols-outlined">check</i>
     </button>
@@ -1099,14 +1087,47 @@ function markValidAnswerHandler() {
   button.id = `invalid-answer-tag-${answer_id}`;
   button.classList.remove('valid-answer-tag');
   button.classList.add('invalid-answer-tag');
+  button.onclick = sendMarkInvalidAnswerRequest;
   button.querySelector('i').classList.add('c-primary');
   button.querySelector('i').classList.add('b-accent');
   button.querySelector('i').classList.add('rounded-circle');
+
+  //find answer 
+  let answer_element = document.querySelector(`#answer_${answer_id}`);
+  console.log(answer_element);
+  answer_element.classList.add('border-success');
 }
 
 function sendMarkInvalidAnswerRequest(event){
-  console.log("not a thing");
+  console.log(event.currentTarget);
+  let answer_id = event.currentTarget.querySelector('input').value;
+
+  if (answer_id != '')
+    sendAjaxRequest('post', `/api/answer/invalid/${answer_id}`, {}, markInvalidAnswerHandler);
+  
+  event.preventDefault();
 }
+
+function markInvalidAnswerHandler() {
+  let answer = JSON.parse(this.responseText);
+  let answer_id = answer['answer_id'];
+
+  let button = document.getElementById(`invalid-answer-tag-${answer_id}`)
+  button.id = `valid-answer-tag-${answer_id}`;
+  button.classList.remove('invalid-answer-tag');
+  button.classList.add('valid-answer-tag');
+  button.onclick = sendMarkValidAnswerRequest;
+  button.querySelector('i').classList.remove('c-primary');
+  button.querySelector('i').classList.remove('b-accent');
+  button.querySelector('i').classList.remove('rounded-circle');	
+
+
+  //find answer
+  let answer_element = document.querySelector(`#answer_${answer_id}`);
+  console.log(answer_element);
+  answer_element.classList.remove('border-success');
+}
+
 
 /* Follow and un-follow questions */
 

@@ -33,6 +33,7 @@ class AnswerController extends Controller
       $answer['author']['name'] = Auth::user()->name;
       $answer['author']['picture_path'] = Auth::user()->picture_path;
       $answer['date'] = date("d-m-Y");
+      $answer['question_author_id'] = Question::find($question_id)->author_id;
       return json_encode($answer);
     }
 
@@ -73,6 +74,16 @@ class AnswerController extends Controller
       $this->authorize('valid', $answer);
 
       $answer->is_correct = true;
+      $answer->save();
+      return $answer;
+    }
+
+    public function make_invalid(Request $request, $answer_id) {
+      if (!Auth::check()) return redirect('/login');
+      $answer = Answer::find($answer_id);
+      $this->authorize('valid', $answer);
+
+      $answer->is_correct = false;
       $answer->save();
       return $answer;
     }
