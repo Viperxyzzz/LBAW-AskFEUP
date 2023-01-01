@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="row m-3">
+<div class="row">
     @include('partials.feed.left_nav')
-    <div class="col-lg-6" >
+    <div class="col-lg-6 " >
         <div class="flex align-content-between mt-5">
             <a class="button float-right" href="{{ route('question_create') }}">Ask a question</a>
         </div>

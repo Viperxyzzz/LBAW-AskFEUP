@@ -184,13 +184,6 @@ function addEventListeners() {
     });
   }
 
-  let tagFilter = document.querySelectorAll('.tag-filter');
-  if (tagFilter != null) {
-    tagFilter.forEach(tag => {
-      tag.addEventListener('click', sendOrderQuestionsRequest);
-    });
-  }
-
   let profileTabs = document.querySelectorAll('.profile-nav')
   profileTabs.forEach(
     button => {
@@ -238,13 +231,6 @@ function addEventListeners() {
       button.addEventListener('click', sendUnFollowQuestionRequest)
     }
   )
-  
-  let notificationUpdate = document.querySelectorAll('.button-notification');
-  if (notificationUpdate != null) {
-    notificationUpdate.forEach(
-      btn => btn.addEventListener('click', sendUpdateNotificationRequest)
-      );
-  }
 }
 
 function closeProfileTabs() {
@@ -583,7 +569,7 @@ function createTag(tag, topics) {
   new_tag.id = `tag-${tag.tag_id}`
   let html = `
   <div class="card-header d-flex align-items-start justify-content-between">
-      <a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-2">${tag.tag_name}</a>
+      <p class="badge p-3 m-1 mt-2">${tag.tag_name}</p>
       <div class="d-flex justify-content-end">`
 
   if (tag['following']) {
@@ -637,6 +623,7 @@ function createTag(tag, topics) {
 }
 
 function createTagModals(tag, topics) {
+  let csrf = document.querySelector('meta[name="csrf-token"]').content;
 
   let html = '';
   if (tag['manage']) {
@@ -824,20 +811,11 @@ function sendCreateReportRequest(event) {
 function sendOrderQuestionsRequest(event) {
   let order = document.querySelector('input[name="order-questions"]:checked').id;
   let direction = document.querySelector('input[name="direction-questions"]:checked').id;
-  let tags = document.querySelectorAll('.tag-filter');
-  let tagsStr = '';
-  tags.forEach(
-    tag => {
-      tagsStr += (tag.hasAttribute('selected')) ? `&tags[]=${tag.value}` : '';
-    }
-  )
-
   const urlParams = new URLSearchParams(window.location.search);
   const search = urlParams.get('searchText');
-  console.log(search)
 
   if (order != '')
-    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}${(search !== null) ? '&searchText=' + search : ''}${tagsStr}`, {}, orderedQuestionsHandler);
+    sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}&searchText=${search}`, {}, orderedQuestionsHandler);
     
   event.preventDefault();
 }
@@ -845,7 +823,7 @@ function sendOrderQuestionsRequest(event) {
 function orderedQuestionsHandler() {
   let questions = JSON.parse(this.responseText);
 
-  if (Object.keys(questions).length > 0) {
+  if (questions.length > 0) {
     let newQuestions = createQuestions(questions);
 
     let parent = document.querySelector('#questions');
@@ -871,7 +849,7 @@ function createQuestion(question) {
 
   let tags = "";
   question.tags.forEach(tag => {
-    tags += `<a href="/browse/?tags[]=${ tag.tag_id }" class="badge p-3 m-1 mt-1">${tag.tag_name}</a>\n`
+    tags += `<span class="badge p-2">${tag.tag_name}</span>\n`
   })
   new_question.innerHTML =
   `
@@ -932,9 +910,11 @@ function submitSettings(){
   document.getElementById("edit-user-form").submit();
 }
 
-/*********** create an edit answer card ***********/
+/*********** edit answer ***********/
 
 function editAnswer(event) {
+  removeOpenedForms()
+
   let answer_id = event.target.parentElement.children[0].innerText;
 
   let answer = document.querySelector('#answer_' + answer_id);
@@ -947,21 +927,26 @@ function editAnswer(event) {
 function createAnswerForm(answer_id, text) {
   let answer_form = document.createElement('div');
   let answer = document.getElementById(answer_id);
-  //answer_form.classList.add('mt-5')
   answer_form.classList.add('answer-form')
   answer_form.classList.add('w-100')
   answer_form.id = `answer_form_${answer_id}`
+
+  // prevent duplicated edit form
+  let previous_comment_form = document.querySelector(`#answer_form_${answer_id}`)
+  if(previous_comment_form!=null&&previous_comment_form.innerHTML!='') return previous_comment_form;
 
   answer_form.innerHTML =
     `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}"></input>
     <textarea id="full_text" rows="4" type="text" name="full_text" class="edit-text mt-2" required/>${text}</textarea>
-  <div class="text-right">
-      <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
-          Save Changes
-      </button>
-  </div>
+    <div class = "row justify-content-between" style="padding: 0.75rem 0.75rem;">
+    <button class="cancel-add-comment button-clear px-2 pr-3 pb-2 d-flex" style="margin: 0;" onclick="cancelEditAnswer(${answer_id},'${text}')">
+        <p class="pb-2">Cancel</p>
+    </button>
+    <button id="update-answer-button" onclick="answerUpdater()" type="submit" class="m-0">
+    Save Changes
+    </button>
       <script>
       var input = document.getElementById("full_text");
       input.addEventListener("keypress", function(event) {
@@ -978,6 +963,7 @@ function createAnswerForm(answer_id, text) {
 function answerUpdater() {
   let new_text = document.querySelector('#full_text').value;
   let answer_id = document.querySelector('#answer_id').value;
+  addAnswerCard();
   sendAjaxRequest('post', '/api/answer/update/' + answer_id, {full_text: new_text, was_edited: true }, sendCreateAnswerUpdateRequest);
 }
 
@@ -994,9 +980,24 @@ function sendCreateAnswerUpdateRequest() {
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
 
   answer_form.remove();
+  addAnswerCard();
 
 }
+function cancelEditAnswer(answer_id,text){
+  let p = document.createElement('p');
+  p.classList.add('card-text', 'pb-5', 'pt-2');
+  p.innerText = text;
 
+  let answer_element = document.querySelector('#answer_' + answer_id);
+  let answer_form = answer_element.querySelector('.answer-form');
+  answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
+
+  answer_form.remove();
+
+  // Insert answer form back
+  addAnswerCard();
+}
+/***********  ***********/
 function sendFollowTagRequest(event) {
   let tag_id = event.currentTarget.querySelector('input').value;
 
@@ -1106,15 +1107,13 @@ function questionUnFollowHandler() {
 
 let options = document.querySelectorAll('option');
 options.forEach(
-  (option) => option.onmousedown = (e) => {
+  (option) => option.addEventListener('click', (e) => {
     e.preventDefault();
-    if (e.target.hasAttribute('selected')) {
-      e.target.removeAttribute('selected');
-    }
-    else {
-      e.target.setAttribute('selected', '');
-    }
+    if (e.target.hasAttribute('selected')) e.target.removeAttribute('selected');
+    else e.target.setAttribute('selected', '');
+    return false;
   })
+  )
 
 function setInnerHTML(elm, html) {
   elm.innerHTML = html;
@@ -1134,6 +1133,8 @@ function setInnerHTML(elm, html) {
 
 /*********** create answer comment ***********/
 function answerCommentForm(event) {
+  removeOpenedForms()
+
   let answer = event.target.parentElement.parentElement.parentElement
   let answer_card_id = answer.parentElement.id;
   answer.insertAdjacentElement('afterend', createAnswerCommentForm(answer_card_id))
@@ -1149,15 +1150,22 @@ function createAnswerCommentForm(answer_card_id) {
   let comment_form = document.createElement('div');
   comment_form.className = 'card';
   comment_form.className = `comment-answer-${answer_id}-form`;
+  comment_form.className = 'add-comment-form';
   comment_form.innerHTML = `
     <form method="POST" class="card-body m-0 p-0">
         <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="3"
             id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
     </form>
-    <div class="card-footer text-right">
+    <div class=" card-footer">
+    <div class = "row justify-content-between" style="padding: 0.75rem 0.75rem;">
+        <button class="cancel-add-comment button-clear px-2 pr-3 pb-2 d-flex" style="margin: 0;" onclick="cancelCreateComment()">
+            <input type="hidden" value="{{ $tag->tag_id }}">
+            <p class="pb-2">Cancel</p>
+        </button>
         <button id="add-comment-button" type="submit" onclick="sendCreateAnswerCommentRequest(${answer_id})" class="m-0">
             Comment
         </button>
+        </div>
     </div>
   `;
   return comment_form;
@@ -1177,7 +1185,7 @@ function answerCommentAddedHandler() {
   let comment = JSON.parse(this.responseText);
 
   //delete comment form
-  document.querySelector(`.comment-answer-${comment.answer_id}-form`).innerHTML = '';
+  document.querySelector(`.add-comment-form`).innerHTML = '';
 
   // Create the new comment
   let new_comment = createComment(comment);
@@ -1253,6 +1261,7 @@ function createComment(comment) {
     </div>
 </div>
   `;
+  addAnswerCard();
   return new_comment;
 }
 
@@ -1260,25 +1269,21 @@ function createComment(comment) {
 
 function questionCommentForm(event) {
   let question = event.target.parentElement.parentElement.parentElement
-
   let question_id = document.querySelector('#question_id').value;
-
-  //remove answer form
-  document.querySelector('#add-answer-card').innerHTML = '';
+  removeOpenedForms()
 
   question.insertAdjacentElement('afterend', createQuestionCommentForm(question_id))
-
 }
 
 function createQuestionCommentForm(question_id) {
   //prevent duplicated comment form
-  let previous_comment_form = document.querySelector('.comment-form')
+  let previous_comment_form = document.querySelector('.add-comment-form')
   if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
   if(previous_comment_form!=null) previous_comment_form.remove()
 
   let comment_form = document.createElement('div')
   comment_form.className = 'card'
-  comment_form.classList.add('comment-form')
+  comment_form.classList.add('add-comment-form')
   comment_form.innerHTML = `
     <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
     <form method="POST" class="card-body m-0 p-0">
@@ -1313,10 +1318,8 @@ function sendCreateQuestionCommentRequest() {
 function  questionCommentAddedHandler() {
   let comment = JSON.parse(this.responseText);
 
-  let question_id = document.querySelector('#question_id').value;
-
   //delete comment form
-  document.querySelector('.comment-form').remove()
+  document.querySelector('.add-comment-form').remove()
 
   // Create the new comment
   let new_comment = createComment(comment);
@@ -1325,7 +1328,19 @@ function  questionCommentAddedHandler() {
   let comments = document.querySelector(`.question-comments`);
   comments.prepend(new_comment);
 
+  addAnswerCard()
+}
+
+function cancelCreateComment(){
+  let commentForm = document.querySelector('.add-comment-form')
+  commentForm.remove()
+
   // Insert answer form back
+  addAnswerCard();
+}
+
+function addAnswerCard() {
+  let question_id = document.querySelector('#question_id').value;
   let add_answer_card = document.querySelector('#add-answer-card');
   add_answer_card.innerHTML = `
   <form method="POST" class="card-body m-0 p-0">
@@ -1338,29 +1353,7 @@ function  questionCommentAddedHandler() {
       Answer
   </button>
 </div>
-  `
-}
-
-function cancelCreateComment(){
-  let question_id = document.querySelector('#question_id').value;
-
-  let commentForm = document.querySelector('.comment-form')
-  commentForm.remove()
-
-    // Insert answer form back
-    let add_answer_card = document.querySelector('#add-answer-card');
-    add_answer_card.innerHTML = `
-    <form method="POST" class="card-body m-0 p-0">
-      <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
-      <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
-        id="answer" name="answer" value="{{ old('answer') }}" required></textarea>
-    </form>
-  <div class="card-footer text-right">
-    <button id="add-answer-button" type="submit" onclick="sendCreateAnswerRequest(event)" class="m-0">
-        Answer
-    </button>
-  </div>
-    `
+`
 }
 
 /*********** delete an comment ***********/
@@ -1382,6 +1375,8 @@ function commentDeletedHandler() {
 /*********** edit comment ***********/
 
 function editComment(event) {
+  removeOpenedForms()
+
   let comment_id = event.target.parentElement.children[0].innerText;
   let comment = document.querySelector('#comment_' + comment_id);
 
@@ -1409,11 +1404,14 @@ function createCommentForm(comment_id, text) {
     <input type="hidden" name="comment_id" id="comment_id" value="${comment_id}"></input>
     <input type="hidden" name="comment" id="comment" value="${comment}"></input>
     <textarea id="full_text" rows="4" type="text" name="full_text" class="edit-text mt-2" required/>${text}</textarea>
-  <div class="text-right">
-      <button id="update-comment-button" onclick="commentUpdater(event)" type="submit" class="m-0">
-          Save Changes
-      </button>
-  </div>
+    <div class = "row justify-content-between" style="padding: 0.75rem 0.75rem;">
+        <button class="cancel-add-comment button-clear px-2 pr-3 pb-2 d-flex" style="margin: 0;" onclick="cancelEditComment(${comment_id},'${text}')">
+            <p class="pb-2">Cancel</p>
+        </button>
+        <button id="update-comment-button" onclick="commentUpdater(event)" type="submit" class="m-0">
+            Save Changes
+        </button>
+    </div>
       <script>
       var input = document.getElementById("full_text");
       input.addEventListener("keypress", function(event) {
@@ -1441,59 +1439,44 @@ function sendCreateCommentUpdateRequest() {
   p.classList.add('card-text', 'pb-5', 'pt-2');
   p.innerText = comment.full_text;
 
-  let em = document.createElement('em')
-  em.innerText = 'edited'
-
   let comment_element = document.querySelector('#comment_' + comment.comment_id);
   let comment_form = comment_element.querySelector('.comment-form');
   comment_form.parentElement.querySelector('.card-text').appendChild(p);
-
-  comment_head = comment_form.parentElement.children[0]
-  if (comment_head.lastElementChild.tagName != 'EM')
-    comment_head.appendChild(em)
   comment_form.remove();
+  addAnswerCard();
 
 }
-function updateNotification(notification_id){
-  let notification_button = document.getElementById("button-notification-" + notification_id)
-  let red_circle = notification_button.getElementsByTagName("span")[0]
-  if(!red_circle) return
-  notification_button.removeChild(red_circle)
 
-  let num_notifications_span = document.getElementById("num-notifications")
-  let num = parseInt(num_notifications_span.textContent) - 1
-  if(num === 0) {
-    num_notifications_span.textContent = ""
-  }
-  else num_notifications_span.textContent = num
+function cancelEditComment(comment_id, text) {
+  addAnswerCard();
+
+  let p = document.createElement('p');
+  p.classList.add('card-text', 'pb-5', 'pt-2');
+  p.innerText = text;
+
+  let comment_element = document.querySelector('#comment_' + comment_id);
+  let comment_form = comment_element.querySelector('.comment-form');
+  comment_form.parentElement.querySelector('.card-text').appendChild(p);
+  comment_form.remove();
 }
 
-
-function sendUpdateNotificationRequest(event) {
-  let button_id
-  if(event.target.className === "btn bg-transparent shadow-none border-0 d-flex justify-content-between align-items-center w-100 button-notification"){
-    button_id = event.target.id
+function removeOpenedForms(){
+  if(document.querySelector('.answer-form')!=null){
+    let answer_id = document.querySelector('#answer_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditAnswer(answer_id, text)
   }
-  if(event.target.className === "d-flex flex-column" || event.target.className === "material-icons ml-4 red-circle-notification"){
-    button_id = event.target.parentElement.id
+  if(document.querySelector('.comment-form')!=null){
+    let comment_id = document.querySelector('#comment_id').value
+    let text = document.querySelector('#full_text').textContent
+    cancelEditComment(comment_id, text)
   }
-  if(event.target.className === "text-left" || event.target.className === "h5 text-left"){
-    button_id = event.target.parentElement.parentElement.id
-  }
-   console.log(button_id)
-  let notification_id = button_id.split('-').pop()
-  if (notification_id != '')
-    sendAjaxRequest('post', 
-                    '/api/notification/update/' + notification_id, 
-                    {}, 
-                    function(){return updateNotification(notification_id);})
-  event.stopPropagation()
-  event.preventDefault()
+  if(document.querySelector('.add-comment-form')!=null) cancelCreateComment()
+  document.querySelector('#add-answer-card').innerHTML = '';
 }
 
-function redirect_notification(notification_id){
-  window.location.assign('/notification/' + notification_id);
+function submitQuestionUpdate(){
+  document.getElementById("edit-question-form").submit();
 }
-/***********  ***********/
 
 addEventListeners();
