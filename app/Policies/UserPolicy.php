@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function view(User $user, User $profile) {
       if ($profile->is_disable())
-      return false;
+        return $user->is_mod();
       if ($profile->is_blocked()) {
         return $user->is_mod();
       }

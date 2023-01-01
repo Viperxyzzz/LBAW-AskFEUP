@@ -26,7 +26,11 @@
         <p class="m-0">{{ $question->date_distance() }}</p>
         <p class="m-0">
             <em>by</em>
+            @if($question->is_accessible_user())
             <a href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
+            @else
+            <a> {{ $question->author->name }}</a>
+            @endif
         </p>
     </div>
     @include('partials.admin.add_report', $question)
