@@ -79,6 +79,10 @@ Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
 
+// OAuth authentication
+Route::get('/auth/redirect', 'Auth\OAuthController@redirect');
+Route::get('/auth/callback', 'Auth\OAuthController@callback');
+
 // Comments
 Route::post('api/comment/{id}', 'CommentController@create')->name('create_comment');
 Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comment_delete_api');
