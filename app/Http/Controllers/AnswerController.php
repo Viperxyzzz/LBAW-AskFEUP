@@ -25,7 +25,7 @@ class AnswerController extends Controller
       $this->authorize('create', Answer::class);
 
       $request->validate([
-        'answer' => 'required|string|max:500'
+        'answer' => 'required|string|max:1000'
       ]);
 
       $answer = new Answer();
@@ -65,7 +65,7 @@ class AnswerController extends Controller
       $this->authorize('update', $answer);
 
       $request->validate([
-        'full_text' => 'required|string|max:500'
+        'full_text' => 'required|string|max:1000'
       ]);
 
       $answer->full_text = $request->input('full_text');
