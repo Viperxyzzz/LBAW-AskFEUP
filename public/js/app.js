@@ -394,7 +394,7 @@ function createAnswer(answer) {
               <i width="16" height="16" class="material-symbols-outlined ">arrow_downward</i>
           </button>
           <button class="button-clear m-0 px-1" type="button">
-              <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
+              <i width="12" height="12" class="material-symbols-outlined" onclick=answerCommentForm(event)>chat_bubble</i>
           </button>
       </div>
       <p class="m-0">${answer.date}</p>
@@ -1195,7 +1195,7 @@ function answerCommentForm(event) {
 function createAnswerCommentForm(answer_card_id) {
   let answer_card_id_list = answer_card_id.split('_', 2);
   let answer_id = answer_card_id_list[1]
-
+  console.log(answer_id)
   let previous_comment_form = document.querySelector(`.comment-answer-${answer_id}-form`)
   if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
 
@@ -1235,16 +1235,22 @@ function sendCreateAnswerCommentRequest(answer_id) {
 
 function answerCommentAddedHandler() {
   let comment = JSON.parse(this.responseText);
+  console.log(comment)
 
   //delete comment form
   document.querySelector(`.add-comment-form`).innerHTML = '';
 
   // Create the new comment
   let new_comment = createComment(comment);
-
+  console.log(new_comment)
   // Insert the new comment
   let comments = document.querySelector(`.answer-${comment.answer_id}-comments`);
-  comments.prepend(new_comment);
+  if(comments!=null)
+    comments.prepend(new_comment);
+  else{
+    comments = document.querySelector(`#answer_${comment.answer_id}`);
+    comments.appendChild(new_comment);
+  }
 }
 
 function createComment(comment) {
