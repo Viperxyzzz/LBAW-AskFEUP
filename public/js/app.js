@@ -842,7 +842,6 @@ function sendOrderQuestionsRequest(event) {
 
   const urlParams = new URLSearchParams(window.location.search);
   const search = urlParams.get('searchText');
-  console.log(search)
 
   if (order != '')
     sendAjaxRequest('get', `/api/browse/?order=${order}&direction=${direction}${(search !== null) ? '&searchText=' + search : ''}${tagsStr}`, {}, orderedQuestionsHandler);
@@ -991,17 +990,13 @@ function createAnswerForm(answer_id, text) {
 }
 
 function cancelEditAnswer(answer_id,text){
-  console.log("cancel edit answer")
-
   let p = document.createElement('p');
   p.classList.add('card-text', 'pb-5', 'pt-2');
   p.innerText = text;
 
   let answer_element = document.querySelector('#answer_' + answer_id);
-  console.log(answer_element)
   let answer_form = answer_element.querySelector('.answer-form');
   answer_form.parentElement.querySelector('.answer-full-text').appendChild(p);
-  console.log(answer_form.parentElement.querySelector('.answer-full-text'))
 
   answer_form.remove();
 
@@ -1195,7 +1190,6 @@ function answerCommentForm(event) {
 function createAnswerCommentForm(answer_card_id) {
   let answer_card_id_list = answer_card_id.split('_', 2);
   let answer_id = answer_card_id_list[1]
-  console.log(answer_id)
   let previous_comment_form = document.querySelector(`.comment-answer-${answer_id}-form`)
   if(previous_comment_form!=null && previous_comment_form.innerHTML!='') return previous_comment_form;
 
@@ -1235,14 +1229,13 @@ function sendCreateAnswerCommentRequest(answer_id) {
 
 function answerCommentAddedHandler() {
   let comment = JSON.parse(this.responseText);
-  console.log(comment)
 
   //delete comment form
   document.querySelector(`.add-comment-form`).innerHTML = '';
 
   // Create the new comment
   let new_comment = createComment(comment);
-  console.log(new_comment)
+
   // Insert the new comment
   let comments = document.querySelector(`.answer-${comment.answer_id}-comments`);
   if(comments!=null)
@@ -1511,7 +1504,6 @@ function cancelEditComment(comment_id, text) {
   // Insert answer form back
   addAnswerCard();
 
-  console.log("cancel edit comment")
   let p = document.createElement('p');
   p.classList.add('card-text', 'pb-5', 'pt-2');
   p.innerText = text;
@@ -1609,7 +1601,6 @@ function sendUpdateNotificationRequest(event) {
   if(event.target.className === "text-left" || event.target.className === "h5 text-left"){
     button_id = event.target.parentElement.parentElement.id
   }
-   console.log(button_id)
   let notification_id = button_id.split('-').pop()
   if (notification_id != '')
     sendAjaxRequest('post', 
@@ -1630,13 +1621,11 @@ function removeOpenedForms(){
     let answer_id = document.querySelector('#answer_id').value
     let text = document.querySelector('#full_text').textContent
     cancelEditAnswer(answer_id, text)
-    console.log("opened answer form")
   }
   if(document.querySelector('.comment-form')!=null){
     let comment_id = document.querySelector('#comment_id').value
     let text = document.querySelector('#full_text').textContent
     cancelEditComment(comment_id, text)
-    console.log("opened comment form")
   }
   if(document.querySelector('.add-comment-form')!=null) cancelCreateComment()
   document.querySelector('#add-answer-card').innerHTML = '';
