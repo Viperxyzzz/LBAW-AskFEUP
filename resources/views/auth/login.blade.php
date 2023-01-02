@@ -2,6 +2,8 @@
 
 @section('content')
 
+@include('partials.messages.feedback')
+
 <form method="POST" action="{{ route('login') }}" class="col-md-4 mx-auto my-5 border rounded bg-light p-5">
     {{ csrf_field() }}
     

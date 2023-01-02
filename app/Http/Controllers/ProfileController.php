@@ -51,17 +51,17 @@ class ProfileController extends Controller
         'new_password' => 'string|min:6',
         'confirm_pass' => 'same:new_password',
       ]);
-
+      
       if(DB::table('users')->where('username', $request->username)->count() !== 0 && 
         $user->username !== $request->username
       ){
-        return back()->with("error", "This username already exists!");
+        return back()->with("alert", "This username already exists!");
       }
 
       if(DB::table('users')->where('email', $request->email)->count() !== 0 &&
          $user->email !== $request->email
         ){
-        return back()->with("error", "This email already exists!");
+        return back()->with("alert", "This email already exists!");
       }
 
       if($request->new_password === NULL){

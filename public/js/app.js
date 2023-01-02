@@ -501,6 +501,17 @@ function setInnerHTML(elm, html) {
   });
 }
 
+function remove_messages(){
+  // removes session's messages after a timeout of 4 seconds
+  $("document").ready(function(){
+    setTimeout(function(){
+       $("div.alert").remove();
+    }, 4000 );
+  
+  });
+}
+
 /***********  ***********/
 
 addEventListeners();
+remove_messages();
