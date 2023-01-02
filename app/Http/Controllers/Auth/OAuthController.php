@@ -24,7 +24,6 @@ class OAuthController extends Controller {
      */
     public function callback() {
         $google_user = Socialite::driver('google')->user();
-        print_r($google_user);
 
         $user = User::firstOrCreate([
             'username' => explode("@", $google_user->email)[0]]
