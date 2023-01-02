@@ -541,12 +541,11 @@ function sendEditTagRequest(event) {
 }
 
 function tagEditedHandler() {
-  //if (this.status != 201) window.location = '/';
   let tag = JSON.parse(this.responseText);
 
   let tag_element = document.getElementById(`tag-${tag.tag_id}`)
   tag_element.querySelector('.card-body > p').innerHTML = tag.tag_description
-  tag_element.querySelector('.card-header > p').innerHTML = tag.tag_name
+  tag_element.querySelector('.card-header > a').innerHTML = tag.tag_name
 }
 
 /*********** remove tags ***********/
