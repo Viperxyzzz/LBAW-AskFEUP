@@ -963,7 +963,7 @@ function createAnswerForm(answer_id, text) {
   let previous_comment_form = document.querySelector(`#answer_form_${answer_id}`)
   if(previous_comment_form!=null&&previous_comment_form.innerHTML!='') return previous_comment_form;
 
-  answer_form.innerHTML =
+  setInnerHTML(   answer_form, 
     `
     <input type="hidden" name="answer_id" id="answer_id" value="${answer_id}"></input>
     <input type="hidden" name="answer" id="answer" value="${answer}"></input>
@@ -984,7 +984,7 @@ function createAnswerForm(answer_id, text) {
         }
       });
       </script>
-`
+`)
   return answer_form;
 }
 
@@ -1196,7 +1196,8 @@ function createAnswerCommentForm(answer_card_id) {
   comment_form.className = 'card';
   comment_form.className = `comment-answer-${answer_id}-form`;
   comment_form.className = 'add-comment-form';
-  comment_form.innerHTML = `
+  setInnerHTML( comment_form,
+    `
     <form method="POST" class="card-body m-0 p-0">
         <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="3"
             id="comment" name="comment" value="{{ old('comment') }}" required></textarea>
@@ -1212,7 +1213,16 @@ function createAnswerCommentForm(answer_card_id) {
         </button>
         </div>
     </div>
-  `;
+    <script>
+    var input = document.getElementById("comment");
+    input.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("add-comment-button").click();
+      }
+    });
+    </script>
+  `);
   return comment_form;
 }
 
@@ -1394,7 +1404,7 @@ function cancelCreateComment(){
 function addAnswerCard() {
   let question_id = document.querySelector('#question_id').value;
   let add_answer_card = document.querySelector('#add-answer-card');
-  add_answer_card.innerHTML = `
+  setInnerHTML( add_answer_card, `
   <form method="POST" class="card-body m-0 p-0">
     <input type="hidden" name="question_id" id="question_id" value="${question_id}"></input>
     <textarea class="w-100 h-100 m-0 border-0" placeholder="Type something..." rows="5"
@@ -1405,7 +1415,17 @@ function addAnswerCard() {
       Answer
   </button>
 </div>
+<script>
+var input = document.getElementById("answer");
+input.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    document.getElementById("add-answer-button").click();
+  }
+});
+</script>
   `
+  )
 }
 
 function cancelCreateComment(){
@@ -1473,7 +1493,7 @@ function createCommentForm(comment_id, text) {
   comment_form.classList.add('w-100')
   comment_form.id = `comment_form_${comment_id}`
 
-  comment_form.innerHTML =
+  setInnerHTML(comment_form,
     `
     <input type="hidden" name="comment_id" id="comment_id" value="${comment_id}"></input>
     <input type="hidden" name="comment" id="comment" value="${comment}"></input>
@@ -1495,7 +1515,7 @@ function createCommentForm(comment_id, text) {
         }
       });
       </script>
-`
+`)
   return comment_form;
 }
 
