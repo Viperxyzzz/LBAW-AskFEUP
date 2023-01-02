@@ -1413,7 +1413,7 @@ function addAnswerCard() {
 function cancelCreateComment(){
   let question_id = document.querySelector('#question_id').value;
 
-  let commentForm = document.querySelector('.comment-form')
+  let commentForm = document.querySelector('.add-comment-form')
   commentForm.remove()
 
     // Insert answer form back

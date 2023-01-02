@@ -19,9 +19,15 @@ class AnswerController extends Controller
      * 
      * @return TODO
      */
+
     public function create(Request $request, $question_id) {
       if (!Auth::check()) return redirect('/login');
       $this->authorize('create', Answer::class);
+
+      $request->validate([
+        'answer' => 'required|string|max:500'
+      ]);
+
       $answer = new Answer();
       $answer->full_text = $request->input('answer');
       $answer->num_votes = 0;
@@ -58,7 +64,11 @@ class AnswerController extends Controller
       $answer = Answer::find($answer_id);
       $this->authorize('update', $answer);
 
-      $answer->full_text = $request->full_text;
+      $request->validate([
+        'full_text' => 'required|string|max:500'
+      ]);
+
+      $answer->full_text = $request->input('full_text');
 
       $answer->date = date('Y-m-d H:i:s');
       $answer->was_edited = true;

@@ -22,12 +22,17 @@ class CommentController extends Controller
     public function create(Request $request) {
       if (!Auth::check()) return redirect('/login');
       $this->authorize('create', Comment::class);
+
       $comment = new Comment();
-      $comment->full_text = $request->full_text;
+      $request->validate([
+        'full_text' => 'required|string|max:1000'
+      ]);
+
+      $comment->full_text = $request->input('full_text');
       $comment->num_votes = 0;
-      $comment->question_id = $request->question_id;
+      $comment->question_id = $request->input('question_id');
       $comment->date = date('Y-m-d H:i:s');
-      $comment->answer_id = $request->answer_id;
+      $comment->answer_id = $request->input('answer_id');
       $comment->user_id = auth::id();
       $comment->was_edited = false;
       $comment->save();
@@ -56,9 +61,14 @@ class CommentController extends Controller
     public function update(Request $request, $comment_id) {
       if (!Auth::check()) return redirect('/login');
       $comment = Comment::find($comment_id);
+
       $this->authorize('update', $comment);
 
-      $comment->full_text = $request->full_text;
+      $request->validate([
+        'full_text' => 'required|string|max:1000'
+      ]);
+
+      $comment->full_text = $request->input('full_text');
       $comment->was_edited = true;
       $comment->date = date('Y-m-d H:i:s');
 
