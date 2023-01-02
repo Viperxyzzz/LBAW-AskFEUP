@@ -29,7 +29,7 @@ CREATE TABLE users (
     username TEXT UNIQUE,
     email TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
-    password TEXT NOT NULL, 
+    password TEXT, 
     score INTEGER NOT NULL,
     is_moderator BOOLEAN NOT NULL,
     is_admin BOOLEAN NOT NULL,
