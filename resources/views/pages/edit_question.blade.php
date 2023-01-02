@@ -8,7 +8,7 @@
         </div>
         <!--include the form-->
         <form id="edit-question-form" method="post" action="{{ route('update_question', array('id' => $question->question_id)) }}" enctype="multipart/form-data">
-            @method('PATCH')
+            @method('PUT')
             @csrf
             <div class="card p-3 my-5">
                 <div class="form-group">

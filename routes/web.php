@@ -31,10 +31,8 @@ Route::post('api/disable/create/{id}', 'DisableController@store');
 // Questions
 Route::get('question/create', 'QuestionController@create_view')->name('question_create');
 Route::get('question/{id}', 'QuestionController@home')->name('question');
-Route::put('api/answer/{id}', 'QuestionController@answer');
 Route::get('question/{id}/edit', 'QuestionController@edit_view')->name('edit_question');
-Route::match(['put', 'patch'], 'api/question/update/{id}','QuestionController@update')->name('update_question');
-//Route::post('api/question/update', 'QuestionController@update')->name('update_question');
+Route::put('api/question/update/{id}','QuestionController@update')->name('update_question');
 Route::post('api/question/follow/{id}', 'QuestionController@follow');
 Route::delete('api/question/unFollow/{id}', 'QuestionController@unFollow');
 
@@ -46,7 +44,7 @@ Route::get('api/browse', 'SearchController@browse');
 Route::get('tags', 'TagController@index');
 Route::get('api/tags/', 'TagController@search');
 Route::post('api/tag/follow/{id}', 'TagController@follow');
-Route::post('api/tag/unFollow/{id}', 'TagController@unFollow');
+Route::delete('api/tag/unFollow/{id}', 'TagController@unFollow');
 Route::post('api/tag/create', 'TagController@store')->name('tag_create_api');
 Route::delete('api/tag/delete/{id}', 'TagController@destroy')->name('tag_delete_api');
 Route::put('api/tag/edit/{id}', 'TagController@update')->name('tag_update_api');
@@ -61,14 +59,14 @@ Route::post('api/report/create', 'ModController@create_report');
 
 // API
 Route::post('api/question', 'QuestionController@create')->name('question_create_api');
-Route::post('api/settings/{id}', 'ProfileController@updateUser')->name('update_user_api');
+Route::put('api/settings/{id}','ProfileController@updateUser')->name('update_user_api');
 Route::delete('api/question/{id}', 'QuestionController@delete')->name('question_delete_api');
 
 // Answers
-Route::put('api/answer/{id}', 'AnswerController@create');
+Route::post('api/answer/{id}', 'AnswerController@create');
 Route::delete('api/answer/delete/{id}', 'AnswerController@delete')->name('answer_delete_api');
 Route::get('api/answer/edit/{id}', 'AnswerController@edit_view')->name('edit_answer_form');
-Route::post('api/answer/update/{id}','AnswerController@update')->name('update_answer');
+Route::put('api/answer/update/{id}','AnswerController@update')->name('update_answer');
 
 // Notifications
 Route::post('api/notification/update/{id}', 'NotificationController@update')->name('update_notification');

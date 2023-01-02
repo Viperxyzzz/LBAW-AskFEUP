@@ -306,7 +306,7 @@ function sendCreateAnswerRequest(event) {
   let answer = document.querySelector('#answer').value;
 
   if (answer != '')
-    sendAjaxRequest('put', '/api/answer/' + question_id, { answer: answer }, answerAddedHandler);
+    sendAjaxRequest('post', '/api/answer/' + question_id, { answer: answer }, answerAddedHandler);
 
   event.preventDefault();
 }
@@ -1014,7 +1014,7 @@ function answerUpdater() {
   let new_text = document.querySelector('#full_text').value;
   let answer_id = document.querySelector('#answer_id').value;
   addAnswerCard();
-  sendAjaxRequest('post', '/api/answer/update/' + answer_id, {full_text: new_text, was_edited: true }, sendCreateAnswerUpdateRequest);
+  sendAjaxRequest('put', '/api/answer/update/' + answer_id, {full_text: new_text, was_edited: true }, sendCreateAnswerUpdateRequest);
 }
 
 
@@ -1076,7 +1076,7 @@ function sendUnFollowTagRequest(event) {
   let tag_id = event.currentTarget.querySelector('input').value;
 
   if (tag_id != '')
-    sendAjaxRequest('post', `/api/tag/unFollow/${tag_id}`, {}, tagUnFollowHandler);
+    sendAjaxRequest('delete', `/api/tag/unFollow/${tag_id}`, {}, tagUnFollowHandler);
     
   event.preventDefault();
 }
