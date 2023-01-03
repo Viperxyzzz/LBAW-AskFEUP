@@ -193,4 +193,16 @@ class User extends Authenticatable
                     ->count();
       return $num;
     }
+
+    /**
+     * Get all the badges from the user
+     * @return mixed Collection of Badge model.
+     */
+    public function badges() {
+        return $this->hasMany(
+          UserBadge::class,
+          'user_id',
+          'user_id',
+        )->get();
+    }
 }

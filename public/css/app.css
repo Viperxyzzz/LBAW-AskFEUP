@@ -28,9 +28,17 @@ body {
     background-color: var(--accent-color);
 }
 
+.b-bg {
+    background-color: var(--background-color);
+}
+
 :target {
     background-color: var(--background-color);
 
+}
+
+.border-strong {
+    border: 2px solid #dcdcdc ;
 }
 
 #content {
