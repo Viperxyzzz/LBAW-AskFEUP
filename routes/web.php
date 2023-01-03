@@ -36,6 +36,9 @@ Route::put('api/question/update/{id}','QuestionController@update')->name('update
 Route::post('api/question/{id}/vote', 'QuestionController@vote')->name('vote_question');
 Route::post('api/question/follow/{id}', 'QuestionController@follow');
 Route::delete('api/question/unFollow/{id}', 'QuestionController@unFollow');
+Route::post('api/question', 'QuestionController@create')->name('question_create_api');
+Route::put('api/settings/{id}','ProfileController@updateUser')->name('update_user_api');
+Route::delete('api/question/{id}', 'QuestionController@delete')->name('question_delete_api');
 
 // Search
 Route::get('browse', 'SearchController@home')->name('browse');
@@ -56,12 +59,6 @@ Route::delete('api/report/delete/{id}', 'ModController@delete_report');
 Route::post('api/blocks/add/{id}', 'BlockController@store');
 Route::delete('api/blocks/delete/{id}', 'BlockController@destroy');
 Route::post('api/report/create', 'ModController@create_report');
-
-
-// API
-Route::post('api/question', 'QuestionController@create')->name('question_create_api');
-Route::put('api/settings/{id}','ProfileController@updateUser')->name('update_user_api');
-Route::delete('api/question/{id}', 'QuestionController@delete')->name('question_delete_api');
 
 // Answers
 Route::post('api/answer/{id}', 'AnswerController@create');
