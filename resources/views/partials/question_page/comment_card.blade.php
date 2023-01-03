@@ -2,12 +2,24 @@
     @include('partials.question_page.delete_comment_modal', ['comment' => $comment])
     <div class="d-flex flex-fill">
         <div class="d-flex align-items-center flex-column p-1">
-            <button class="button-clear p-0 m-0 mr-2" type="button">
-                <i class="material-symbols-outlined">keyboard_arrow_up</i>
+            <button class="button-clear p-0 m-0 mr-2 update-votes-comment" type="button">
+                <input type="hidden" name="vote" value="1"></input>
+                <input type="hidden" name="comment_id" value="{{$comment->comment_id}}"></input>
+                @if($comment->vote()!=null && $comment->vote()==1)
+                <i id="up-comment-{{$comment->comment_id}}-vote" class="material-symbols-outlined voted rounded-circle">keyboard_arrow_up</i>
+                @else
+                <i id="up-comment-{{$comment->comment_id}}-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_up</i>
+                @endif
             </button>
-            <p class="m-0 pr-2 text-nowrap">{{ $comment->num_votes }}</p>
-            <button class="button-clear d-block p-0 m-0 mr-2" type="button">
-                <i class="material-symbols-outlined ">keyboard_arrow_down</i>
+            <p class="m-0 pr-2 text-nowrap" id="num-votes-comment-{{$comment->comment_id}}">{{ $comment->num_votes }}</p>
+            <button class="button-clear d-block p-0 m-0 mr-2 update-votes-comment" type="button">
+                <input type="hidden" name="vote" value="-1"></input>
+                <input type="hidden" name="comment_id" value="{{$comment->comment_id}}"></input>
+                @if($comment->vote()!=null && $comment->vote()==-1)
+                <i id="down-comment-{{$comment->comment_id}}-vote" class="material-symbols-outlined voted rounded-circle">keyboard_arrow_down</i>
+                @else
+                <i id="down-comment-{{$comment->comment_id}}-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_down</i>
+                @endif
             </button>
         </div>
         <div class="pt-3 flex-fill">

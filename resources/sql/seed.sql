@@ -155,6 +155,29 @@ CREATE TABLE question_user_follower
     PRIMARY KEY (question_id, user_id)
 );
 
+DROP TABLE IF EXISTS question_votes CASCADE;
+CREATE TABLE question_votes (
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    question_id INTEGER NOT NULL REFERENCES question (question_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    value INTEGER NOT NULL CHECK (value IN (1, -1)),
+    PRIMARY KEY (user_id, question_id)
+);
+
+DROP TABLE IF EXISTS answer_votes CASCADE;
+CREATE TABLE answer_votes (
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    answer_id INTEGER NOT NULL REFERENCES answer (answer_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    value INTEGER NOT NULL CHECK (value IN (1, -1)),
+    PRIMARY KEY (user_id, answer_id)
+);
+
+DROP TABLE IF EXISTS comment_votes CASCADE;
+CREATE TABLE comment_votes (
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    comment_id INTEGER NOT NULL REFERENCES comment (comment_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    value INTEGER NOT NULL CHECK (value IN (1, -1)),
+    PRIMARY KEY (user_id, comment_id)
+);
 
 
 --Triggers
@@ -462,6 +485,7 @@ DROP TRIGGER IF EXISTS new_badge_notification ON user_badge CASCADE;
 CREATE TRIGGER new_badge_notification
     AFTER INSERT ON user_badge
     FOR EACH ROW EXECUTE FUNCTION new_badge_notification();
+
 
 --INDEXES
 

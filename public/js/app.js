@@ -253,6 +253,27 @@ function addEventListeners() {
       btn => btn.addEventListener('click', sendUpdateNotificationRequest)
       );
   }
+
+  let updateVotes = document.querySelectorAll('.update-votes');
+  if (updateVotes != null) {
+    updateVotes.forEach(
+      btn => btn.addEventListener('click', sendUpdateVotesRequest)
+      );
+  }
+
+  let updateVotesAnswer = document.querySelectorAll('.update-votes-answer');
+  if (updateVotesAnswer != null) {
+    updateVotesAnswer.forEach(
+      btn => btn.addEventListener('click', sendUpdateVotesAnswerRequest)
+      );
+  }
+
+  let updateVotesComment = document.querySelectorAll('.update-votes-comment');
+  if (updateVotesComment != null) {
+    updateVotesComment.forEach(
+      btn => btn.addEventListener('click', sendUpdateVotesCommentRequest)
+      );
+  }
 }
 
 function closeProfileTabs() {
@@ -386,12 +407,16 @@ function createAnswer(answer) {
   </div>
   <div class="card-footer d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-start mt-2">
-          <button class="button-clear m-0 px-1" type="button">
-              <i width="16" height="16" class="material-symbols-outlined ">arrow_upward</i>
+          <button class="button-clear m-0 px-1 update-votes-answer" type="button" onclick=sendUpdateVotesAnswerRequest(event)>
+              <input type="hidden" name="vote" value="1"></input>
+              <input type="hidden" name="answer_id" value="${answer.answer_id}"></input>
+              <i id="up-answer-${answer.answer_id}-vote" width="16" height="16" class="material-symbols-outlined rounded-circle ">arrow_upward</i>
           </button>
-          <p class="m-0 px-1 pt-1">${answer.num_votes}</p>
-          <button class="button-clear d-block m-0 px-1" type="button">
-              <i width="16" height="16" class="material-symbols-outlined ">arrow_downward</i>
+          <p class="m-0 px-1 pt-1" id="num-votes-answer-${answer.answer_id}">${answer.num_votes}</p>
+          <button class="button-clear m-0 px-1 update-votes-answer" type="button" onclick=sendUpdateVotesAnswerRequest(event)>
+              <input type="hidden" name="vote" value="-1"></input>
+              <input type="hidden" name="answer_id" value="${answer.answer_id}"></input>
+              <i id="down-answer-${answer.answer_id}-vote" width="16" height="16" class="material-symbols-outlined rounded-circle">arrow_downward</i>
           </button>
           <button class="button-clear m-0 px-1" type="button">
               <i width="12" height="12" class="material-symbols-outlined" onclick=answerCommentForm(event)>chat_bubble</i>
@@ -1284,12 +1309,16 @@ function createComment(comment) {
   </div>
   <div class="d-flex flex-fill">
   <div class="d-flex align-items-center flex-column p-1">
-      <button class="button-clear p-0 m-0 mr-2" type="button">
-          <i class="material-symbols-outlined">keyboard_arrow_up</i>
+      <button class="button-clear p-0 m-0 mr-2 update-votes-comment" type="button" onclick=sendUpdateVotesCommentRequest(event)>
+          <input type="hidden" name="vote" value="1"></input>
+          <input type="hidden" name="comment_id" value="${comment.comment_id}"></input>
+          <i id="up-comment-${comment.comment_id}-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_up</i>
       </button>
-      <p class="m-0 pr-2 text-nowrap">${comment.num_votes}</p>
-      <button class="button-clear d-block p-0 m-0 mr-2" type="button">
-          <i class="material-symbols-outlined ">keyboard_arrow_down</i>
+      <p class="m-0 pr-2 text-nowrap" id="num-votes-comment-${comment.comment_id}">${comment.num_votes}</p>
+      <button id="down-comment-${comment.comment_id}-vote"class="button-clear p-0 m-0 mr-2 update-votes-comment" type="button" onclick=sendUpdateVotesCommentRequest(event)>
+          <input type="hidden" name="vote" value="-1"></input>
+          <input type="hidden" name="comment_id" value="${comment.comment_id}"></input>
+          <i id="down-comment-${comment.comment_id}-vote" class="material-symbols-outlined rounded-circle ">keyboard_arrow_down</i>
       </button>
   </div>
   <div class="pt-3 flex-fill">
@@ -1633,6 +1662,95 @@ function sendUpdateNotificationRequest(event) {
 function redirect_notification(notification_id){
   window.location.assign('/notification/' + notification_id);
 }
+
+function sendUpdateVotesRequest(event) {
+  id = event.currentTarget.querySelectorAll('input')[1].value;
+  let value = event.currentTarget.querySelectorAll('input')[0].value;
+  if(value==1){
+    document.querySelector('#up-question-vote').classList.toggle('voted')
+    if(document.querySelector('#down-question-vote').classList.contains('voted'))
+      document.querySelector('#down-question-vote').classList.toggle('voted')
+  }
+  if(value==-1){
+    document.querySelector('#down-question-vote').classList.toggle('voted')
+    if(document.querySelector('#up-question-vote').classList.contains('voted'))
+    document.querySelector('#up-question-vote').classList.toggle('voted')
+  }
+  if (id != '')
+    sendAjaxRequest('post', `/api/question/${id}/vote`, {question_id : id, vote: value}, sendUpdateVotesHandler);
+  event.preventDefault();
+}
+
+function sendUpdateVotesHandler() {
+  let response = JSON.parse(this.responseText);
+  let votes = response.num_votes;
+  let question_id = response.question_id;
+  let votesHTML = document.getElementById('num-votes-' + question_id);
+
+  votesHTML.innerHTML = votes;
+}
+
+function sendUpdateVotesAnswerHandler() {
+  let response = JSON.parse(this.responseText);
+
+  value = response.vote;
+
+  if(value==1){
+    document.querySelector(`#up-answer-${id}-vote`).classList.toggle('voted')
+    if(document.querySelector(`#down-answer-${id}-vote`).classList.contains('voted'))
+      document.querySelector(`#down-answer-${id}-vote`).classList.toggle('voted')
+  }
+  if(value==-1){
+    document.querySelector(`#down-answer-${id}-vote`).classList.toggle('voted')
+    if(document.querySelector(`#up-answer-${id}-vote`).classList.contains('voted'))
+    document.querySelector(`#up-answer-${id}-vote`).classList.toggle('voted')
+  }
+
+  let votes = response.num_votes;
+  let answer_id = response.answer_id;
+  let votesHTML = document.getElementById('num-votes-answer-' + answer_id);
+
+  votesHTML.innerHTML = votes;
+}
+
+function sendUpdateVotesAnswerRequest(event) {
+  id = event.currentTarget.querySelectorAll('input')[1].value;
+  value = event.currentTarget.querySelectorAll('input')[0].value;
+  if (id != '')
+    sendAjaxRequest('post', `/api/answer/${id}/vote`, {answer_id : id, vote: value}, sendUpdateVotesAnswerHandler);
+  event.preventDefault();
+}
+
+function sendUpdateVotesCommentHandler() {
+  let response = JSON.parse(this.responseText);
+
+  value = response.vote;
+  if(value==1){
+    document.querySelector(`#up-comment-${id}-vote`).classList.toggle('voted')
+    if(document.querySelector(`#down-comment-${id}-vote`).classList.contains('voted'))
+      document.querySelector(`#down-comment-${id}-vote`).classList.toggle('voted')
+  }
+  if(value==-1){
+    document.querySelector(`#down-comment-${id}-vote`).classList.toggle('voted')
+    if(document.querySelector(`#up-comment-${id}-vote`).classList.contains('voted'))
+    document.querySelector(`#up-comment-${id}-vote`).classList.toggle('voted')
+  }
+
+  let votes = response.num_votes;
+  let comment_id = response.comment_id;
+  let votesHTML = document.getElementById('num-votes-comment-' + comment_id);
+
+  votesHTML.innerHTML = votes;
+}
+
+function sendUpdateVotesCommentRequest(event) {
+  id = event.currentTarget.querySelectorAll('input')[1].value;
+  value = event.currentTarget.querySelectorAll('input')[0].value;
+  if (id != '')
+    sendAjaxRequest('post', `/api/comment/${id}/vote`, {comment_id : id, vote: value}, sendUpdateVotesCommentHandler);
+  event.preventDefault();
+}
+
 /***********  ***********/
 
 function removeOpenedForms(){

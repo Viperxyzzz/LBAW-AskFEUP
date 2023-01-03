@@ -35,4 +35,10 @@ class CommentPolicy
       // Only a comment's author or admin can delete it
       return $user->user_id == $comment->user_id || $user->is_admin;
     }
+
+    public function vote(User $user, Comment $comment)
+    {
+      // Any user can vote on a comment
+      return Auth::check();
+    }
 }
