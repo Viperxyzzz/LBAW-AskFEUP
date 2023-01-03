@@ -45,6 +45,19 @@ body {
     flex-grow: 1;
 }
 
+.badge-button {
+    padding: 0;
+    color: inherit;
+    background-color: transparent;
+    margin: 0;
+    border: none;
+}
+
+.badge-button:hover , .badge-button::selection, .badge-button::backdrop , .badge-button:focus {
+    color: var(--accent-color);
+    background-color: transparent;
+}
+
 i {
     vertical-align:sub;
 }

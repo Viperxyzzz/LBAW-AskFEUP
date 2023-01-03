@@ -203,6 +203,22 @@ class User extends Authenticatable
           UserBadge::class,
           'user_id',
           'user_id',
-        )->get();
+        )->orderBy('badge_id')->get();
+    }
+
+    /**
+     * Check if a user is supporting a badge
+     * @param mixed $badge_id Badge id to check.
+     * @param mixed $user_id User that achieved the badge
+     * @return Boolean True if the user supports the badge, false otherwise.
+     */
+    public function supports_badge($badge_id, $achiever_id) {
+      return UserBadgeSupport::where(
+        [
+          ['user_who_supports', $this->user_id],
+          ['user_who_achieves', $achiever_id],
+          ['badge_id', $badge_id]
+        ]
+      )->exists();
     }
 }
