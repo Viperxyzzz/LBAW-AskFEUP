@@ -3,7 +3,7 @@ openapi: 3.0.0
 info:
   version: '1.0'
   title: 'LBAW Ask FEUP Web API'
-  description: 'Web Resources Specification (A7) for Ask FEUP'
+  description: 'Web Resources Specification for Ask FEUP'
 
 servers:
 - url: http://db.fe.up.pt
@@ -110,7 +110,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
@@ -130,6 +130,13 @@ paths:
                 - password
                 - username
                 - name
+              example:
+                - name: "Pedro"
+                  username: "Viper"
+                  email: "viper@memeware.net"
+                  password: "waiodaiwdaw821831wa"
+              
+
 
       responses:
         '302':
@@ -1196,6 +1203,47 @@ paths:
       responses:
         '200':
           description: 'Ok. Show users UI'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    title:
+                      type: string
+                    full_text:
+                      type: string
+                    author_id:
+                      type: integer
+                    num_votes:
+                      type: integer
+                    num_answers:
+                      type: integer
+                    num_views:
+                      type: integer
+                    date:
+                      type: string
+                example:
+                  - id: 5
+                    title: 'How do I use the search function?'
+                    full_text: 'I cant find the search function. Can someone help me?'
+                    author_id: 1
+                    num_votes: 0
+                    num_answers: 0
+                    num_views: 0
+                    date: '2020-11-30 12:00:00'
+                  - id: 6
+                    title: 'What is search in memeware?'
+                    full_text: 'I dont know what search memeware is. Can someone help me?'
+                    author_id: 1
+                    num_votes: 1377
+                    num_answers: 420
+                    num_views: 1488
+                    date: '2001-09-11 12:00:00'
+                
   /:
     get:
       operationId: R603
