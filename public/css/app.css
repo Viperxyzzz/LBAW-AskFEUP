@@ -310,9 +310,8 @@ aside.sticky-top {
 .badge {
     background-color: var(--accent-color);
 }
-.vote-down {
-    color: #B22222;
-}
-.vote-up {
-    color: green;
+
+.voted {
+    background-color: #3f72af;
+    color: #f3f3f3;
 }

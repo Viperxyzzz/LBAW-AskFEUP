@@ -7,9 +7,9 @@
                 <input type="hidden" name="vote" value="1"></input>
                 <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
                 @if($question->vote()!=null && $question->vote()==1)
-                <i width="16" height="16" class="material-symbols-outlined vote-up">keyboard_arrow_up</i>
+                <i width="16" height="16" class="material-symbols-outlined voted rounded-circle">keyboard_arrow_up</i>
                 @else
-                <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_up</i>
+                <i width="16" height="16" class="material-symbols-outlined rounded-circle">keyboard_arrow_up</i>
                 @endif
                 </button>
             <!-- </form> -->
@@ -19,9 +19,9 @@
                 <input type="hidden" name="vote" value="-1"></input>
                 <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
                 @if($question->vote()!=null && $question->vote()==-1)
-                <i width="16" height="16" class="material-symbols-outlined vote-down">keyboard_arrow_down</i>
+                <i width="16" height="16" class="material-symbols-outlined voted rounded-circle">keyboard_arrow_down</i>
                 @else
-                <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_down</i>
+                <i width="16" height="16" class="material-symbols-outlined rounded-circle">keyboard_arrow_down</i>
                 @endif
                 </button>
             <!-- </form> -->

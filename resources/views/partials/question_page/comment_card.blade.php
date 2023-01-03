@@ -6,9 +6,9 @@
                 <input type="hidden" name="vote" value="1"></input>
                 <input type="hidden" name="comment_id" value="{{$comment->comment_id}}"></input>
                 @if($comment->vote()!=null && $comment->vote()==1)
-                <i class="material-symbols-outlined vote-up">keyboard_arrow_up</i>
+                <i class="material-symbols-outlined voted rounded-circle">keyboard_arrow_up</i>
                 @else
-                <i class="material-symbols-outlined">keyboard_arrow_up</i>
+                <i class="material-symbols-outlined rounded-circle">keyboard_arrow_up</i>
                 @endif
             </button>
             <p class="m-0 pr-2 text-nowrap" id="num-votes-comment-{{$comment->comment_id}}">{{ $comment->num_votes }}</p>
@@ -16,9 +16,9 @@
                 <input type="hidden" name="vote" value="-1"></input>
                 <input type="hidden" name="comment_id" value="{{$comment->comment_id}}"></input>
                 @if($comment->vote()!=null && $comment->vote()==-1)
-                <i class="material-symbols-outlined vote-down">keyboard_arrow_down</i>
+                <i class="material-symbols-outlined voted rounded-circle">keyboard_arrow_down</i>
                 @else
-                <i class="material-symbols-outlined">keyboard_arrow_down</i>
+                <i class="material-symbols-outlined rounded-circle">keyboard_arrow_down</i>
                 @endif
             </button>
         </div>
