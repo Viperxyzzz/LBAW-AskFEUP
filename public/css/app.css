@@ -327,7 +327,8 @@ aside.sticky-top {
     position: fixed;
     top: 5em;
     right: 1em;
-    z-index: 2;
+    z-index: 1000;
+    min-width: 20rem;
 }
 
 @media (max-width: 1200px) { 
