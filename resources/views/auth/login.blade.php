@@ -33,11 +33,12 @@
                 {{ $errors->first('password') }}
             </span>
         @endif
-
-        <label>
-            <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
-        </label>
-
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <label>
+                <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
+            </label>
+            <a href="{{ route('password.request') }}" class="text-left">Forgot my password</a>
+        </div>
         <div class="d-flex justify-content-center">
             <a class="button button-outline mx-1" href="{{ route('register') }}">Register</a>
             <button type="submit" class="mx-1">
@@ -46,7 +47,7 @@
         </div>
     </form>
     <div class="d-flex flex-column justify-content-center">
-        <hr class="c-secondary mx-auto">
+        <hr class="w-50 c-secondary mx-auto">
         <a href="{{ url('/auth/redirect') }}" class="button button-outline mx-auto mt-5" style="width: 200px;">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
             Sign in with Google

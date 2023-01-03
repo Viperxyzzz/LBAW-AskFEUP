@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use App\Models\CommentVotes;
 
 class Comment extends Model
 {
@@ -38,5 +39,13 @@ class Comment extends Model
         if ($author->is_disable())
             return false;
         return true;
+    }
+    public function vote(){
+        $commentVote = CommentVotes::where('comment_id', $this->comment_id)
+        ->where('user_id', Auth::user()->user_id)
+        ->first();
+        if ($commentVote != null)
+            return $commentVote->value;
+        return $commentVote;
     }
 }

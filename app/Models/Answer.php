@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use App\Models\AnswerVotes;
 
 class Answer extends Model
 {
@@ -56,5 +57,13 @@ class Answer extends Model
         if ($author->is_disable())
             return false;
         return true;
+    }
+    public function vote(){
+        $answerVote = AnswerVotes::where('answer_id', $this->answer_id)
+        ->where('user_id', Auth::user()->user_id)
+        ->first();
+        if ($answerVote != null)
+            return $answerVote->value;
+        return $answerVote;
     }
 }
