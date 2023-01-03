@@ -24,7 +24,7 @@ class QuestionController extends Controller
      */
     public function home($question_id)
     {
-      //$this->authorize('list', Question::class);
+      if(!Auth::check()) return redirect('/login');
       $question = Question::find($question_id);
       $answers = $question->answers();
       $comments = $question->comments();
