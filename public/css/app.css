@@ -248,6 +248,11 @@ input[type="checkbox"] {
   100% { opacity: 1; }
 }
 
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 @keyframes fadeInDelay {
   0% { opacity: 0; }
   50% {opacity: 0;}
@@ -314,4 +319,25 @@ aside.sticky-top {
 .voted {
     background-color: #3f72af;
     color: #f3f3f3;
+}
+
+/************* alert messages ****************/
+
+.alert {
+    position: fixed;
+    top: 5em;
+    right: 1em;
+    z-index: 2;
+}
+
+@media (max-width: 1200px) { 
+    .alert {
+        top: 8em;
+    }
+}
+
+@media (max-width: 700px) { 
+    .alert {
+        top: 13em;
+    }
 }

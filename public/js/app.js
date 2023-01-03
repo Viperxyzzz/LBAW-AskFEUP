@@ -1793,4 +1793,28 @@ function logout(){
 
 /***********  ***********/
 
+
+
+/*********** alert messages ***********/
+
+const fadeOut = [
+  { transform: 'rotate(0) scale(1)' },
+  { transform: 'rotate(360deg) scale(0)' }
+];
+
+setTimeout(function() {
+  let alerts = document.querySelectorAll('.alert')
+  alerts.forEach(
+    alert => {
+      alert.style["animation"] = "fadeOut 2.5s"
+      setTimeout(function () {
+        alert.remove()
+      }, 2500);
+    }
+    );
+
+}, 3000)
+
+
+
 addEventListeners();
