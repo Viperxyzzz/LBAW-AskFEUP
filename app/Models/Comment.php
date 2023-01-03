@@ -33,7 +33,7 @@ class Comment extends Model
 
     public function is_accessible_user(){
         $author = User::find($this->user_id);
-        if (Auth::user()->is_admin)
+        if (Auth::user()!=null && Auth::user()->is_admin)
             return true;
         if ($author->is_disable())
             return false;
