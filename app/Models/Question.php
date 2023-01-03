@@ -43,21 +43,36 @@ class Question extends Model
         );
     }
 
+    /**
+     * Get the author of this question
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function author() {
         return $this->hasOne(User::class, 'user_id', 'author_id');
     }
 
-
+    /**
+     * Get all the answers to this question
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function answers()
     {
         return $this->hasMany(Answer::class, 'question_id', 'question_id');
     }
 
+    /**
+     * Get all the comments to this question.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function comments()
     {
         return $this->hasMany(Comment::class, 'question_id', 'question_id');
     }
 
+    /**
+     * Get all the comments directly on the question.
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function question_comments()
     {
         return $this->comments()->select("*")
@@ -65,6 +80,10 @@ class Question extends Model
         ->get();
     }
 
+    /**
+     * Get the formatted date distance of the question.
+     * @return string Formatted date string.
+     */
     public function date_distance() {
         return Carbon::parse($this->date)->diffForHumans();
     }
@@ -75,6 +94,10 @@ class Question extends Model
     public function __construct() {
     }
 
+    /**
+     * Check if a user's profile is accessible.
+     * @return bool True is the user's profile is accessible, false otherwise (e.g. was deleted).
+     */
     public function is_accessible_user(){
         $author = User::find($this->author_id);
         if (Auth::user()!=null && Auth::user()->is_admin)
@@ -83,6 +106,11 @@ class Question extends Model
             return false;
         return true;
     }
+
+    /**
+     * Get the vote status of the logged user and this question.
+     * @return mixed Returns the object of the vote.
+     */
     public function vote(){
         $questionVote = QuestionVotes::where('question_id', $this->question_id)
         ->where('user_id', Auth::user()->user_id)

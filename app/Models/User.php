@@ -45,31 +45,50 @@ class User extends Authenticatable
         ->orWhere('name', 'ilike', "%$query%")->orderBy('username')->get();
     }
 
+    /**
+     * Get the number of answers the user has created.
+     * @return int Number of answers.
+     */
     public function get_n_answered()
     {
-      
       $num_answered_questions = DB::table('answer')->where('user_id', $this->user_id)->count();
       return $num_answered_questions;
     }
 
+    /**
+     * Get the number of questions the user has asked.
+     * @return int Total number of questions.
+     */
     public function get_n_asked()
     {
       $num_asked_questions = DB::table('question')->where('author_id', $this->user_id)->count();
       return $num_asked_questions;
     }
 
+    /**
+     * Get the number of badges the user has been awarded.
+     * @return int Total number of bages.
+     */
     public function get_n_badges()
     {
       $num_badges = DB::table('user_badge')->where('user_id', $this->user_id)->count();
       return $num_badges;
     }
 
+    /**
+     * Get the number of tags the user is following.
+     * @return int Total number of following tags.
+     */
     public function get_n_ftags()
     {
       $num_ftags = DB::table('user_tag')->where('user_id', $this->user_id)->count();
       return $num_ftags;
     }
 
+    /**
+     * Get the titles of the last 3 asked questions.
+     * @return \Illuminate\Support\Collection
+     */
     public function get_last3_asked()
     {
       $titles3 = DB::table('question')->where('author_id', $this->user_id)
@@ -79,6 +98,10 @@ class User extends Authenticatable
       return $titles3;
     }
 
+    /**
+     * Get the last 3 received badges.
+     * @return \Illuminate\Support\Collection
+     */
     public function get_last3_badges()
     {
       $badge_names3 = DB::table('badge')
@@ -91,7 +114,7 @@ class User extends Authenticatable
     }
   
     /**
-     * Get all of the comments for the User
+     * Get all of the question this user has asked.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -100,6 +123,10 @@ class User extends Authenticatable
         return $this->hasMany(Question::class, 'author_id', 'user_id');
     }
 
+    /**
+     * Get all the questions the user is following.
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
     public function questions_following()
     {
         return $this->hasManyThrough(
@@ -112,6 +139,10 @@ class User extends Authenticatable
         );
     }
 
+    /**
+     * Get all the tags the user if following.
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
     public function tags_following()
     {
         return $this->hasManyThrough(
@@ -124,6 +155,11 @@ class User extends Authenticatable
         );
     }
 
+    /**
+     * Check if a user if following a tag.
+     * @param mixed $tag_id The id of the tag to be checked.
+     * @return mixed
+     */
     public function follows_tag($tag_id) {
       return UserTag::where([
         ['user_id', '=', $this->user_id],
@@ -134,7 +170,7 @@ class User extends Authenticatable
     /**
      * Determine if a user is following a question
      * 
-     * @param question_id Id of the question to check
+     * @param mixed Id of the question to check
      * @return Boolean True if user follows the question, false otherwise.
      */
     public function follows_question($question_id) {
@@ -144,11 +180,19 @@ class User extends Authenticatable
       ])->exists();
     }
 
+    /**
+     * Get all the answers the user has created.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function answers()
     {
         return $this->hasMany(Answer::class, 'user_id', 'user_id');
     }
 
+    /**
+     * Get all the comments the user has created.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function comments()
     {
         return $this->hasMany(Comment::class, 'user_id', 'user_id');
@@ -181,13 +225,27 @@ class User extends Authenticatable
       return $this->hasOne(Block::class, 'user_id', 'user_id')->exists();
     }
 
+    /**
+     * Check if a user is disabled.
+     * 
+     * @return True if the user is disabled, false otherwise.
+     */
     public function is_disable() {
       return $this->hasOne(Disable::class, 'user_id', 'user_id')->exists();
     }
+    
+    /**
+     * Get all the notifications of this user.
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function notifications(){
       return $this->hasMany(Notification::class, 'user_id', 'user_id');
     }
 
+    /**
+     * Get the number of non viewed notification.
+     * @return int Total number of unread notifications.
+     */
     public function num_non_viewed_notifications(){
       $num = DB::table('notification')
                     ->where([['viewed', 'No'], ['user_id', $this->user_id]])

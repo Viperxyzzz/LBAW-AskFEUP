@@ -22,8 +22,10 @@ class Disable extends Model
      * @var string
      */
     protected $primaryKey = 'disable_id';
+    
      // Don't add create and update timestamps in database.
      public $timestamps  = false;
+
      /**
       * Get the disabled user.
       * 
