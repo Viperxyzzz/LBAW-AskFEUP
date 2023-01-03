@@ -95,3 +95,7 @@ Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comm
 Route::get('api/comment/edit/{id}', 'CommentController@edit_view')->name('edit_comment_form');
 Route::put('api/comment/update/{id}', 'CommentController@update')->name('update_comment');
 Route::post('api/comment/{id}/vote', 'CommentController@vote')->name('vote_comment');
+
+// Badges 
+Route::post('api/badge/support', 'BadgeController@support');
+Route::post('api/badge/unsupport', 'BadgeController@unsupport');

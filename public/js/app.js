@@ -254,6 +254,13 @@ function addEventListeners() {
       );
   }
 
+  let badgeButton = document.querySelectorAll('.badge-button');
+  badgeButton.forEach(
+    button => {
+      button.addEventListener('click', badgeButtonClick);
+    }
+  )
+
   let updateVotes = document.querySelectorAll('.update-votes');
   if (updateVotes != null) {
     updateVotes.forEach(
@@ -1791,6 +1798,35 @@ function logout(){
   window.location.href = "/";
 }
 
-/***********  ***********/
+/*********** support badges ***********/
+
+function badgeButtonClick(event) {
+  let button = event.currentTarget
+  console.log(button)
+  let badge_id = button.querySelector('input[name=badge_id]').value
+  let user_id = button.querySelector('input[name=user_id]').value
+  let num = button.parentElement.querySelector('.num-supports')
+
+  if (button.querySelector('.material-icons') == null) {
+    sendSupportBadgeRequest(badge_id, user_id);
+    num.innerText = parseInt(num.innerText) + 1
+  }
+  else {
+    sendUnSupportBadgeRequest(badge_id, user_id);
+    num.innerText = parseInt(num.innerText) - 1
+  }
+  button.firstElementChild.classList.toggle('material-symbols-outlined');
+  button.firstElementChild.classList.toggle('material-icons');
+  event.stopPropagation()
+}
+
+function sendSupportBadgeRequest(badge_id, user_id) {
+  sendAjaxRequest('post', '/api/badge/support/', {badge_id : badge_id, user_id : user_id}, () => {} );
+}
+
+function sendUnSupportBadgeRequest(badge_id, user_id) {
+  sendAjaxRequest('post', '/api/badge/unsupport/', {badge_id : badge_id, user_id : user_id}, () => {} );
+}
+
 
 addEventListeners();
