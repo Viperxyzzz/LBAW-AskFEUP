@@ -232,6 +232,20 @@ function addEventListeners() {
       button.addEventListener('click', sendUnFollowTagRequest)
     }
   )
+  
+  let markValidAnswer = document.querySelectorAll('.mark-valid-answer')
+  markValidAnswer.forEach(
+    button => {
+      button.addEventListener('click', sendMarkValidAnswerRequest)
+    }
+  )
+
+  let markInvalidAnswer = document.querySelectorAll('.mark-invalid-answer')
+  markInvalidAnswer.forEach(
+    button => {
+      button.addEventListener('click', sendMarkInvalidAnswerRequest)
+    }
+  )
 
   let followQuestion = document.querySelectorAll('.follow-question')
   followQuestion.forEach(
@@ -355,6 +369,18 @@ function answerAddedHandler() {
 
 function createAnswer(answer) {
   let new_answer = document.createElement('div');
+  let question_author_id = answer.question_author_id;
+  let markValidQuestionHtml = "";
+  if(question_author_id == answer.user_id){
+    markValidQuestionHtml =
+    `
+    <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-${answer.answer_id}" type="submit" onclick="sendMarkValidAnswerRequest(event)">
+    <input type="hidden" name="answer_id" value="${answer.answer_id}">
+    <i id="mark-valid-button" width="16" height="16" class="material-symbols-outlined">check</i>
+    </button>
+    `;
+  }
+
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
   new_answer.classList.add('answer')
@@ -427,7 +453,11 @@ function createAnswer(answer) {
           </button>
           <button class="button-clear m-0 px-1" type="button">
               <i width="12" height="12" class="material-symbols-outlined" onclick=answerCommentForm(event)>chat_bubble</i>
-          </button>
+          </button>`
+          +
+          markValidQuestionHtml
+          +
+          `
       </div>
       <p class="m-0">${answer.date}</p>
   </div>
@@ -1121,6 +1151,62 @@ function tagUnFollowHandler() {
   button.querySelector('i').innerHTML = 'add'
   button.querySelector('p').innerHTML = 'Follow'
 }
+
+function sendMarkValidAnswerRequest(event){
+  let answer_id = event.currentTarget.querySelector('input').value;
+
+  if (answer_id != '')
+    sendAjaxRequest('post', `/api/answer/valid/${answer_id}`, {}, markValidAnswerHandler);
+  
+  event.preventDefault();
+}
+
+function markValidAnswerHandler() {
+  let answer = JSON.parse(this.responseText);
+  let answer_id = answer['answer_id'];
+
+  let button = document.getElementById(`valid-answer-tag-${answer_id}`)
+  button.removeEventListener('click', sendMarkValidAnswerRequest);
+  button.id = `invalid-answer-tag-${answer_id}`;
+  button.classList.remove('valid-answer-tag');
+  button.classList.add('invalid-answer-tag');
+  button.onclick = sendMarkInvalidAnswerRequest;
+  button.querySelector('i').classList.add('c-primary');
+  button.querySelector('i').classList.add('b-accent');
+  button.querySelector('i').classList.add('rounded-circle');
+
+  //find answer 
+  let answer_element = document.querySelector(`#answer_${answer_id}`);
+}
+
+function sendMarkInvalidAnswerRequest(event){
+  let answer_id = event.currentTarget.querySelector('input').value;
+
+  if (answer_id != '')
+    sendAjaxRequest('post', `/api/answer/invalid/${answer_id}`, {}, markInvalidAnswerHandler);
+  
+  event.preventDefault();
+}
+
+function markInvalidAnswerHandler() {
+  let answer = JSON.parse(this.responseText);
+  let answer_id = answer['answer_id'];
+
+  let button = document.getElementById(`invalid-answer-tag-${answer_id}`)
+  button.removeEventListener('click', sendMarkInvalidAnswerRequest);
+  button.id = `valid-answer-tag-${answer_id}`;
+  button.classList.remove('invalid-answer-tag');
+  button.classList.add('valid-answer-tag');
+  button.onclick = sendMarkValidAnswerRequest;
+  button.querySelector('i').classList.remove('c-primary');
+  button.querySelector('i').classList.remove('b-accent');
+  button.querySelector('i').classList.remove('rounded-circle');	
+
+
+  //find answer
+  let answer_element = document.querySelector(`#answer_${answer_id}`);
+}
+
 
 /* Follow and un-follow questions */
 

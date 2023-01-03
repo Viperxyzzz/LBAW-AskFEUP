@@ -1,5 +1,8 @@
-
-<div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+@if ($answer->is_correct)
+    <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+@else
+    <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+@endif
     @include('partials.question_page.delete_answer_modal', ['answer' => $answer])
     <div class="card-body d-flex justify-content-between">
         <div class="flex-fill">
@@ -67,10 +70,21 @@
             <button class="add-comment-answer-form-button button button-clear m-0 px-1" type="button">
                 <i width="12" height="12" class="material-symbols-outlined">chat_bubble</i>
             </button>
-            @if ($answer->is_correct)
-                <i class="material-symbols-outlined c-primary b-accent rounded-circle ml-2">
-                    check
-                </i>
+            @if (!$answer->is_correct)
+                @can('valid', $answer)
+                    <!-- <form method="post" action="{{ route('valid_answer', $answer->answer_id) }}">
+                        @csrf-->
+                        <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-{{ $answer->answer_id }}" type="submit">
+                            <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                            <i id="mark-valid-button" width="16" height="16" class="material-symbols-outlined">check</i>
+                        </button>
+                    <!-- </form> -->
+                @endcan
+            @else
+                <button class="button-clear m-0 px-1 mark-invalid-answer" id="invalid-answer-tag-{{ $answer->answer_id }}" type="submit">
+                    <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                    <i width="16" height="16" class="material-symbols-outlined c-primary b-accent rounded-circle">check</i>
+                </button>
             @endif
             @if($answer->was_edited)
                 <p class="m-0 p-0 mt-1 ml-3">edited</p>

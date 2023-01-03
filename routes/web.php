@@ -68,6 +68,8 @@ Route::post('api/answer/{id}', 'AnswerController@create');
 Route::delete('api/answer/delete/{id}', 'AnswerController@delete')->name('answer_delete_api');
 Route::get('api/answer/edit/{id}', 'AnswerController@edit_view')->name('edit_answer_form');
 Route::put('api/answer/update/{id}','AnswerController@update')->name('update_answer');
+Route::post('api/answer/valid/{id}', 'AnswerController@make_valid')->name('valid_answer');
+Route::post('api/answer/invalid/{id}', 'AnswerController@make_invalid')->name('invalid_answer');
 Route::post('api/answer/{id}/vote', 'AnswerController@vote')->name('vote_answer');
 
 // Notifications
