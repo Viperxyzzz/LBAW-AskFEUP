@@ -29,18 +29,8 @@
         </div>
     </div>
     <hr class="mx-0 my-2">
-    <div class=" d-flex mx-2 justify-content-between">
-        <p class="m-0">
-            {{ $question->date_distance() }}
-            @if ($question->was_edited)
-                (Edited)
-            @endif
-        </p>
-        <p class="m-0">
-            <em>by</em>
-            <a class="author" href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
-        </p>
-        <div class="row">
+    <div class="row d-flex justify-content-between">
+        <div class="d-flex">
             <button class="add-comment-question-form-button button button-clear m-0 px-1" type="button">
             <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
             </button>
@@ -51,7 +41,7 @@
                 @endif
             </p>
         </div>
-        <div class="row justify-self-end">
+        <div class="d-flex">
             <p class="m-0">
                 <em>by</em>
                 @if($question->is_accessible_user())
