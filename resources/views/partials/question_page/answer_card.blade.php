@@ -7,11 +7,11 @@
     <div class="card-body d-flex justify-content-between">
         <div class="flex-fill">
             <p class="m-0">
-                <img src="{{asset('storage/'.($answer->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
+                <img src="{{asset('storage/'.($answer->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle keep-ratio" alt="user image" width="25px">
                 @if($answer->is_accessible_user())
-                <a href="{{ url("/users/$answer->user_id") }}"> {{ $answer->author->name }}</a>
+                <a  class="font-weight-bold" href="{{ url("/users/$answer->user_id") }}"> {{ $answer->author->name }}</a>
                 @else
-                <a> {{ $answer->author->name }}</a>
+                <a  class="font-weight-bold"> {{ $answer->author->name }}</a>
                 @endif
             </p>
             <div class="answer-full-text">
