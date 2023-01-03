@@ -1,7 +1,7 @@
 :root {
     --primary-color: #3f72af;
     --secondary-color: #606c76;
-    --accent-color: #FDBE34;
+    --accent-color: #f4a259;
     --light-color: #a7a7a7;
     --background-color: #f3f3f3;
 }
@@ -12,12 +12,74 @@ body {
     overflow-x: hidden;
 }
 
+.c-primary {
+    color: var(--primary-color);
+}
+
+.c-secondary {
+    color: var(--secondary-color);
+}
+
+.c-accent {
+    color: var(--accent-color);
+}
+
+.b-accent {
+    background-color: var(--accent-color);
+}
+
+.b-bg {
+    background-color: var(--background-color);
+}
+
+:target {
+    background-color: var(--background-color);
+
+}
+
+.border-strong {
+    border: 2px solid #dcdcdc ;
+}
+
+#content {
+    flex-grow: 1;
+}
+
+.badge-button {
+    padding: 0;
+    color: inherit;
+    background-color: transparent;
+    margin: 0;
+    border: none;
+}
+
+.badge-button:hover , .badge-button::selection, .badge-button::backdrop , .badge-button:focus {
+    color: var(--accent-color);
+    background-color: transparent;
+}
+
 i {
     vertical-align:sub;
 }
 
 a {
     cursor: pointer;
+}
+
+footer * {
+    color: var(--light-color);
+}
+
+form {
+    margin: 0;
+}
+
+.sitemap li {
+    list-style: none;
+}
+
+.sitemap li a {
+    color: var(--light-color);
 }
 
 .card .question-stats {
@@ -50,8 +112,12 @@ a {
     font-size: 1.6rem;
 }
 
-.dropdown-item {
-    font-size: 1.5rem;
+button.btn[aria-expanded="true"] { color: black;}
+
+.dropdown-menu {
+    max-height: 280px;
+    overflow-y: scroll;
+    font-size: 14px;
 }
 
 .badge {
@@ -62,8 +128,17 @@ a {
     color: var(--primary-color);
 }
 
+.error-code {
+    font-size: 17rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
 #tags option{
-    font-size: 1.3rem;
+    font-size: 1.6rem;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin: 0.2rem;
 }
 
 textarea {
@@ -125,9 +200,25 @@ input[type=radio]:checked + label {
     width: 25rem;
 }
 
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+.dashboard-tab {
+    display: none;
+    animation: fadeIn 0.8s;
+}
+
+.tab-open {
+    display: block;
+}
+
+.tab-closed {
+    display: none;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--accent-color);
+}
+
+.multi-check {
+    font-weight: normal;
 }
 
 .hide{
@@ -138,4 +229,141 @@ input[type=radio]:checked + label {
     font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
     color: var(--secondary-color);
     height: 200px;
+}
+
+.filter-option {
+    background-color: var(--background-color);
+    border-radius: 5rem;
+    cursor: pointer;
+}
+
+.filter-option.active {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.filter-option > input {
+    display: none;
+}
+
+.keep-ratio{
+    aspect-ratio: 1/1;
+}
+
+/************************* Animations **************************/
+
+.fade-in {
+    animation: fadeIn 0.8s;
+}
+
+.fade-1 {
+    animation: fadeInDelay 0.8s;
+}
+
+.fade-2 {
+    animation: fadeInDelay 1.2s;
+}
+
+.fade-3 {
+    animation: fadeInDelay 1.6s;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes fadeInDelay {
+  0% { opacity: 0; }
+  50% {opacity: 0;}
+  100% { opacity: 1; }
+}
+
+.slide-left {
+      position: relative;
+      animation: slideLeft 0.8s ease-out;
+    }
+
+@keyframes slideLeft {
+      0% {
+        opacity: 0;
+        right: -100px;
+      }
+    100% {
+        opacity: 1;
+        right: 0;
+      }
+    }
+
+.slide-right {
+      position: relative;
+      animation: slideRight 0.8s ease-out;
+    }
+
+@keyframes slideRight {
+      0% {
+        opacity: 0;
+        left: -100px;
+      }
+    100% {
+        opacity: 1;
+        left: 0;
+      }
+    }
+
+
+/************************* Responsive **************************/
+
+@media (max-width: 576px) { 
+    .feed-index {
+        display: none;
+    }
+
+    .row {
+        width: inherit;
+    }
+}
+span.red-circle-notification {
+    font-size: 12px;
+    color: var(--accent-color);
+  }
+
+aside.sticky-top {
+    z-index: 999;
+}
+
+.badge {
+    background-color: var(--accent-color);
+}
+
+.voted {
+    background-color: #3f72af;
+    color: #f3f3f3;
+}
+
+/************* alert messages ****************/
+
+.alert {
+    position: fixed;
+    top: 5em;
+    right: 1em;
+    z-index: 1000;
+    min-width: 20rem;
+}
+
+@media (max-width: 1200px) { 
+    .alert {
+        top: 8em;
+    }
+}
+
+@media (max-width: 700px) { 
+    .alert {
+        top: 13em;
+    }
 }

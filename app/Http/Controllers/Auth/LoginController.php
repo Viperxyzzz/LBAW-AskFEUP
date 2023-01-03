@@ -41,6 +41,10 @@ class LoginController extends Controller
         return $request->user();
     }
 
+    /**
+     * Get the initial page for guests.
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View Initial page.
+     */
     public function home() {
         return view('pages.home');
     }

@@ -8,5 +8,5 @@
       {{$answer->question()->get()->value('title')}}
     </a>
   </h3>
-  @include('partials.question_page.answer_card', ['answer' => $answer])
+  @include('partials.question_page.answer_card', ['answer' => $answer, 'question' => $answer->question()->first()])
 @endforeach

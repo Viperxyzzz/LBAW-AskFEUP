@@ -1,53 +1,99 @@
-
-<div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
-    <strong class="ml-4 mb-0">Answer:</strong>
+@if ($answer->is_correct)
+    <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+@else
+    <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
+@endif
+    @include('partials.question_page.delete_answer_modal', ['answer' => $answer])
     <div class="card-body d-flex justify-content-between">
-        <div style="font-size: 2rem" class="answer-full-text">
-            <p class="card-text">{{ $answer->full_text }}</p>
+        <div class="flex-fill">
+            <p class="m-0">
+                <img src="{{asset('storage/'.($answer->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle keep-ratio" alt="user image" width="25px">
+                @if($answer->is_accessible_user())
+                <a  class="font-weight-bold" href="{{ url("/users/$answer->user_id") }}"> {{ $answer->author->name }}</a>
+                @else
+                <a  class="font-weight-bold"> {{ $answer->author->name }}</a>
+                @endif
+            </p>
+            <div class="answer-full-text">
+                <p class="card-text pb-5 pt-2">{{ $answer->full_text }}</p>
+            </div>
         </div>
         <div class="ml-5 d-flex">
-            <aside class="question-stats">
-                @if ($answer->is_correct == 1)
-                <span class="material-symbols-outlined" style="color: green">
-                    task_alt
-                </span>
-                @endif
-                <p class="m-0 text-nowrap">{{ $answer->num_votes }} votes</p>
-                @if($answer->was_edited == 1)
-                <p class="m-0 text-nowrap">edited</p>
-                @endif
-            </aside>
-            @can('edit', $answer)
                 <div class="dropdown">
                     <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
                         <i class="material-symbols-outlined">more_vert</i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                            <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
-                            <button class="dropdown-item edit_answer" type="button">
-                                <i width="16" height="16" class="material-symbols-outlined ">edit</i>
-                                Edit
+                            @can('edit', $answer)
+                                <data class="answer_id" hidden>{{ $answer->answer_id }}</data>
+                                <button class="dropdown-item edit_answer m-0" type="button">
+                                    <i width="16" height="16" class="material-symbols-outlined ">edit</i>
+                                    Edit
+                                </button>
+                                <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                                <button class="dropdown-item m-0" type="button" data-toggle="modal" data-target="#answerModal_{{$answer->answer_id}}">
+                                    <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                                    Delete
+                                </button>
+                            @endcan
+                            <button class="dropdown-item m-0" type="button" data-toggle="modal" 
+                                data-target="#add-report-modal-{{ $question->question_id }}-{{ $answer->answer_id }}-">
+                                <i width="16" height="16" class="material-symbols-outlined ">flag</i>
+                                Report
                             </button>
-                        <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
-                        <button class="dropdown-item delete-answer" type="button">
-                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
-                            Delete
-                        </button>
                     </div>
                 </div>
-            @endcan
         </div>
+        @include('partials.admin.add_report', ['comment' => null])
     </div>
-    <div class="card-footer d-flex justify-content-between">
+    <div class="card-footer d-flex justify-content-between align-items-center answer-footer">
+        <div class="d-flex align-items-start mt-2">
+            <button class="button-clear m-0 px-1 update-votes-answer" type="button">
+                <input type="hidden" name="vote" value="1"></input>
+                <input type="hidden" name="answer_id" value="{{$answer->answer_id}}"></input>
+                @if($answer->vote()!=null && $answer->vote()==1)
+                <i width="16" height="16" id="up-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined voted rounded-circle">arrow_upward</i>
+                @else
+                <i width="16" height="16" id="up-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined rounded-circle">arrow_upward</i>
+                @endif
+            </button>
+            <p class="m-0 px-1 pt-1" id="num-votes-answer-{{$answer->answer_id}}">{{ $answer->num_votes }}</p>
+            <button class="button-clear m-0 px-1 update-votes-answer" type="button">
+                <input type="hidden" name="vote" value="-1"></input>
+                <input type="hidden" name="answer_id" value="{{$answer->answer_id}}"></input>
+                @if($answer->vote()!=null && $answer->vote()==-1)
+                <i width="16" height="16" id="down-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined voted rounded-circle">arrow_downward</i>
+                @else
+                <i width="16" height="16" id="down-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined rounded-circle">arrow_downward</i>
+                @endif
+            </button>
+            <button class="add-comment-answer-form-button button button-clear m-0 px-1" type="button">
+                <i width="12" height="12" class="material-symbols-outlined">chat_bubble</i>
+            </button>
+            @if (!$answer->is_correct)
+                @can('valid', $answer)
+                    <!-- <form method="post" action="{{ route('valid_answer', $answer->answer_id) }}">
+                        @csrf-->
+                        <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-{{ $answer->answer_id }}" type="submit">
+                            <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                            <i id="mark-valid-button" width="16" height="16" class="material-symbols-outlined">check</i>
+                        </button>
+                    <!-- </form> -->
+                @endcan
+            @else
+                <button class="button-clear m-0 px-1 mark-invalid-answer" id="invalid-answer-tag-{{ $answer->answer_id }}" type="submit">
+                    <input type="hidden" name="answer_id" value="{{$answer->answer_id}}">
+                    <i width="16" height="16" class="material-symbols-outlined c-primary b-accent rounded-circle">check</i>
+                </button>
+            @endif
+            @if($answer->was_edited)
+                <p class="m-0 p-0 mt-1 ml-3">edited</p>
+            @endif
+        </div>
         <p class="m-0">{{ \Carbon\Carbon::parse($answer->date)->format('d/m/Y')}}</p>
-        <p class="m-0">
-            <em>by</em>
-            <a href="{{url("/users/$answer->user_id")}}"> {{ $answer->author->name }}</a>
-        </p>
     </div>
-    <div class="answer-comments">
+    <div class="answer-{{$answer->answer_id}}-comments">
         @foreach ($answer->comments()->orderBy('num_votes', 'DESC')->get() as $comment)
-            <strong class="ml-4 mt-2">Comment:</strong>
             @include('partials.question_page.comment_card', ['comment' => $comment])
         @endforeach
     </div>

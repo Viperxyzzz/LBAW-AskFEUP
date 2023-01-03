@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+
+  @include('partials.messages.feedback')
+
   <div class="container py-5">
     <div class="row">
       @include('partials.profile.header', ['user' => $user])
@@ -18,15 +21,20 @@
                 {{ session('error') }}
             </div>
         @endif
-
         <div class="profile-tab profile-tab-open" id="user-overview-tab">
           @include('partials.profile.overview', ['user' => $user])
+        </div>
+        <div class="profile-tab" id="user-badges-tab">
+          @include('partials.profile.badges', ['user' => $user])
         </div>
         <div class="profile-tab" id="user-questions-tab">
           @include('partials.profile.questions', ['questions' => $questions])
         </div>
         <div class="profile-tab" id="user-answers-tab">
           @include('partials.profile.answers', ['answers' => $answers])
+        </div>
+        <div class="profile-tab" id="user-tags-tab">
+          @include('partials.profile.tags', ['tags' => $tags])
         </div>
       </div>
     </div>

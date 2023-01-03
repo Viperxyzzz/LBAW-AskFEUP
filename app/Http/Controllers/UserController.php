@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 
@@ -14,18 +12,21 @@ class UserController extends Controller
     /**
      * Display all the users.
      *
-     * @return Response
+     * @return mixed Page that displayed the results of the queried users.
      */
     public function home()
     {
       $users = User::all()->sortBy('username');
-      return view('pages.users', ['users' => $users]);
+      $filtered_user = $users->filter(function ($item) {
+        return (!$item->is_disable());
+      });
+        return view('pages.users', ['users' => $filtered_user]);
     }
 
     /**
      * Display all the users that match an exact search.
      *
-     * @return Response
+     * @return mixed Page that displayed the results of the queried users.
      */
     public function search(Request $request)
     {
