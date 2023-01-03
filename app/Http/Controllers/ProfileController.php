@@ -8,15 +8,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
-use App\Models\Question;
 
 class ProfileController extends Controller
 {
-
     /**
-     * Display the personal profile.
-     *
-     * @return Response
+     * Display a user profile.
+     * 
+     * @param mixed $user_id The id of the profile to be displayed.
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View User profile page.
      */
     public function home($user_id)
     {
@@ -34,9 +33,10 @@ class ProfileController extends Controller
     }
 
     /**
-     * Display the personal profile.
-     *
-     * @return Response
+     * Display the profile editing page.
+     * 
+     * @param mixed $user_id Id of the user referent to the page.
+     * @return mixed Returns a profile editing page.
      */
     public function settings($user_id)
     {
@@ -46,6 +46,13 @@ class ProfileController extends Controller
       return view('pages.settings', ['user' => $user]);
     }
 
+    /**
+     * Edit a user's profile.
+     * 
+     * @param Request $request Request with correct user parameters.
+     * @param mixed $user_id Id of user whose info is being edited.
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector Redirects to user page.
+     */
     public function updateUser(Request $request, $user_id){
       $user = User::find($user_id);
       $this->authorize('edit', $user);
@@ -105,7 +112,9 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete an account
+     * Delete a users account.
+     * @param mixed $user_id Id of the account to be deleted.
+     * @return mixed JSON of the deleted user.
      */
     public function delete($user_id)
     {

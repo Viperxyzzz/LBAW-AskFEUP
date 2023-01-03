@@ -26,8 +26,18 @@ class Notification extends Model
      * @var string
      */
     protected $primaryKey = 'notification_id';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = ['viewed'];
     
+    /**
+     * Get the owner of the notification
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function author() {
         return $this->hasOne(User::class, 'user_id', 'user_id');
     }

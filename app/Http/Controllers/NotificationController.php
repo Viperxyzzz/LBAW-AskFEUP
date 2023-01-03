@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Notification;
-use App\Models\Question;
 use App\Models\Answer;
 use App\Models\Comment;
 
 class NotificationController extends Controller
 {
+    /**
+     * Mark a notification as viewed.
+     * @param mixed $notification_id The id of the notification to update.
+     * @return mixed JSON of updated notification.
+     */
     public function update($notification_id) {
       if (!Auth::check()) return redirect('/login');
       $notification = Notification::find($notification_id);
@@ -20,6 +23,11 @@ class NotificationController extends Controller
       return $notification;
     }
 
+    /**
+     * Get the redirect link for a notification.
+     * @param mixed $notification_id The id of the notification to get a redirect.
+     * @return mixed Returns a redirect to the correct link depending on the notification.
+     */
     public function redirectNotification($notification_id){
       $notification = Notification::find($notification_id);
       switch($notification->event_type){

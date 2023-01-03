@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Tag extends Model
 {
@@ -28,7 +27,10 @@ class Tag extends Model
     protected $primaryKey = 'tag_id';
 
     /**
-     * Perform an exact search match for tag names.
+     * Perform an exact search match for tag names and filter by topic.
+     * @param string $query Text search to be applied.
+     * @param array $topics List of selected topics.
+     * @return mixed Returns the list of tags that match the criteria.
      */
     public static function search(string $query, array $topics) {
       if (empty($topics)) return Tag::where('tag_name', 'like', "%$query%")->get();

@@ -27,6 +27,12 @@ class UserTag extends Model
      */
     protected $primaryKey = 'user_id';
 
+    /**
+     * Follow a tag.
+     * @param mixed $user_id User that is following the tag.
+     * @param mixed $tag_id Id of the tag to be followed.
+     * @return UserTag JSON of the newly created following relation.
+     */
     public static function follow($user_id, $tag_id) {
         $follow = new UserTag;
         $follow->user_id = $user_id;

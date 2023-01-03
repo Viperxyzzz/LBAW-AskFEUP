@@ -5,10 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\Question;
-use App\Models\QuestionTag;
-use App\Models\Tag;
-use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\CommentVotes;
 
@@ -16,9 +12,9 @@ class CommentController extends Controller
 {
 
     /**
-     * Post an comment to a question or answer.
-     * 
-     * @return TODO
+     * Create a comment and store it.
+     * @param Request $request
+     * @return mixed Returns the created comment in JSON format.
      */
     public function create(Request $request) {
       if (!Auth::check()) return redirect('/login');
@@ -43,6 +39,13 @@ class CommentController extends Controller
       $comment['date'] = date("d/m/Y");
       return json_encode($comment);
     }
+
+    /**
+     * Delete a comment from storage.
+     * @param Request $request
+     * @param mixed $comment_id The id of the comment ot be deleted.
+     * @return mixed Returns the deleted's comment JSON object.
+     */
     public function delete(Request $request, $comment_id) {
       if (!Auth::check()) return redirect('/login');
       $comment = Comment::find($comment_id);
@@ -51,6 +54,13 @@ class CommentController extends Controller
       $comment->delete();
       return $comment;
     }
+
+    /**
+     * Get the comment to be edited. This is used to retrieve info before editing.
+     * @param Request $request
+     * @param mixed $comment_id Id of the comment to be retrieved.
+     * @return mixed JSON object of the comment.
+     */
     public function edit_view(Request $request, $comment_id) {
       if (!Auth::check()) return redirect('/login');
       $comment = Comment::find($comment_id);
@@ -59,6 +69,12 @@ class CommentController extends Controller
       return $comment;
     }
 
+    /**
+     * Update a comment in storage.
+     * @param Request $request
+     * @param mixed $comment_id The id of the comment to be edited.
+     * @return mixed JSON object of the comment.
+     */
     public function update(Request $request, $comment_id) {
       if (!Auth::check()) return redirect('/login');
       $comment = Comment::find($comment_id);
@@ -77,6 +93,12 @@ class CommentController extends Controller
       return $comment;
     }
 
+    /**
+     * Create a vote on a comment
+     * @param Request $request
+     * @param mixed $comment_id The id of the comment to be edited.
+     * @return mixed JSON object of the comment.
+     */
     public function vote(Request $request, $comment_id) {
       if(!Auth::check()) return redirect('/login');
 
@@ -116,7 +138,5 @@ class CommentController extends Controller
       if($comment->num_votes < 0) $comment->num_votes = 0;
       $comment->save();
       return ['num_votes' => $comment->num_votes, 'comment_id' => $request->comment_id, 'vote' => $request->vote];
-
-      return $comment;
     }
 }

@@ -13,9 +13,9 @@ class TagController extends Controller
 {
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of all the tags available.
      *
-     * @return \Illuminate\Http\Response
+     * @return mixed Displays the tag search page.
      */
     public function index()
     {
@@ -24,6 +24,12 @@ class TagController extends Controller
         return view('pages.tags', ['tags' => $tags, 'topics' => $topics]);
     }
 
+    /**
+     * Search for tags using the available filters: topic and text search.
+     * 
+     * @param Request $request Request with topics and search params.
+     * @return array Returns JSON with filtered tags and all available topics.
+     */
     public function search(Request $request) {
         $search =  $request->input('search') ?? '';
         $topics = $request->input('topics') ?? [];
@@ -37,12 +43,26 @@ class TagController extends Controller
         return ['tags' => $tags, 'topics' => Topic::all()];
     }
 
+    /**
+     * Follow a tag.
+     * 
+     * @param Request $request
+     * @param mixed $tag_id Id of the tag to be followed.
+     * @return UserTag JSON with newly created following relation.
+     */
     public function follow(Request $request, $tag_id) {
         if (!Auth::check()) abort(403);
         if ($tag_id == NULL) return;
         return UserTag::follow(Auth::id(), $tag_id);
     }
 
+    /**
+     * Unfollow a tag.
+     * 
+     * @param Request $request
+     * @param mixed $tag_id Id of the tag to be un-followed.
+     * @return array JSON with the unfollowed tag id.
+     */
     public function unFollow(Request $request, $tag_id) {
         $follow = UserTag::where([
             ['user_id', '=', Auth::id()],
@@ -57,7 +77,7 @@ class TagController extends Controller
      * Store a newly created tag in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response Tag json object.
+     * @return array JSON with tag and all topics.
      */
     public function store(Request $request)
     {
@@ -83,33 +103,11 @@ class TagController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Edit a tag from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  $request POST request with all new tag info.
+     * @param  int  $id If of the tag to be edited.
+     * @return mixed JSON of newly edited tag.
      */
     public function update(Request $request, $id)
     {
@@ -133,10 +131,10 @@ class TagController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove a tag from storage
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $id Id of the tag to be removed.
+     * @return mixed
      */
     public function destroy($id)
     {

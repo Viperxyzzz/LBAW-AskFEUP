@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\Block;
 use App\Models\Disable;
 
 class DisableController extends Controller
@@ -18,6 +15,13 @@ class DisableController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request HTTP Post Request.
      * @return \Illuminate\Http\Response Disable json object.
+     */
+
+    /**
+     * Delete a user account.
+     * This is done by creating an entry on the Disable class.
+     * @param mixed $user_id The id of the user to be disabled.
+     * @return mixed Returns JSON with the created user disabling.
      */
     public function store($user_id)
     {
