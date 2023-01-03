@@ -1,4 +1,5 @@
 <div class="d-flex flex-wrap border p-5 col-md-12">
+    @include('partials.profile.delete_user_modal', ['user' => $user])
     <img src="{{asset('storage/'.($user->picture_path).'.jpeg')}}" alt="avatar"
               class="rounded-circle keep-ratio" width="225px">
     <div class="d-flex justify-content-between" style="flex-grow: 1">
@@ -15,6 +16,7 @@
             <h4 class="text-secondary ml-5"><em>{{$user->username}}</em></h4>
             <h4 class="ml-5">{{$user->email}}</h4>
         </div>
+        @can('edit', $user)
         <div class="text-right">
             <div class="dropdown">
                 <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true"">
@@ -39,13 +41,16 @@
                         </button> 
                         @endif
                     @endcan
-                    @can('edit', $user)
                         <a class="dropdown-item" href="{{ url('/settings', ['id' => $user->user_id]) }}">
                             <i class="material-symbols-outlined mr-1">edit</i>
                             Edit Profile
                         </a>
-                    @endcan
+                        <button class="dropdown-item m-0" type="button" data-toggle="modal" data-target="#userModal_{{$user->user_id}}">
+                            <i width="16" height="16" class="material-symbols-outlined ">delete</i>
+                            Delete
+                        </button>
                 </div>
+                @endcan
             </div>
             <h4 class="text-right"><strong class="title-blue">{{$user->score}}</strong> points</h4>
         </div>

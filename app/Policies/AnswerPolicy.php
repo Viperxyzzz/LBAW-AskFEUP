@@ -34,4 +34,10 @@ class AnswerPolicy
       // Only an answer's author can update it
       return $user->user_id == $answer->user_id || $user->is_admin;
     }
+
+    public function vote(User $user, Answer $answer)
+    {
+      // Any user can vote on a answer
+      return Auth::check();
+    }
 }

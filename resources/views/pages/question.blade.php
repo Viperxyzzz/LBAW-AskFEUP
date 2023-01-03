@@ -6,6 +6,7 @@
     @include('partials.feed.left_nav')
 
     <div class="col-lg-7 m-3 mt-5">
+        <input type="hidden" name="question_id" id="question_id" value="{{$question->question_id}}"></input>
         @include('partials.question_page.question_card', ['question' => $question])
         <div class="question-comments">
             @foreach($question->question_comments()->sortByDesc('num_votes')->all() as $comment)

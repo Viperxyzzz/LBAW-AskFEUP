@@ -10,6 +10,8 @@ use App\Models\Question;
 use App\Models\QuestionTag;
 use App\Models\QuestionUser;
 use App\Models\Tag;
+use App\Models\Answer;
+use App\Models\QuestionVotes;
 
 class QuestionController extends Controller
 {
@@ -33,8 +35,14 @@ class QuestionController extends Controller
     {
       if(!Auth::check()) return redirect('/login');
       $question = new Question;
-      $question->title = $request->title;
-      $question->full_text = $request->full_text;
+
+      $request->validate([
+        'title' => 'required|string|max:100',
+        'full_text' => 'required|string|max:1000',
+      ]);
+
+      $question->title = $request->input('title');
+      $question->full_text = $request->input('full_text');
       $question->author_id = Auth::user()->user_id;
 
       $question->num_votes = 0;
@@ -63,14 +71,14 @@ class QuestionController extends Controller
       if(!Auth::check()) return redirect('/login');
     
       $request->validate([
-        'title' => 'required',
-        'full_text' => 'required',
+        'title' => 'required|string|max:100',
+        'full_text' => 'required|string|max:1000',
       ]);
       
       $question = Question::find($id);
       $this->authorize('edit', $question);
-      $question->title = $request->get('title');
-      $question->full_text = $request->full_text;
+      $question->title = $request->input('title');
+      $question->full_text = $request->input('full_text');
 
       $question->date = date('Y-m-d H:i:s');
       $question->was_edited = true;
@@ -116,6 +124,48 @@ class QuestionController extends Controller
       $tags = Tag::all();
       return view('pages.edit_question',['tags' => $tags, 'question' => $question]);
     }
+
+    public function vote(Request $request){
+      if(!Auth::check()) return redirect('/login');
+
+      $question = Question::find($request->question_id);
+      $this->authorize('vote', $question);
+
+      $questionVote = QuestionVotes::where('question_id', $request->question_id)
+        ->where('user_id', Auth::user()->user_id)
+        ->first();
+
+      if ($questionVote !== null) {
+        // User has already voted
+        if ($questionVote->value == $request->vote) {
+          // User is trying to cancel their vote
+          if ($question->num_votes > 0 || $request->vote != -1) {
+            // Only decrement the num_votes if it is above 0 or if the user is not downvoting
+            $question->num_votes -= $request->vote;
+          }
+          $questionVote->delete();
+        } else {
+          // User is updating their vote
+          if($question->num_votes != 0 || $questionVote->value != -1)
+            $question->num_votes -= $questionVote->value;
+          $question->num_votes += $request->vote;
+          $questionVote->value = $request->vote;
+          $questionVote->save();
+        }
+      } else {
+        // User is casting a new vote
+        $questionVote = new QuestionVotes;
+        $questionVote->question_id = $request->question_id;
+        $questionVote->user_id = Auth::user()->user_id;
+        $questionVote->value = $request->vote;
+        $questionVote->save();
+        $question->num_votes += $request->vote;
+      }
+      if($question->num_votes < 0) $question->num_votes = 0;
+      $question->save();
+      return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id];
+    }
+
 
     public function create_view()
     {

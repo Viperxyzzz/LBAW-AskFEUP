@@ -20,7 +20,6 @@ class FeedController extends Controller
     public function home()
     {
       if (!Auth::check()) return redirect('/login');
-      //$this->authorize('list', Question::class);
       $questions['last'] = Question::orderBy('date', 'desc')->take(3)->get();
       $questions['authored'] = Auth::user()->questions()->get();
       $questions['following'] = Auth::user()->questions_following()->get();

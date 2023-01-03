@@ -54,7 +54,7 @@ class ProfileController extends Controller
         'username' => 'required|string|max:255',
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255',
-        'new_password' => 'string|min:6',
+        'new_password' => 'string|min:8',
         'confirm_pass' => 'same:new_password',
         'picture_path' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
       ]);
@@ -104,4 +104,20 @@ class ProfileController extends Controller
       return redirect('users/'.$user->user_id);
     }
 
+    /**
+     * Delete an account
+     */
+    public function delete($user_id)
+    {
+      // account updates
+      $user = User::find($user_id);
+      $this->authorize('delete', $user);
+
+      $user->name = 'anonymous';
+      $user->picture_path = 'guest';
+
+      $user->save();
+
+    return $user;
+    }
 }
