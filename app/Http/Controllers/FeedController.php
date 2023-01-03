@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
-use App\Models\User;
 
 class FeedController extends Controller
 {
 
     /**
-     * Shows all questions.
+     * Shows all questions tailored to the user.
+     * These are separated by recent, authored and following.
      *
-     * @return Response
+     * @return mixed Returns the feed page.
      */
     public function home()
     {

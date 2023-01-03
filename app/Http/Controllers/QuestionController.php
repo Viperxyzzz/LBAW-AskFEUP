@@ -3,23 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
 use App\Models\QuestionTag;
 use App\Models\QuestionUser;
 use App\Models\Tag;
-use App\Models\Answer;
 use App\Models\QuestionVotes;
 
 class QuestionController extends Controller
 {
-
     /**
-     * Shows all questions.
-     *
-     * @return Response
+     * Show the page of a question.
+     * @param mixed $question_id Id of the question to be displayed.
+     * @return mixed Detailed question page.
      */
     public function home($question_id)
     {
@@ -31,6 +28,11 @@ class QuestionController extends Controller
       return view('pages.question', ['question' => $question,'answers' => $answers, 'comments' => $comments, 'question_comments' => $question_comments]);
     }
 
+    /**
+     * Create a new question
+     * @param Request $request POST request to create question.
+     * @return mixed After the question is created, redirects to question page.
+     */
     public function create(Request $request)
     {
       if(!Auth::check()) return redirect('/login');
@@ -66,6 +68,12 @@ class QuestionController extends Controller
       return redirect('/question/'.$question->question_id);
     }
 
+    /**
+     * Edit a question
+     * @param Request $request POST request with correct question details.
+     * @param mixed $id Id of the question to be edited.
+     * @return mixed After the question is edited, redirects to question page.
+     */
     public function update(Request $request, $id)
     {
       if(!Auth::check()) return redirect('/login');
@@ -107,6 +115,11 @@ class QuestionController extends Controller
       return redirect('/question/'.$question->question_id);
     }
 
+    /**
+     * Delete a question from storage.
+     * @param Request $request
+     * @param mixed After a question is deleted, redirects to the feed.
+     */
     public function delete(Request $request)
     {
       if(!Auth::check()) return redirect('/login');
@@ -116,6 +129,11 @@ class QuestionController extends Controller
       return redirect('/feed');
     }
 
+    /**
+     * Get info of question to be edited.
+     * @param Request $request Request including question id in the data.
+     * @return mixed JSON object of a question.
+     */
     public function edit_view(Request $request)
     {
       if (!Auth::check()) return redirect('/login');
@@ -125,6 +143,11 @@ class QuestionController extends Controller
       return view('pages.edit_question',['tags' => $tags, 'question' => $question]);
     }
 
+    /**
+     * Create a vote on a question
+     * @param Request $request
+     * @return mixed JSON with number of votes and the id of the question.
+     */
     public function vote(Request $request){
       if(!Auth::check()) return redirect('/login');
 
@@ -166,7 +189,10 @@ class QuestionController extends Controller
       return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id];
     }
 
-
+    /**
+     * Get the view of create question.
+     * @return mixed Returns the page used to create questions.
+     */
     public function create_view()
     {
       if (!Auth::check()) return redirect('/login');

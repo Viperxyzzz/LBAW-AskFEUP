@@ -3,20 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\Block;
 
 class BlockController extends Controller
 {
-    //
-
     /**
-     * Store a newly created block.
-     *
-     * @param  \Illuminate\Http\Request  $request HTTP Post Request.
-     * @return \Illuminate\Http\Response Block json object.
+     * Create a user block.
+     * @param Request $request 
+     * @param mixed $user_id Id of the user to be blocked.
+     * @return mixed JSON of the newly created block.
      */
     public function store(Request $request, $user_id)
     {
@@ -38,10 +35,10 @@ class BlockController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove a user block.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $id Id of the block to be removed
+     * @return mixed JSON of the destroyed block entry
      */
     public function destroy($id)
     {

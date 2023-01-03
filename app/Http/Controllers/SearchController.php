@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
 use App\Models\Question;
 use App\Models\QuestionTag;
@@ -51,7 +49,7 @@ class SearchController extends Controller
     /**
      * Shows all questions.
      *
-     * @return Response
+     * @return mixed Page filled with every question.
      */
     public function home(Request $request)
     {
@@ -61,9 +59,9 @@ class SearchController extends Controller
     }
 
     /**
-     * Shows all questions.
+     * Shows questions filtered with browsing parameters.
      *
-     * @return Response
+     * @return mixed Page filled with filtered questions.
      */
     public function browse(Request $request)
     {
