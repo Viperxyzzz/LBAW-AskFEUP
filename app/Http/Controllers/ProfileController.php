@@ -51,7 +51,7 @@ class ProfileController extends Controller
       $this->authorize('edit', $user);
     
       $valid_settings = $request->validate([
-        'username' => 'required|string|max:255',
+        'username' => 'required|string|alpha_dash|max:255',
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255',
         'new_password' => 'string|min:8',
