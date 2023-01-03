@@ -54,7 +54,7 @@ class ProfileController extends Controller
         'username' => 'required|string|max:255',
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255',
-        'new_password' => 'string|min:6',
+        'new_password' => 'string|min:8',
         'confirm_pass' => 'same:new_password',
       ]);
 

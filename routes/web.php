@@ -33,6 +33,7 @@ Route::get('question/create', 'QuestionController@create_view')->name('question_
 Route::get('question/{id}', 'QuestionController@home')->name('question');
 Route::get('question/{id}/edit', 'QuestionController@edit_view')->name('edit_question');
 Route::put('api/question/update/{id}','QuestionController@update')->name('update_question');
+Route::post('api/question/{id}/vote', 'QuestionController@vote')->name('vote_question');
 Route::post('api/question/follow/{id}', 'QuestionController@follow');
 Route::delete('api/question/unFollow/{id}', 'QuestionController@unFollow');
 
@@ -67,6 +68,7 @@ Route::post('api/answer/{id}', 'AnswerController@create');
 Route::delete('api/answer/delete/{id}', 'AnswerController@delete')->name('answer_delete_api');
 Route::get('api/answer/edit/{id}', 'AnswerController@edit_view')->name('edit_answer_form');
 Route::put('api/answer/update/{id}','AnswerController@update')->name('update_answer');
+Route::post('api/answer/{id}/vote', 'AnswerController@vote')->name('vote_answer');
 
 // Notifications
 Route::post('api/notification/update/{id}', 'NotificationController@update')->name('update_notification');
@@ -78,6 +80,10 @@ Route::post('login', 'Auth\LoginController@login');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'Auth\RegisterController@register');
+Route::get('forgot-password', 'Auth\ResetPasswordController@show_forgot')->name('password.request');
+Route::post('forgot-password', 'Auth\ResetPasswordController@send')->name('password.email');
+Route::get('reset-password/{token}', 'Auth\ResetPasswordController@show_reset')->name('password.reset');
+Route::post('reset-password', 'Auth\ResetPasswordController@reset')->name('password.update');
 
 // OAuth authentication
 Route::get('/auth/redirect', 'Auth\OAuthController@redirect');
@@ -88,8 +94,8 @@ Route::post('api/comment/{id}', 'CommentController@create')->name('create_commen
 Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comment_delete_api');
 Route::get('api/comment/edit/{id}', 'CommentController@edit_view')->name('edit_comment_form');
 Route::put('api/comment/update/{id}', 'CommentController@update')->name('update_comment');
+Route::post('api/comment/{id}/vote', 'CommentController@vote')->name('vote_comment');
 
 // Badges 
 Route::post('api/badge/support', 'BadgeController@support');
 Route::post('api/badge/unsupport', 'BadgeController@unsupport');
-

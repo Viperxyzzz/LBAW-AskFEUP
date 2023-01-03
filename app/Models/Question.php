@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Models\QuestionVotes;
 
 class Question extends Model
 {
@@ -81,5 +82,13 @@ class Question extends Model
         if ($author->is_disable())
             return false;
         return true;
+    }
+    public function vote(){
+        $questionVote = QuestionVotes::where('question_id', $this->question_id)
+        ->where('user_id', Auth::user()->user_id)
+        ->first();
+        if ($questionVote != null)
+            return $questionVote->value;
+        return $questionVote;
     }
 }
