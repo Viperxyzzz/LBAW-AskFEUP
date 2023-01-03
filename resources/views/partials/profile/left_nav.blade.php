@@ -11,7 +11,7 @@
         </li>
         @if (Auth::id() === $user->user_id)
         <li class="nav-item ">
-            <a class="nav-link profile-nav">Following Tags</a>
+            <a class="nav-link profile-nav" id="user-tags">Following Tags</a>
         </li>
         @endif
     </ul>

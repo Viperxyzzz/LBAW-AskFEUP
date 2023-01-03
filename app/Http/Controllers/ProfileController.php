@@ -20,11 +20,17 @@ class ProfileController extends Controller
      */
     public function home($user_id)
     {
-      //$this->authorize('list', Question::class);
       $user = User::find($user_id);
+      $this->authorize('view', $user);
       $questions = $user->questions()->orderBy('question_id', 'DESC')->get();
       $answers = $user->answers()->orderBy('answer_id', 'DESC')->get();
-      return view('pages.profile', ['user' => $user, 'questions' => $questions, 'answers' => $answers]);
+      $tags = $user->tags_following()->get();
+      return view('pages.profile', [
+        'user' => $user,
+        'questions' => $questions,
+        'answers' => $answers,
+        'tags' => $tags
+      ]);
     }
 
     /**
@@ -48,7 +54,7 @@ class ProfileController extends Controller
         'username' => 'required|string|max:255',
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255',
-        'new_password' => 'string|min:6',
+        'new_password' => 'string|min:8',
         'confirm_pass' => 'same:new_password',
       ]);
       
@@ -84,4 +90,20 @@ class ProfileController extends Controller
       return redirect('users/'.$user->user_id)->with('message', 'Changed profile information successfully!');
     }
 
+    /**
+     * Delete an account
+     */
+    public function delete($user_id)
+    {
+      // account updates
+      $user = User::find($user_id);
+      $this->authorize('delete', $user);
+
+      $user->name = 'anonymous';
+      $user->picture_path = 'guest';
+
+      $user->save();
+
+    return $user;
+    }
 }

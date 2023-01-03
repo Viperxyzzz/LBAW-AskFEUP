@@ -1,12 +1,30 @@
-<div class="pb-5">
+<div>
     <div class="d-flex">
-        <div>
-            <button class="button-clear p-1 mr-2" type="button">
-                <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_up</i>
-            </button>
-            <button class="button-clear d-block p-1 mr-2" type="button">
-                <i width="16" height="16" class="material-symbols-outlined ">keyboard_arrow_down</i>
-            </button>
+        <div class="d-flex flex-column">
+            <!-- <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
+                {{ csrf_field() }} -->
+                <button class="button-clear p-1 mr-2 update-votes" type="submit">
+                <input type="hidden" name="vote" value="1"></input>
+                <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
+                @if($question->vote()!=null && $question->vote()==1)
+                <i width="16" height="16" id="up-question-vote" class="material-symbols-outlined  voted rounded-circle">keyboard_arrow_up</i>
+                @else
+                <i width="16" height="16" id="up-question-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_up</i>
+                @endif
+                </button>
+            <!-- </form> -->
+            <!-- <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
+                {{ csrf_field() }} -->
+                <button class="button-clear p-1 mr-2 update-votes" type="submit">
+                <input type="hidden" name="vote" value="-1"></input>
+                <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
+                @if($question->vote()!=null && $question->vote()==-1)
+                <i width="16" height="16" id="down-question-vote" class="material-symbols-outlined voted rounded-circle">keyboard_arrow_down</i>
+                @else
+                <i width="16" height="16" id="down-question-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_down</i>
+                @endif
+                </button>
+            <!-- </form> -->
         </div>
         <div class="d-flex flex-fill justify-content-between">
             <div>
@@ -23,22 +41,34 @@
         @endforeach
         </div>
         <div class="d-flex">
-            <p class="m-2"><strong class="title-blue">{{$question->num_votes}}</strong> votes</p>
+            <p class="m-2"><strong class="title-blue" id="num-votes-{{$question->question_id}}">{{$question->num_votes}}</strong> votes</p>
             <p class="m-2"><strong class="title-blue">{{$question->num_views}}</strong> views</p>
             <p class="m-2"><strong class="title-blue">{{$question->num_answers}}</strong> answers</p>
         </div>
     </div>
     <hr class="mx-0 my-2">
     <div class=" d-flex mx-2 justify-content-between">
-        <p class="m-0">
-            {{ $question->date_distance() }}
-            @if ($question->was_edited)
-                (Edited)
-            @endif
-        </p>
-        <p class="m-0">
-            <em>by</em>
-            <a href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
-        </p>
+        <div class="row">
+            <button class="add-comment-question-form-button button button-clear m-0 px-1" type="button">
+            <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
+            </button>
+            <p class="m-0">
+                {{ $question->date_distance() }}
+                @if ($question->was_edited)
+                    (Edited)
+                @endif
+            </p>
+        </div>
+        <div class="row justify-self-end">
+            <p class="m-0">
+                <em>by</em>
+                @if($question->is_accessible_user())
+                <a href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
+                @else
+                <a> {{ $question->author->name }}</a>
+                @endif
+            </p>
+        </div>
     </div>
+    @include('partials.admin.add_report', $question)
 </div>

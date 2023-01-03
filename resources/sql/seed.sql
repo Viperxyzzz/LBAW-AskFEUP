@@ -12,7 +12,9 @@ CREATE TABLE topic(
 DROP TABLE IF EXISTS tag CASCADE;
 CREATE TABLE tag(
     tag_id SERIAL PRIMARY KEY,
-    tag_name TEXT UNIQUE NOT NULL
+    tag_name TEXT UNIQUE NOT NULL,
+    topic_id INTEGER REFERENCES topic (topic_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    tag_description TEXT
 );
 
 DROP TABLE IF EXISTS badge CASCADE;
@@ -27,12 +29,19 @@ CREATE TABLE users (
     username TEXT UNIQUE,
     email TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
-    password TEXT NOT NULL, 
+    password TEXT, 
     score INTEGER NOT NULL,
     is_moderator BOOLEAN NOT NULL,
     is_admin BOOLEAN NOT NULL,
     picture_path TEXT DEFAULT 'guest' NOT NULL,
     remember_token VARCHAR
+);
+
+DROP TABLE IF EXISTS password_resets;
+CREATE TABLE password_resets (
+    email TEXT NOT NULL,
+    token TEXT NOT NULL,
+    created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
 );
 
 DROP TABLE IF EXISTS question CASCADE;
@@ -43,7 +52,7 @@ CREATE TABLE question (
     num_votes INTEGER NOT NULL CHECK (num_votes >= 0),
     num_views INTEGER NOT NULL CHECK (num_views >= 0),
     num_answers INTEGER NOT NULL CHECK (num_answers >= 0),
-    date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
+    date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
     was_edited BOOLEAN NOT NULL DEFAULT FALSE,
     author_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
 );
@@ -67,7 +76,9 @@ CREATE TABLE notification (
     notification_text TEXT NOT NULL,
     date TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
     viewed BOOLEAN NOT NULL DEFAULT FALSE,
-    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    event_id INTEGER NOT NULL,
+    event_type TEXT NOT NULL
 );
 
 DROP TABLE IF EXISTS comment CASCADE;
@@ -75,7 +86,8 @@ CREATE TABLE comment(
   comment_id SERIAL PRIMARY key,
   full_text TEXT NOT NULL,
   num_votes INTEGER NOT NULL CONSTRAINT num_votes_ck CHECK (num_votes >= 0),
-  date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
+  was_edited BOOLEAN NOT NULL DEFAULT FALSE,
+  date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP),
   question_id INTEGER NOT NULL REFERENCES question (question_id) ON UPDATE CASCADE ON DELETE CASCADE, 
   answer_id INTEGER REFERENCES answer (answer_id) ON UPDATE CASCADE ON DELETE CASCADE, 
   user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL
@@ -91,18 +103,25 @@ CREATE TABLE comment(
    comment_id INTEGER REFERENCES comment (comment_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS topic_tag CASCADE;
-CREATE TABLE topic_tag(
-        topic_id INTEGER REFERENCES topic (topic_id) ON UPDATE CASCADE,
-        tag_id INTEGER REFERENCES tag (tag_id) ON UPDATE CASCADE,
-        PRIMARY KEY (topic_id, tag_id)
+DROP TABLE IF EXISTS blocks CASCADE;
+create table blocks(
+    block_id SERIAL PRIMARY KEY,
+    user_id INTEGER UNIQUE NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    reason TEXT NOT NULL,
+    date TIMESTAMP NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
 );
 
+DROP TABLE IF EXISTS disable_user CASCADE;
+create table disable_user(
+    disable_id SERIAL PRIMARY KEY,
+    user_id INTEGER UNIQUE NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    date DATE NOT NULL CHECK (date <= CURRENT_TIMESTAMP)
+);
 
 DROP TABLE IF EXISTS user_tag CASCADE;
 CREATE table user_tag(
         user_id INTEGER REFERENCES users (user_id) ON UPDATE CASCADE,
-        tag_id INTEGER REFERENCES tag (tag_id) ON UPDATE CASCADE,
+        tag_id INTEGER REFERENCES tag (tag_id) ON UPDATE CASCADE ON DELETE CASCADE,
         PRIMARY KEY (user_id, tag_id)
 );
 
@@ -143,6 +162,29 @@ CREATE TABLE question_user_follower
     PRIMARY KEY (question_id, user_id)
 );
 
+DROP TABLE IF EXISTS question_votes CASCADE;
+CREATE TABLE question_votes (
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    question_id INTEGER NOT NULL REFERENCES question (question_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    value INTEGER NOT NULL CHECK (value IN (1, -1)),
+    PRIMARY KEY (user_id, question_id)
+);
+
+DROP TABLE IF EXISTS answer_votes CASCADE;
+CREATE TABLE answer_votes (
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    answer_id INTEGER NOT NULL REFERENCES answer (answer_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    value INTEGER NOT NULL CHECK (value IN (1, -1)),
+    PRIMARY KEY (user_id, answer_id)
+);
+
+DROP TABLE IF EXISTS comment_votes CASCADE;
+CREATE TABLE comment_votes (
+    user_id INTEGER NOT NULL REFERENCES users (user_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    comment_id INTEGER NOT NULL REFERENCES comment (comment_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    value INTEGER NOT NULL CHECK (value IN (1, -1)),
+    PRIMARY KEY (user_id, comment_id)
+);
 
 
 --Triggers
@@ -376,6 +418,81 @@ CREATE TRIGGER was_edited
     AFTER UPDATE ON question
     FOR EACH ROW EXECUTE FUNCTION was_edited();
 
+--
+CREATE OR REPLACE FUNCTION new_answer_notification() RETURNS TRIGGER AS
+$FUNC9$
+BEGIN
+    INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
+    ('New answers to your question', DEFAULT, 'No', 
+        (SELECT author_id FROM question FULL OUTER JOIN answer USING(question_id) WHERE answer_id = NEW.answer_id),
+        NEW.answer_id,
+        'new answer'
+    );
+    RETURN NULL;
+END
+$FUNC9$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_answer_notification ON answer CASCADE;
+CREATE TRIGGER new_answer_notification
+    AFTER INSERT ON answer
+    FOR EACH ROW EXECUTE FUNCTION new_answer_notification();
+
+
+--
+CREATE OR REPLACE FUNCTION new_vote_notification() RETURNS TRIGGER AS
+$FUNC10$
+BEGIN
+    IF OLD.num_votes < NEW.num_votes THEN
+        INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
+        ('New vote on your comment', DEFAULT, 'No', NEW.user_id, NEW.comment_id, 'new vote');
+    END IF;
+    RETURN NEW;
+END
+$FUNC10$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_vote_notification ON comment CASCADE;
+CREATE TRIGGER new_vote_notification
+    BEFORE UPDATE ON comment
+    FOR EACH ROW EXECUTE FUNCTION new_vote_notification();
+
+
+--
+CREATE OR REPLACE FUNCTION new_correct_answer_notification() RETURNS TRIGGER AS
+$FUNC11$
+BEGIN
+    IF OLD.is_correct = 'No' AND NEW.is_correct = 'Yes' THEN
+        INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
+        ('Your answer was marked as correct', DEFAULT, 'No', NEW.user_id, NEW. answer_id, 'correct answer');
+    END IF;
+    RETURN NEW;
+END
+$FUNC11$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_correct_answer_notification ON answer CASCADE;
+CREATE TRIGGER new_correct_answer_notification
+    BEFORE UPDATE ON answer
+    FOR EACH ROW EXECUTE FUNCTION new_correct_answer_notification();
+
+
+--
+CREATE OR REPLACE FUNCTION new_badge_notification() RETURNS TRIGGER AS
+$FUNC12$
+BEGIN
+    INSERT INTO notification(notification_text, date, viewed, user_id, event_id, event_type) VALUES
+    ('You received a badge', DEFAULT, 'No', NEW.user_id, NEW.badge_id, 'new badge');
+    RETURN NULL;
+END
+$FUNC12$
+LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS new_badge_notification ON user_badge CASCADE;
+CREATE TRIGGER new_badge_notification
+    AFTER INSERT ON user_badge
+    FOR EACH ROW EXECUTE FUNCTION new_badge_notification();
+
 
 --INDEXES
 
@@ -441,49 +558,48 @@ INSERT INTO topic(topic_name,num_views) VALUES ('Jobs',116);
 INSERT INTO topic(topic_name,num_views) VALUES ('Languages',114);
 INSERT INTO topic(topic_name,num_views) VALUES ('Music',178);
 
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('javascript','JavaScript is a programming language that is one of the core technologies of the World Wide Web.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('python','Python is a high-level, general-purpose programming language.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('java','Java is a high-level, class-based, object-oriented programming language.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('c#','C# is a general-purpose, high-level multi-paradigm programming language.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('php','PHP is a general-purpose scripting language geared toward web development.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('android','Ipsum amet ipsum quaerat ipsum dolor magnam.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('html','Ipsum non neque numquam.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('jquery','Dolorem velit adipisci ipsum adipisci est non ipsum.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('c++','Voluptatem voluptatem non modi numquam.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('css','Non etincidunt voluptatem ut amet.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('ios','Non est numquam sed quisquam porro ut non.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('mysql','Quaerat consectetur quisquam dolorem tempora voluptatem.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('sql','Quaerat non dolorem dolorem eius.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('r','Consectetur numquam dolore quaerat porro non neque est.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('node.js','Dolore adipisci amet tempora numquam.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('reactjs','Sit consectetur aliquam quiquia.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('arrays','Quaerat voluptatem quisquam porro voluptatem dolorem.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('c','Labore sit eius eius velit aliquam non.',1);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('consectetur','Etincidunt velit porro est sit.',2);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('temporai','Neque ipsum porro voluptatem numquam quaerat eius dolorem.',3);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quaerat','Aliquam tempora neque numquam numquam numquam.',4);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('neque','Ipsum sed ipsum magnam voluptatem.',5);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('labore','Porro aliquam non quaerat tempora.',6);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quisquamus','Non quiquia quisquam labore ut amet quiquia ipsum.',7);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('temporali','Amet magnam amet ut aliquam.',8);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quisquam','Labore tempora ut est.',9);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('modi','Aliquam voluptatem non sed dolor.',10);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('aliquam','Quisquam labore voluptatem etincidunt consectetur.',11);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('velit','Neque velit non numquam voluptatem.',12);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('magnam','Est porro aliquam velit quiquia eius.',13);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('voluptatem','Neque etincidunt dolorem quiquia aliquam magnam voluptatem quisquam.',14);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quaerati','Consectetur aliquam magnam sit velit sed.',15);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quarat','Tempora voluptatem amet sit quaerat consectetur modi neque.',16);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('dolore','Aliquam amet dolorem modi dolorem voluptatem ut ipsum.',17);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('tempora','Quiquia neque modi sed.',18);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('dolor','Quisquam adipisci dolorem quaerat.',19);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('etincidunt','Porro tempora tempora amet non dolore.',20);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('ipsum','Numquam eius ut velit aliquam aliquam quaerat.',21);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('eius','Dolor modi ut aliquam labore adipisci dolor.',22);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('adipisci','Etincidunt neque quisquam non neque est.',2);
+INSERT INTO tag(tag_name,tag_description,topic_id) VALUES ('quiquam','Consectetur neque est dolorem dolorem numquam ut neque.',2);
 
-INSERT INTO tag(tag_name) VALUES ('javascript');
-INSERT INTO tag(tag_name) VALUES ('python');
-INSERT INTO tag(tag_name) VALUES ('java');
-INSERT INTO tag(tag_name) VALUES ('c#');
-INSERT INTO tag(tag_name) VALUES ('php');
-INSERT INTO tag(tag_name) VALUES ('android');
-INSERT INTO tag(tag_name) VALUES ('html');
-INSERT INTO tag(tag_name) VALUES ('jquery');
-INSERT INTO tag(tag_name) VALUES ('c++');
-INSERT INTO tag(tag_name) VALUES ('css');
-INSERT INTO tag(tag_name) VALUES ('ios');
-INSERT INTO tag(tag_name) VALUES ('mysql');
-INSERT INTO tag(tag_name) VALUES ('sql');
-INSERT INTO tag(tag_name) VALUES ('r');
-INSERT INTO tag(tag_name) VALUES ('node.js');
-INSERT INTO tag(tag_name) VALUES ('reactjs');
-INSERT INTO tag(tag_name) VALUES ('arrays');
-INSERT INTO tag(tag_name) VALUES ('c');
-INSERT INTO tag(tag_name) VALUES ('consectetur');
-INSERT INTO tag(tag_name) VALUES ('tempora');
-INSERT INTO tag(tag_name) VALUES ('quaerat');
-INSERT INTO tag(tag_name) VALUES ('neque');
-INSERT INTO tag(tag_name) VALUES ('labore');
-INSERT INTO tag(tag_name) VALUES ('quisquam');
-INSERT INTO tag(tag_name) VALUES ('lorem');
-INSERT INTO tag(tag_name) VALUES ('quisquamont');
-INSERT INTO tag(tag_name) VALUES ('modi');
-INSERT INTO tag(tag_name) VALUES ('aliquam');
-INSERT INTO tag(tag_name) VALUES ('velit');
-INSERT INTO tag(tag_name) VALUES ('magnam');
-INSERT INTO tag(tag_name) VALUES ('voluptatem');
-INSERT INTO tag(tag_name) VALUES ('quaeratus');
-INSERT INTO tag(tag_name) VALUES ('quaeratis');
-INSERT INTO tag(tag_name) VALUES ('dolore');
-INSERT INTO tag(tag_name) VALUES ('temporalius');
-INSERT INTO tag(tag_name) VALUES ('dolor');
-INSERT INTO tag(tag_name) VALUES ('etincidunt');
-INSERT INTO tag(tag_name) VALUES ('ipsum');
-INSERT INTO tag(tag_name) VALUES ('eius');
-INSERT INTO tag(tag_name) VALUES ('adipisci');
-INSERT INTO tag(tag_name) VALUES ('quisqumanos');
- 
 INSERT INTO badge(badge_name)
 VALUES
   ('First question'),
@@ -523,9 +639,10 @@ INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, pict
 INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('lhryniewiczr','lhryniewiczr@discovery.com','Lazaro Hryniewicz','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',74,false,false, DEFAULT);
 INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('mshepherdsons','mshepherdsons@census.gov','Muriel Shepherdson','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',49,false,false, DEFAULT);
 INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('jbasellit','jbasellit@diigo.com','Jeannine Baselli','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',95,false,false, DEFAULT);
+INSERT INTO users(username,email,name,password,score,is_moderator,is_admin, picture_path) VALUES ('jbassjsdn','jbassjsdn@diigo.com','anonymous','$2a$10$Ouen.rfaV99RokFnkwK5.e0D0/8fgIDx7yfnIhc3EUuom7jJuYBky',95,false,false, DEFAULT);
 
-INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How to center a div?', 'What method can I use to center a div horizontally to the middle of the screen?', 17, 282, 1, '2021-12-01 04:24:58', false, 1);
-INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How do I add multi-line comments in Python?', '# works for single line comments but Im wondering how to comment multiple lines of code', 5, 100, 0, '2021-01-01 05:26:58', false, 1);
+INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How to center a div?', 'What method can I use to center a div horizontally to the middle of the screen?', 17, 282, 1, '2022-12-01 04:24:58', false, 1);
+INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'How do I add multi-line comments in Python?', '# works for single line comments but Im wondering how to comment multiple lines of code', 5, 100, 0, '2022-12-01 05:26:58', false, 1);
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'What is the difference between git pull and git fetch?', 'I don`t understand the difference between the two.', 96, 192, 1, '2022-01-19 04:52:59', false, 3);
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'fermentum donec ut mauris eget massa tempor convallis nulla', 'eu orci mauris lacinia sapien quis libero nullam sit amet', 71, 242, 1, '2022-04-14 23:56:49', false, 20);
 INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date, was_edited, author_id) VALUES ( 'justo in blandit ultrices enim lorem ipsum dolor sit', 'sit amet lobortis sapien sapien non mi integer ac neque duis bibendum morbi non quam nec dui luctus rutrum', 1, 75, 1, '2022-06-08 01:57:24', false, 3);
@@ -557,8 +674,8 @@ INSERT INTO question( title, full_text, num_votes, num_views, num_answers, date,
 
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'You can use the `text-align` property with the value `center`.', 31, true, false, '2022-05-18 00:01:14', 1, 2);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'Best way to do this is to use the `margin` property and set it to `0 auto`. This will make the horizontal margin equally divided', 41, true, false, '2021-11-08 13:01:18', 1, 3);
-INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'git fetch is similar to pull but doesnt merge. i.e. it fetches remote updates but your local stays the same', 41, true, false, '2022-02-22 09:48:22', 2, 2);
-INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'eget congue eget semper rutrum nulla nunc purus phasellus in felis donec semper sapien a libero nam dui proin', 39, true, true, '2022-04-15 18:47:13', 12, 26);
+INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'Use triple quotes for multi line comments.', 39, true, true, '2022-04-15 18:47:13', 2, 26);
+INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'git fetch is similar to pull but doesnt merge. i.e. it fetches remote updates but your local stays the same', 41, true, false, '2022-02-22 09:48:22', 3, 2);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'rutrum neque aenean auctor gravida sem praesent id massa id nisl venenatis', 30, true, false, '2021-12-15 03:02:19', 30, 1);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'risus auctor sed tristique in tempus sit amet sem fusce consequat nulla', 41, true, false, '2022-06-01 14:27:04', 11, 13);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'vitae quam suspendisse potenti nullam porttitor lacus at turpis donec posuere metus vitae ipsum', 42, true, true, '2022-08-12 16:38:46', 26, 5);
@@ -616,124 +733,142 @@ INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'posuere cubilia curae donec pharetra magna vestibulum aliquet ultrices erat tortor sollicitudin mi sit amet lobortis', 44, false, true, '2022-05-12 11:45:34', 10, 16);
 INSERT INTO answer( full_text, num_votes, is_correct, was_edited, date, question_id, user_id) VALUES ( 'sem praesent id massa id nisl venenatis lacinia aenean sit amet justo morbi ut', 3, false, true, '2022-09-28 16:09:01', 4, 6);
 
-INSERT INTO notification(notification_text,date,viewed,user_id)
-VALUES
-  ('New answers to your question','May 25, 2022','No',1),
-  ('New vote on your comment','Mar 4, 2022','No',2),
-  ('Your answer was marked as correct','Aug 4, 2022','No',3),
-  ('New answers to your question','Apr 26, 2022','No',4),
-  ('You received a badge','Jun 1, 2022','No',5);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Altough it might work, this should only be used with text.', 24, false, '2022-08-29 09:49:24',1, 1, 3);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Awesome! This worked just fine.', 48, true, '2022-09-15 22:50:46',1, 2, 2);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'You probably want to skip the pull and just do a "git rebase origin" as the last step since you already fetched the changes.', 43, false, '2021-10-26 06:24:38',3, 4, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'in magna bibendum imperdiet nullam orci pede venenatis non sodales sed tincidunt eu felis', 19, false, '2022-05-13 23:57:52',27, 52, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel nulla eget eros elementum pellentesque quisque', 24, false, '2022-07-26 08:48:54',26, 50, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'magna at nunc commodo placerat praesent blandit nam nulla integer pede justo lacinia eget', 31, false, '2022-05-13 14:47:21',25, 48, 2);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'quisque erat eros viverra eget congue eget semper rutrum nulla nunc', 18, false, '2022-06-19 14:43:15',24, 51, 11);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'nisi venenatis tristique fusce congue diam id ornare imperdiet sapien urna pretium nisl ut', 3, false, '2021-12-26 08:05:08',23, 26, 7);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'nibh fusce lacus purus aliquet at feugiat non pretium quis lectus suspendisse potenti', 36, false, '2022-08-30 19:39:37',22, 4, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'sapien non mi integer ac neque duis bibendum morbi non quam nec dui luctus rutrum nulla tellus', 16, false, '2022-03-15 21:36:19',21, 21, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'viverra eget congue eget semper rutrum nulla nunc purus phasellus in felis donec semper sapien a libero nam', 27, false, '2022-06-19 17:25:50',20, 26, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'amet consectetuer adipiscing elit proin risus praesent lectus vestibulum quam sapien varius', 43, false, '2022-06-09 15:32:10',19, 26, 2);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'posuere cubilia curae donec pharetra magna vestibulum aliquet ultrices erat', 48, true, '2022-01-22 04:34:43',23, 52, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Yes, Linus is right', 7, false, '2021-12-18 22:08:37',18, 1, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae mauris viverra diam vitae quam suspendisse potenti', 35, false, '2021-11-23 01:59:06',17, 13, 10);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'lorem vitae mattis nibh ligula nec sem duis aliquam convallis nunc proin at turpis', 22, false, '2022-10-03 16:12:43',17, 28, 26);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'orci luctus et ultrices posuere cubilia curae donec pharetra magna vestibulum', 23, false, '2021-10-23 13:09:07',5, 11, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'scelerisque mauris sit amet eros suspendisse accumsan tortor quis turpis sed ante vivamus tortor duis', 6, false, '2022-10-09 17:34:55',16, 34, 4);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'aenean sit amet justo morbi ut odio cras mi pede malesuada in', 36, false, '2021-12-26 06:55:46',14, 21, 6);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'est lacinia nisi venenatis tristique fusce congue diam id ornare', 5, false, '2022-10-18 12:57:38',15, 30, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'eget vulputate ut ultrices vel augue vestibulum ante ipsum primis in faucibus orci luctus et ultrices', 30, true, '2021-11-07 20:16:13',15, 40, 10);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'sed vestibulum sit amet cursus id turpis integer aliquet massa id lobortis convallis tortor risus dapibus augue vel', 35, false, '2022-08-24 11:39:41',14, 35, 7);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'lorem quisque ut erat curabitur gravida nisi at nibh in hac habitasse', 30, false, '2021-11-01 03:20:41',18, 9, 9);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'felis eu sapien cursus vestibulum proin eu mi nulla ac', 27, false, '2022-04-22 09:34:25',19, 30, 18);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'ante vel ipsum praesent blandit lacinia erat vestibulum sed magna at nunc commodo placerat praesent blandit nam nulla integer pede', 29, true, '2021-12-05 19:20:34',13, 54, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'dui luctus rutrum nulla tellus in sagittis dui vel nisl duis ac nibh fusce lacus purus aliquet at', 48, false, '2022-06-02 13:13:36',12, 46, 2);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'sed nisl nunc rhoncus dui vel sem sed sagittis nam congue risus semper porta volutpat quam pede lobortis', 3, false, '2022-10-01 13:55:50',11, 38, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'in felis eu sapien cursus vestibulum proin eu mi nulla', 20, false, '2022-04-28 18:37:38',30, 11, 22);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'integer a nibh in quis justo maecenas rhoncus aliquam lacus morbi quis', 40, false, '2022-06-16 03:33:54',10, 34, 29);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'in tempus sit amet sem fusce consequat nulla nisl nunc nisl duis bibendum', 27, false, '2022-08-13 22:34:53',9, 16, 26);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'neque duis bibendum morbi non quam nec dui luctus rutrum nulla tellus in sagittis dui vel nisl duis ac nibh', 28, false, '2022-03-12 14:07:37',8, 45, 6);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'mi pede malesuada in imperdiet et commodo vulputate justo in blandit ultrices enim lorem ipsum dolor sit amet consectetuer adipiscing', 10, false, '2021-11-27 19:41:56',7, 46, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'sed nisl nunc rhoncus dui vel sem sed sagittis nam congue risus semper porta volutpat quam pede lobortis', 24, false, '2022-03-03 13:51:57',6, 8, 17);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'tellus nisi eu orci mauris lacinia sapien quis libero nullam sit amet turpis elementum ligula vehicula consequat', 1, false, '2022-01-13 20:28:22',5, 20, 10);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'nisl duis bibendum felis sed interdum venenatis turpis enim blandit mi in porttitor pede justo eu', 41, true, '2022-07-15 07:33:00',4, 56, 30);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'porta volutpat quam pede lobortis ligula sit amet eleifend pede libero', 13, false, '2022-08-24 22:12:04',7, 41, 14);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'eget tempus vel pede morbi porttitor lorem id ligula suspendisse ornare consequat lectus in est risus', 32, false, '2022-04-18 19:09:49',3, 39, 7);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'odio odio elementum eu interdum eu tincidunt in leo maecenas pulvinar lobortis est phasellus sit', 26, false, '2021-11-13 21:27:31',2, 48, 22);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'nec molestie sed justo pellentesque viverra pede ac diam cras', 33, false, '2022-07-13 21:24:18',12, 36, 25);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'nulla mollis molestie lorem quisque ut erat curabitur gravida nisi', 30, false, '2021-11-11 11:18:43',1, 40, 2);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'amet sem fusce consequat nulla nisl nunc nisl duis bibendum felis sed interdum venenatis turpis enim', 8, false, '2022-09-30 21:04:43',1, 52, 8);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'luctus ultricies eu nibh quisque id justo sit amet sapien dignissim vestibulum', 50, false, '2021-10-29 04:24:32',2, 56, 21);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'nec nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel nulla eget eros elementum pellentesque quisque porta volutpat erat', 13, false, '2022-10-08 03:40:53',3, 59, 8);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'purus aliquet at feugiat non pretium quis lectus suspendisse potenti in eleifend quam a odio in hac habitasse platea dictumst', 18, false, '2022-09-27 22:19:34',4, 59, 23);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'a feugiat et eros vestibulum ac est lacinia nisi venenatis tristique fusce congue diam id ornare imperdiet sapien', 44, false, '2022-07-10 01:04:11',5, 11, 6);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'lacus morbi sem mauris laoreet ut rhoncus aliquet pulvinar sed nisl nunc', 37, false, '2022-05-21 09:37:44',6, 31, 25);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'est donec odio justo sollicitudin ut suscipit a feugiat et', 1, false, '2022-09-11 17:17:15',7, 59, 8);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'mauris vulputate elementum nullam varius nulla facilisi cras non velit nec nisi vulputate nonummy', 22, true, '2022-04-16 21:38:30',8, 31, 20);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'potenti in eleifend quam a odio in hac habitasse platea dictumst maecenas ut massa quis augue luctus', 33, false, '2022-02-03 07:32:11',10, 39, 29);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'lacinia eget tincidunt eget tempus vel pede morbi porttitor lorem id', 42, false, '2021-11-27 01:18:51',11, 3, 24);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'tempus sit amet sem fusce consequat nulla nisl nunc nisl duis bibendum felis sed interdum venenatis', 27, false, '2022-03-04 16:30:59',12, 57, 18);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'tellus in sagittis dui vel nisl duis ac nibh fusce lacus purus aliquet at', 39, false, '2022-08-27 04:38:27',13, 50, 9);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'quam suspendisse potenti nullam porttitor lacus at turpis donec posuere metus vitae', 50, false, '2021-10-25 01:20:00',14, 3, 17);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'iaculis justo in hac habitasse platea dictumst etiam faucibus cursus urna ut tellus nulla ut', 11, false, '2022-10-11 06:41:39',14, 24, 21);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'eget eros elementum pellentesque quisque porta volutpat erat quisque erat', 46, false, '2022-07-20 16:07:09',19, 13, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'quisque id justo sit amet sapien dignissim vestibulum vestibulum ante ipsum primis in faucibus', 22, false, '2022-10-20 19:33:37',15, 51, 30);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'in eleifend quam a odio in hac habitasse platea dictumst maecenas', 1, true, '2021-12-15 14:21:25',16, 36, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'condimentum neque sapien placerat ante nulla justo aliquam quis turpis eget elit', 5, false, '2022-04-18 11:41:13',17, 44, 8);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'dui vel nisl duis ac nibh fusce lacus purus aliquet at feugiat non pretium quis', 49, false, '2022-06-30 22:51:50',18, 23, 11);
 
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'Altough it might work, this should only be used with text.', 24, '2022-08-29 09:49:24',30, 1, 3);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'Awesome! This worked just fine.', 48, '2022-09-15 22:50:46',29, 2, 1);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'You probably want to skip the pull and just do a "git rebase origin" as the last step since you already fetched the changes.', 43, '2021-10-26 06:24:38',28, 3, 1);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'in magna bibendum imperdiet nullam orci pede venenatis non sodales sed tincidunt eu felis', 19, '2022-05-13 23:57:52',27, 52, 27);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel nulla eget eros elementum pellentesque quisque', 24, '2022-07-26 08:48:54',26, 50, 12);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'magna at nunc commodo placerat praesent blandit nam nulla integer pede justo lacinia eget', 31, '2022-05-13 14:47:21',25, 48, 2);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'quisque erat eros viverra eget congue eget semper rutrum nulla nunc', 18, '2022-06-19 14:43:15',24, 51, 11);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'nisi venenatis tristique fusce congue diam id ornare imperdiet sapien urna pretium nisl ut', 3, '2021-12-26 08:05:08',23, 26, 7);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'nibh fusce lacus purus aliquet at feugiat non pretium quis lectus suspendisse potenti', 36, '2022-08-30 19:39:37',22, 4, 27);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'sapien non mi integer ac neque duis bibendum morbi non quam nec dui luctus rutrum nulla tellus', 16, '2022-03-15 21:36:19',21, 21, 12);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'viverra eget congue eget semper rutrum nulla nunc purus phasellus in felis donec semper sapien a libero nam', 27, '2022-06-19 17:25:50',20, 26, 27);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'amet consectetuer adipiscing elit proin risus praesent lectus vestibulum quam sapien varius', 43, '2022-06-09 15:32:10',19, 26, 2);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'posuere cubilia curae donec pharetra magna vestibulum aliquet ultrices erat', 48, '2022-01-22 04:34:43',23, 52, 12);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'curabitur convallis duis consequat dui nec nisi volutpat eleifend donec ut dolor morbi vel lectus in quam fringilla', 7, '2021-12-18 22:08:37',18, 1, 1);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae mauris viverra diam vitae quam suspendisse potenti', 35, '2021-11-23 01:59:06',17, 13, 10);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'lorem vitae mattis nibh ligula nec sem duis aliquam convallis nunc proin at turpis', 22, '2022-10-03 16:12:43',17, 28, 26);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'orci luctus et ultrices posuere cubilia curae donec pharetra magna vestibulum', 23, '2021-10-23 13:09:07',5, 11, 1);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'scelerisque mauris sit amet eros suspendisse accumsan tortor quis turpis sed ante vivamus tortor duis', 6, '2022-10-09 17:34:55',16, 34, 4);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'aenean sit amet justo morbi ut odio cras mi pede malesuada in', 36, '2021-12-26 06:55:46',14, 21, 6);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'est lacinia nisi venenatis tristique fusce congue diam id ornare', 5, '2022-10-18 12:57:38',15, 30, 1);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'eget vulputate ut ultrices vel augue vestibulum ante ipsum primis in faucibus orci luctus et ultrices', 30, '2021-11-07 20:16:13',15, 40, 10);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'sed vestibulum sit amet cursus id turpis integer aliquet massa id lobortis convallis tortor risus dapibus augue vel', 35, '2022-08-24 11:39:41',14, 35, 7);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'lorem quisque ut erat curabitur gravida nisi at nibh in hac habitasse', 30, '2021-11-01 03:20:41',18, 9, 9);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'felis eu sapien cursus vestibulum proin eu mi nulla ac', 27, '2022-04-22 09:34:25',19, 30, 18);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'ante vel ipsum praesent blandit lacinia erat vestibulum sed magna at nunc commodo placerat praesent blandit nam nulla integer pede', 29, '2021-12-05 19:20:34',13, 54, 12);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'dui luctus rutrum nulla tellus in sagittis dui vel nisl duis ac nibh fusce lacus purus aliquet at', 48, '2022-06-02 13:13:36',12, 46, 2);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'sed nisl nunc rhoncus dui vel sem sed sagittis nam congue risus semper porta volutpat quam pede lobortis', 3, '2022-10-01 13:55:50',11, 38, 27);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'in felis eu sapien cursus vestibulum proin eu mi nulla', 20, '2022-04-28 18:37:38',30, 11, 22);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'integer a nibh in quis justo maecenas rhoncus aliquam lacus morbi quis', 40, '2022-06-16 03:33:54',10, 34, 29);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'in tempus sit amet sem fusce consequat nulla nisl nunc nisl duis bibendum', 27, '2022-08-13 22:34:53',9, 16, 26);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'neque duis bibendum morbi non quam nec dui luctus rutrum nulla tellus in sagittis dui vel nisl duis ac nibh', 28, '2022-03-12 14:07:37',8, 45, 6);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'mi pede malesuada in imperdiet et commodo vulputate justo in blandit ultrices enim lorem ipsum dolor sit amet consectetuer adipiscing', 10, '2021-11-27 19:41:56',7, 46, 27);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'sed nisl nunc rhoncus dui vel sem sed sagittis nam congue risus semper porta volutpat quam pede lobortis', 24, '2022-03-03 13:51:57',6, 8, 17);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'tellus nisi eu orci mauris lacinia sapien quis libero nullam sit amet turpis elementum ligula vehicula consequat', 1, '2022-01-13 20:28:22',5, 20, 10);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'nisl duis bibendum felis sed interdum venenatis turpis enim blandit mi in porttitor pede justo eu', 41, '2022-07-15 07:33:00',4, 56, 30);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'porta volutpat quam pede lobortis ligula sit amet eleifend pede libero', 13, '2022-08-24 22:12:04',7, 41, 14);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'eget tempus vel pede morbi porttitor lorem id ligula suspendisse ornare consequat lectus in est risus', 32, '2022-04-18 19:09:49',3, 39, 7);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'odio odio elementum eu interdum eu tincidunt in leo maecenas pulvinar lobortis est phasellus sit', 26, '2021-11-13 21:27:31',2, 48, 22);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'nec molestie sed justo pellentesque viverra pede ac diam cras', 33, '2022-07-13 21:24:18',12, 36, 25);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'nulla mollis molestie lorem quisque ut erat curabitur gravida nisi', 30, '2021-11-11 11:18:43',1, 40, 2);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'amet sem fusce consequat nulla nisl nunc nisl duis bibendum felis sed interdum venenatis turpis enim', 8, '2022-09-30 21:04:43',1, 52, 8);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'luctus ultricies eu nibh quisque id justo sit amet sapien dignissim vestibulum', 50, '2021-10-29 04:24:32',2, 56, 21);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'nec nisi vulputate nonummy maecenas tincidunt lacus at velit vivamus vel nulla eget eros elementum pellentesque quisque porta volutpat erat', 13, '2022-10-08 03:40:53',3, 59, 8);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'purus aliquet at feugiat non pretium quis lectus suspendisse potenti in eleifend quam a odio in hac habitasse platea dictumst', 18, '2022-09-27 22:19:34',4, 59, 23);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'a feugiat et eros vestibulum ac est lacinia nisi venenatis tristique fusce congue diam id ornare imperdiet sapien', 44, '2022-07-10 01:04:11',5, 11, 6);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'lacus morbi sem mauris laoreet ut rhoncus aliquet pulvinar sed nisl nunc', 37, '2022-05-21 09:37:44',6, 31, 25);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'est donec odio justo sollicitudin ut suscipit a feugiat et', 1, '2022-09-11 17:17:15',7, 59, 8);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'mauris vulputate elementum nullam varius nulla facilisi cras non velit nec nisi vulputate nonummy', 22, '2022-04-16 21:38:30',8, 31, 20);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'pellentesque volutpat dui maecenas tristique est et tempus semper est', 41, '2021-12-12 12:23:19',9, 2, 1);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'potenti in eleifend quam a odio in hac habitasse platea dictumst maecenas ut massa quis augue luctus', 33, '2022-02-03 07:32:11',10, 39, 29);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'lacinia eget tincidunt eget tempus vel pede morbi porttitor lorem id', 42, '2021-11-27 01:18:51',11, 3, 24);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'tempus sit amet sem fusce consequat nulla nisl nunc nisl duis bibendum felis sed interdum venenatis', 27, '2022-03-04 16:30:59',12, 57, 18);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'tellus in sagittis dui vel nisl duis ac nibh fusce lacus purus aliquet at', 39, '2022-08-27 04:38:27',13, 50, 9);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'quam suspendisse potenti nullam porttitor lacus at turpis donec posuere metus vitae', 50, '2021-10-25 01:20:00',14, 3, 17);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'iaculis justo in hac habitasse platea dictumst etiam faucibus cursus urna ut tellus nulla ut', 11, '2022-10-11 06:41:39',14, 24, 21);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'eget eros elementum pellentesque quisque porta volutpat erat quisque erat', 46, '2022-07-20 16:07:09',19, 13, 1);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'quisque id justo sit amet sapien dignissim vestibulum vestibulum ante ipsum primis in faucibus', 22, '2022-10-20 19:33:37',15, 51, 30);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'in eleifend quam a odio in hac habitasse platea dictumst maecenas', 1, '2021-12-15 14:21:25',16, 36, 12);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'condimentum neque sapien placerat ante nulla justo aliquam quis turpis eget elit', 5, '2022-04-18 11:41:13',17, 44, 8);
-INSERT INTO comment( full_text, num_votes, date, question_id, answer_id, user_id) VALUES ( 'dui vel nisl duis ac nibh fusce lacus purus aliquet at feugiat non pretium quis', 49, '2022-06-30 22:51:50',18, 23, 11);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Phasellus a lectus malesuada, ornare tortor sit amet, convallis magna. In bibendum rutrum condimentum.', 19, false, '2022-05-13 23:57:52',27, null, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Morbi hendrerit at sapien quis blandit. Donec quis feugiat erat.', 24, false, '2022-07-26 08:48:54',26, null, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Sed pulvinar mauris tincidunt est euismod, quis interdum augue scelerisque. ', 31, false, '2022-05-13 14:47:21',25, null, 2);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Nulla ut vestibulum nisi. Morbi sit amet velit ultrices, faucibus urna et, aliquet leo. ', 18, false, '2022-06-19 14:43:15',24, null, 11);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Nam efficitur consequat libero. Integer nec nisl id tellus interdum faucibus.', 3, false, '2021-12-26 08:05:08',23, null, 7);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Morbi blandit enim elementum purus facilisis pellentesque.', 36, false, '2022-08-30 19:39:37',22, null, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Quisque pretium tortor vitae cursus facilisis. Vestibulum ut porta diam.', 16, false, '2022-03-15 21:36:19',21, null, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Vivamus eu lacinia diam, eu congue quam. Sed id luctus turpis.', 27, true, '2022-06-19 17:25:50',20, null, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Quisque malesuada lacus quis enim vehicula vestibulum sit amet vel erat.', 43, false, '2022-06-09 15:32:10',19, null, 2);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Praesent nunc elit, hendrerit ac urna mattis, convallis lobortis ante.', 48, false, '2022-01-22 04:34:43',23, null, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Nulla sit amet mi mollis, facilisis nisi at, pretium dui. Maecenas vestibulum accumsan ante.', 7, false, '2021-12-18 22:08:37',18, null, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Pellentesque sit amet maximus nibh. Fusce ut lorem est. Phasellus bibendum venenatis velit ac interdum.', 35, false, '2021-11-23 01:59:06',17, null, 10);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Fusce mauris nisi, tincidunt nec varius vitae, vehicula ac tellus.', 22, false, '2022-10-03 16:12:43',17, null, 26);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Fusce id turpis a arcu blandit mattis eu nec justo.', 23, false, '2021-10-23 13:09:07',5, null, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Mauris arcu nisl, mollis vitae pulvinar ac, mollis porta nibh. Donec pharetra quis est quis suscipit.', 6, true, '2022-10-09 17:34:55',16, null, 4);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Nullam suscipit turpis at est sodales placerat.', 36, false, '2021-12-26 06:55:46',14, null, 6);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Etiam quis est ut risus pretium faucibus ut vitae magna. Proin et lacus porttitor leo cursus tristique eu vel orci.', 5, false, '2022-10-18 12:57:38',15, null, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Proin quam tortor, pulvinar vel consectetur in, auctor et nulla. Etiam convallis eros vitae nulla ultrices, nec aliquet ante pretium.', 30, false, '2021-11-07 20:16:13',15, null, 10);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Etiam in justo erat. Morbi congue venenatis massa ac commodo. Quisque eu ex imperdiet, fermentum enim a, posuere ipsum.', 35, false, '2022-08-24 11:39:41',14, null, 7);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse auctor vestibulum consequat. ', 30, false, '2021-11-01 03:20:41',18, null, 9);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Nullam luctus semper mollis. Phasellus ornare rhoncus dolor, eu iaculis sapien vehicula id.', 27, false, '2022-04-22 09:34:25',19, null, 18);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Curabitur sodales erat sodales auctor aliquet. Donec eget ipsum nisl.', 29, false, '2021-12-05 19:20:34',13, null, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Fusce accumsan libero ac sollicitudin laoreet. Sed magna ligula, tempor a lorem a, elementum sagittis mi.', 48, false, '2022-06-02 13:13:36',12, null, 2);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.', 3, false, '2022-10-01 13:55:50',11, null, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Maecenas euismod ex a arcu egestas tempus. Pellentesque blandit massa enim, vitae imperdiet augue condimentum ut.', 20, false, '2022-04-28 18:37:38',30, null, 22);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Cras purus dolor, blandit sit amet tortor et, fringilla malesuada lacus. Ut pellentesque sem id neque laoreet, at ornare purus iaculis.', 40, false, '2022-06-16 03:33:54',10, null, 29);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Nunc pulvinar tortor id eros efficitur, eu venenatis mi sodales.', 27, false, '2022-08-13 22:34:53',9, null, 26);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Proin luctus nulla non magna porta, in condimentum mauris convallis.', 28, false, '2022-03-12 14:07:37',8, null, 6);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Nullam finibus velit ac nisl rhoncus dictum. Praesent elementum nulla justo, sed venenatis elit lacinia et.', 10, false, '2021-11-27 19:41:56',7, null, 27);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Aliquam auctor dolor at nulla vulputate hendrerit. Aenean in eros et purus placerat maximus.', 24, false, '2022-03-03 13:51:57',6, null, 17);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Duis consectetur, velit eget venenatis accumsan, est quam imperdiet orci, ac aliquam eros neque ut mi.', 1, false, '2022-01-13 20:28:22',5, null, 10);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Sed a ullamcorper mi. Vestibulum tellus ipsum, convallis a dapibus nec, tempor nec nulla.', 41, false, '2022-07-15 07:33:00',4, null, 30);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 13, true, '2022-08-24 22:12:04',7, null, 14);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Vivamus viverra et est vitae iaculis. Morbi ultrices nulla facilisis ex mattis eleifend. ', 32, false, '2022-04-18 19:09:49',3, null, 7);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Quisque ac mauris at risus vestibulum rhoncus sit amet eu mauris. Maecenas placerat blandit finibus.', 26, false, '2021-11-13 21:27:31',2, null, 22);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Maecenas commodo ante vitae risus sollicitudin, vel tempor enim interdum. Morbi et rutrum ligula.', 33, false, '2022-07-13 21:24:18',12, null, 25);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Again with this question?', 30, false, '2021-11-11 11:18:43',1, null, 3);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Pellentesque suscipit nunc nec eleifend porttitor. Sed vel nisi rhoncus, rutrum dolor sed, aliquet est.', 50, false, '2021-10-29 04:24:32',2, null, 21);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Vivamus non commodo leo, non lobortis sem. Aenean risus ante, faucibus at odio id, gravida euismod nisl.', 13, false, '2022-10-08 03:40:53',3, null, 8);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Nulla porta magna dolor, eu luctus velit dapibus at. Duis at mi fermentum, sagittis metus sit amet, vehicula nunc.', 18, false, '2022-09-27 22:19:34',4, null, 23);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Donec elit lectus, pulvinar in nibh ac, sodales semper diam. In non nisi vel odio tempor dictum.', 44, false, '2022-07-10 01:04:11',5, null, 6);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Donec sit amet neque a ipsum porttitor convallis. Aliquam ante erat, eleifend a lacinia eget, consectetur blandit tellus.', 37, false, '2022-05-21 09:37:44',6, null, 25);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Praesent euismod ipsum quam, vitae rutrum nisl suscipit sit amet. Fusce consequat ullamcorper elit nec fringilla.', 1, false, '2022-09-11 17:17:15',7, null, 8);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Etiam consectetur, nulla ut scelerisque sodales, massa mi lacinia dui, et luctus ligula massa vel elit.', 22, false, '2022-04-16 21:38:30',8, null, 20);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Mauris volutpat eu justo rhoncus aliquam. Ut fringilla accumsan lacus ut molestie. ', 41, false, '2021-12-12 12:23:19',9, null, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Sed eget arcu a libero lacinia porttitor. Sed lacus lectus, efficitur id eros nec, dignissim commodo quam.', 33, false, '2022-02-03 07:32:11',10, null, 29);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Praesent augue nibh, ultrices nec orci in, pellentesque molestie est. Donec in magna vitae nisi imperdiet tempus in placerat felis.', 42, false, '2021-11-27 01:18:51',11, null, 24);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Sed augue ipsum, rutrum a neque vitae, efficitur viverra libero. Vestibulum non egestas lacus.', 27, false, '2022-03-04 16:30:59',12, null, 18);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Sed urna tortor, sodales eu eros et, fermentum blandit turpis. Suspendisse id laoreet lorem.', 39, false, '2022-08-27 04:38:27',13, null, 9);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec bibendum augue sed vestibulum vehicula.', 50, false, '2021-10-25 01:20:00',14, null, 17);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Suspendisse potenti. Morbi imperdiet nibh tortor, in aliquam dolor iaculis non.', 11, false, '2022-10-11 06:41:39',14, null, 21);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Etiam nibh odio, aliquam quis egestas a, sodales a nisi. Morbi nec suscipit turpis.', 46, false, '2022-07-20 16:07:09',19, null, 1);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Sed orci magna, ultrices nec justo eget, venenatis pellentesque mi.', 22, false, '2022-10-20 19:33:37',15, null, 30);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Donec finibus nec nisi non bibendum. Nullam imperdiet aliquam tempor. Donec molestie dignissim nulla vel pellentesque.', 1, false, '2021-12-15 14:21:25',16, null, 12);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Pellentesque eu commodo mauris. Nulla enim sapien, pellentesque vitae justo sit amet, mattis euismod purus.', 5, false, '2022-04-18 11:41:13',17, null, 8);
+INSERT INTO comment( full_text, num_votes, was_edited, date, question_id, answer_id, user_id) VALUES ( 'Duis imperdiet imperdiet tellus, ut bibendum justo fermentum vel.', 49, true, '2022-06-30 22:51:50',18, null, 11);
 
 INSERT INTO report(reason,date,question_id,answer_id,comment_id)
 VALUES
-  ('Spam','Dec 30, 2021',1,NULL,NULL),
-  ('Hate speech','Mar 23, 2022',2,2,NULL),
-  ('Harassment','May 26, 2022',3,3,3),
-  ('blandit. Nam nulla magna, malesuada vel, convallis','Nov 16, 2021',4,NULL,NULL),
-  ('sit amet, consectetuer adipiscing elit. Etiam laoreet,','Dec 3, 2021',5,5,5);
+  ('Spam','2022-02-11 03:16:56',1,NULL,NULL),
+  ('Hate speech','2022-06-11 03:16:56',2,3,NULL),
+  ('Harassment','2020-01-24 03:16:56',3,NULL,100),
+  ('blandit. Nam nulla magna, malesuada vel, convallis','2021-03-21 03:16:56',4,NULL,NULL),
+  ('sit amet, consectetuer adipiscing elit. Etiam laoreet,','2022-07-22 03:16:56',5,47,NULL);
 
-insert into topic_tag (topic_id, tag_id) values (1, 1);
-insert into topic_tag (topic_id, tag_id) values (1, 2);
-insert into topic_tag (topic_id, tag_id) values (1, 3);
-insert into topic_tag (topic_id, tag_id) values (1, 4);
-insert into topic_tag (topic_id, tag_id) values (1, 5);
-insert into topic_tag (topic_id, tag_id) values (1, 6);
-insert into topic_tag (topic_id, tag_id) values (1, 7);
-insert into topic_tag (topic_id, tag_id) values (1, 8);
-insert into topic_tag (topic_id, tag_id) values (1, 9);
-insert into topic_tag (topic_id, tag_id) values (1, 10);
-insert into topic_tag (topic_id, tag_id) values (1, 11);
-insert into topic_tag (topic_id, tag_id) values (1, 12);
-insert into topic_tag (topic_id, tag_id) values (1, 13);
-insert into topic_tag (topic_id, tag_id) values (1, 14);
-insert into topic_tag (topic_id, tag_id) values (1, 15);
-insert into topic_tag (topic_id, tag_id) values (1, 16);
-insert into topic_tag (topic_id, tag_id) values (1, 17);
-insert into topic_tag (topic_id, tag_id) values (1, 18);
-INSERT INTO topic_tag (topic_id, tag_id) VALUES (2,19);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (3,20);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (4,21);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (5,22);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (6,23);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (7,24);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (8,25);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (9,26);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (10,27);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (11,28);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (12,29);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (13,30);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (14,31);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (15,32);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (16,33);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (17,34);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (18,35);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (19,36);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (20,37);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (21,38);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (22,39);
-INSERT INTO topic_tag (topic_id,tag_id) VALUES (23,40);
+INSERT INTO blocks(user_id, reason, date)
+VALUES
+  (10,'Hate speech','2020-04-11 04:16:56'),
+  (11,'Too much activity','2021-08-27 04:16:57'),
+  (12,'User repeatedly asked same questions in order to gain votes','2022-03-12 04:16:56');
 
+
+INSERT INTO disable_user(user_id, date)
+VALUES
+  (31, '2022-06-11 03:16:56');
+  
 insert into user_tag (user_id, tag_id) values (1, 1);
 insert into user_tag (user_id, tag_id) values (1, 2);
 insert into user_tag (user_id, tag_id) values (3, 19);
