@@ -48,12 +48,24 @@
     </div>
     <div class="card-footer d-flex justify-content-between align-items-center answer-footer">
         <div class="d-flex align-items-start mt-2">
-            <button class="button-clear m-0 px-1" type="button">
-                <i width="16" height="16" class="material-symbols-outlined ">arrow_upward</i>
+            <button class="button-clear m-0 px-1 update-votes-answer" type="button">
+                <input type="hidden" name="vote" value="1"></input>
+                <input type="hidden" name="answer_id" value="{{$answer->answer_id}}"></input>
+                @if($answer->vote()!=null && $answer->vote()==1)
+                <i width="16" height="16" id="up-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined voted rounded-circle">arrow_upward</i>
+                @else
+                <i width="16" height="16" id="up-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined rounded-circle">arrow_upward</i>
+                @endif
             </button>
-            <p class="m-0 px-1 pt-1">{{ $answer->num_votes }}</p>
-            <button class="button-clear d-block m-0 px-1" type="button">
-                <i width="16" height="16" class="material-symbols-outlined ">arrow_downward</i>
+            <p class="m-0 px-1 pt-1" id="num-votes-answer-{{$answer->answer_id}}">{{ $answer->num_votes }}</p>
+            <button class="button-clear m-0 px-1 update-votes-answer" type="button">
+                <input type="hidden" name="vote" value="-1"></input>
+                <input type="hidden" name="answer_id" value="{{$answer->answer_id}}"></input>
+                @if($answer->vote()!=null && $answer->vote()==-1)
+                <i width="16" height="16" id="down-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined voted rounded-circle">arrow_downward</i>
+                @else
+                <i width="16" height="16" id="down-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined rounded-circle">arrow_downward</i>
+                @endif
             </button>
             <button class="add-comment-answer-form-button button button-clear m-0 px-1" type="button">
                 <i width="12" height="12" class="material-symbols-outlined">chat_bubble</i>

@@ -42,4 +42,10 @@ class AnswerPolicy
       $question = Question::find($answer->question_id);
       return $user->user_id == $question->author_id;
     }
+
+    public function vote(User $user, Answer $answer)
+    {
+      // Any user can vote on a answer
+      return Auth::check();
+    }
 }
