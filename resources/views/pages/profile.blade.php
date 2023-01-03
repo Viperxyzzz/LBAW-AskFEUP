@@ -18,10 +18,10 @@
                 {{ session('error') }}
             </div>
         @endif
-        <div class="profile-tab" id="user-overview-tab">
+        <div class="profile-tab profile-tab-open" id="user-overview-tab">
           @include('partials.profile.overview', ['user' => $user])
         </div>
-        <div class="profile-tab profile-tab-open" id="user-badges-tab">
+        <div class="profile-tab" id="user-badges-tab">
           @include('partials.profile.badges', ['user' => $user])
         </div>
         <div class="profile-tab" id="user-questions-tab">
