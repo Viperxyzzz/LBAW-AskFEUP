@@ -20,12 +20,24 @@ class SearchController extends Controller
       $direction =  $request->input('direction') ?? 'desc';
       $order = $request->input('order') ?? 'date';
       $tags = $request->input('tags') ?? [];
-
-      if($request->input('searchText') != null){
-        $questions = Question::where('title', 'like', '%' . $request->input('searchText') . '%')
-          ->orWhere('full_text', 'like', '%' . $request->input('searchText') . '%')
-          ->orWhere('tsvectors', 'like', '%' . $request->input('searchText') . '%')
-          ->orderBy($order, $direction)->get();
+      if($request->has('searchText')){
+        
+        $searchText = $request->input('searchText');
+        $stripedText = preg_replace('/[^0-9a-zA-ZÀ-ú\s]/', '', $searchText);
+  
+        $search = str_replace(' ',' | ', $stripedText);
+        $questions = Question::selectRaw("*, ts_rank(tsvectors, to_tsquery('english', ?)) as rank", [$search])
+        ->whereRaw("tsvectors @@ to_tsquery('english', ?)", [$search])
+        ->orWhereRaw("full_text @@ to_tsquery('english', ?)", [$search])
+        ->orWhereRaw("title @@ to_tsquery('english', ?)", [$search])
+        ->orWhereRaw("author_id IN (SELECT user_id FROM users WHERE name @@ to_tsquery('english', ?))", [$search]);
+        if($request->input('order')){
+          $questions = $questions->orderBy($order,$direction);
+        }
+        else{
+          $questions = $questions->orderBy('rank', 'desc');
+        }
+        $questions = $questions->get();
       }
       else{
         $questions = Question::orderBy($order, $direction)->get();
