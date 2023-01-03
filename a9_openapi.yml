@@ -129,7 +129,6 @@ paths:
                 - email
                 - password
                 - username
-                - password
                 - name
 
       responses:
@@ -919,60 +918,39 @@ paths:
       responses:
         '200':
           description: 'Accepted. Voted answer.'
-/api/comment/{id}:
-  post:
-    operationId: R417
-    summary: 'R417: Comment creation action'
-    description: 'Processes the comment creation form submission. Access: USR, OWN, ADM, MOD'
-    tags:
-      - 'M04: Questions'
-    parameters:
-      - in: path
-        name: "id"
-        description: 'The unique identifier for the question to which the comment is being added.'
-        schema:
-          type: integer
-          required: true
-    requestBody:
-      required: true
-      content:
-        application/json:
+  /api/comment/{id}:
+    post:
+      operationId: R417
+      summary: 'R417: Comment creation action'
+      description: 'Processes the comment creation form submission. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M04: Questions'
+
+      parameters:
+        - in: path
+          name: "id"
           schema:
-            type: object
-            properties:
-              full_text:
-                type: string
-                description: 'The full text of the comment.'
-              answer_id:
-                type: integer
-                description: 'The unique identifier for the answer to which the comment is being added.'
-            required:
-              - full_text
-    responses:
-      '200':
-        description: 'Accepted. Created comment.'
+            type: integer
+          required: true
+
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                id:
-                  type: integer
-                  description: 'The unique identifier for the comment.'
                 full_text:
                   type: string
-                  description: 'The full text of the comment.'
                 answer_id:
                   type: integer
-                  description: 'The unique identifier for the answer to which the comment is being added'
-                date_created:
-                  type: string
-                  format: 'date-time'
-                  description: 'The date and time the comment was created.'
-              example:
-                id: 1
-                full_text: 'This is a great question!'
-                answer_id: 1
+              required:
+                - full_text
+                - answer_id
+      responses:
+        '200':
+          description: 'Accepted. Created comment.'
+  /api/comment/delete/{id}:
     delete:
       operationId: R418
       summary: 'R418: Comment deletion action'
@@ -1069,22 +1047,48 @@ paths:
   
   /dashboard:
     get:
-      operationId: 501
+      operationId: R501
       summary: 'R501: Displays the dashboard'
       description: 'Provides the dashboard. Access: ADM, MOD'
       tags:
-        - 'M05: User Administration and static pages'
+        - 'M05: Reports'
       responses:
         '302':
           description: 'Redirects to the login page.'
   
-  /api/report/delete/{id}:
-    delete:
-      operationId: R505
-      summary: 'R505: Report deletion action'
-      description: 'Deletes a report. Access: ADM, MOD'
+  /api/report/create:
+    post:
+      operationId: R502
+      summary: 'R502: Report creation action'
+      description: 'Processes the report creation form submission. Access: USR, OWN, ADM, MOD'
       tags:
-        - 'M05: User Administration and static pages'
+        - 'M05: Reports'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                question_id:
+                  type: integer
+              required:
+                - reason
+                - question_id
+      responses:
+        '200':
+          description: 'Accepted. Created report.'
+  
+  /api/blocks/delete/{id}:
+    delete:
+      operationId: R503
+      summary: 'R503: Block deletion action'
+      description: 'Deletes a block. Access: ADM, MOD'
+      tags:
+        - 'M05: Reports'
       
       parameters:
         - in: path
@@ -1095,15 +1099,16 @@ paths:
 
       responses:
         '200':
-          description: 'Accepted. Deleted report.'
-  
+          description: 'Accepted. Deleted block.'
+          
+          
   /api/blocks/add/{id}:
     post:
       operationId: R504
       summary: 'R504: Block creation action'
       description: 'Processes the block creation form submission. Access: ADM, MOD'
       tags:
-        - 'M05: User Administration and static pages'
+        - 'M05: Reports'
 
       parameters:
         - in: path
@@ -1126,14 +1131,16 @@ paths:
       responses:
         '200':
           description: 'Accepted. Created block.'
+        
   
-  /api/blocks/delete/{id}:
+  
+  /api/report/delete/{id}:
     delete:
-      operationId: R503
-      summary: 'R503: Block deletion action'
-      description: 'Deletes a block. Access: ADM, MOD'
+      operationId: R505
+      summary: 'R505: Report deletion action'
+      description: 'Deletes a report. Access: ADM, MOD'
       tags:
-        - 'M05: User Administration and static pages'
+        - 'M05: Reports'
       
       parameters:
         - in: path
@@ -1144,33 +1151,8 @@ paths:
 
       responses:
         '200':
-          description: 'Accepted. Deleted block.'
-  
-  /api/report/create:
-    post:
-      operationId: R501
-      summary: 'R501: Report creation action'
-      description: 'Processes the report creation form submission. Access: USR, OWN, ADM, MOD'
-      tags:
-        - 'M05: User Administration and static pages'
+          description: 'Accepted. Deleted report.'
 
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                reason:
-                  type: string
-                question_id:
-                  type: integer
-              required:
-                - reason
-                - question_id
-      responses:
-        '200':
-          description: 'Accepted. Created report.'
     
 
   
@@ -1204,88 +1186,16 @@ paths:
       responses:
         '200':
           description: 'Ok. Show browse UI'
-/api/browse:
-  get:
-    operationId: R303
-    summary: 'R303: Displays all questions that match a search'
-    description: 'Provides the list of questions that match a search. Access: USR, OWN, ADM, MOD'
-    tags:
-      - 'M03: Search'
-    parameters:
-      - in: query
-        name: search
-        description: 'A string used to perform a full text search on the questions. If provided, only questions with matching text will be returned.'
-        schema:
-          type: string
-      - in: query
-        name: tags
-        description: 'A comma-separated list of tags used to filter the search results. If provided, only questions with at least one matching tag will be returned.'
-        schema:
-          type: string
-      - in: query
-        name: order
-        description: 'A string used to specify the sort order of the search results. Possible values are "asc" for ascending and "desc" for descending.'
-        schema:
-          type: string
-    requestBody:
-      description: 'An example request body for searching for questions with the tag "javascript" and sorting the results in descending order by date created.'
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              tags:
-                type: string
-                example: 'javascript'
-              order:
-                type: string
-                example: 'desc'
-    responses:
-      '200':
-        description: 'Ok. Show questions UI'
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    description: 'The unique identifier for the question.'
-                  title:
-                    type: string
-                    description: 'The title of the question.'
-                  body:
-                    type: string
-                    description: 'The body of the question.'
-                  tags:
-                    type: array
-                    description: 'A list of tags associated with the question.'
-                    items:
-                      type: string
-                  date_created:
-                    type: string
-                    format: 'date-time'
-                    description: 'The date and time the question was created.'
-              example:
-                - id: 1
-                  title: 'How do I get started with JavaScript?'
-                  body: 'I am new to programming and would like to learn JavaScript. Where do I start?'
-                  tags: ['javascript', 'beginner']
-                  date_created: '2022-09-01T12:34:56Z'
-                - id: 2
-                  title: 'What are the best resources for learning JavaScript?'
-                  body: 'I have some experience with programming and would like to improve my skills in JavaScript. Can you recommend some good resources?'
-                  tags: ['javascript', 'learning']
-                  date_created: '2022-08-15T09:12:34Z'
-      '400':
-        description: 'Bad Request. The request was invalid or cannot be served.'
-      '401':
-        description: 'Unauthorized. The request requires an user authentication.'
-      '403':
-        description: 'Forbidden. The server understands the request, but it refuses to authorize it.'
-      '500':
+  /api/browse:
+    get:
+      operationId: R303
+      summary: 'R303: Displays all questions that match a search'
+      description: 'Provides the list of questions that match a search. Access: USR, OWN, ADM, MOD'
+      tags:
+        - 'M03: Search'
+      responses:
+        '200':
+          description: 'Ok. Show users UI'
   /:
     get:
       operationId: R603
@@ -1352,13 +1262,19 @@ paths:
       description: 'Provides a notification. Access: USR, OWN, ADM, MOD'
       tags:
         - 'M07: Notifications'
+      parameters:
+        - in: path
+          name: "id"
+          schema:
+            type: integer
+          required: true
       responses:
         '302':
           description: 'Redirects to the notification page.'
   
   /tags:
     get:
-      operationId: 801
+      operationId: R801
       summary: 'R801: Displays the tags page'
       description: 'Provides the tags page. Access: USR, OWN, ADM, MOD'
       tags:
