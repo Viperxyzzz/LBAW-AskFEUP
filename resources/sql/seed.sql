@@ -37,6 +37,13 @@ CREATE TABLE users (
     remember_token VARCHAR
 );
 
+DROP TABLE IF EXISTS password_resets;
+CREATE TABLE password_resets (
+    email TEXT NOT NULL,
+    token TEXT NOT NULL,
+    created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL
+);
+
 DROP TABLE IF EXISTS question CASCADE;
 CREATE TABLE question (
     question_id SERIAL PRIMARY KEY, 
