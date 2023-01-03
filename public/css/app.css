@@ -28,13 +28,34 @@ body {
     background-color: var(--accent-color);
 }
 
+.b-bg {
+    background-color: var(--background-color);
+}
+
 :target {
     background-color: var(--background-color);
 
 }
 
+.border-strong {
+    border: 2px solid #dcdcdc ;
+}
+
 #content {
     flex-grow: 1;
+}
+
+.badge-button {
+    padding: 0;
+    color: inherit;
+    background-color: transparent;
+    margin: 0;
+    border: none;
+}
+
+.badge-button:hover , .badge-button::selection, .badge-button::backdrop , .badge-button:focus {
+    color: var(--accent-color);
+    background-color: transparent;
 }
 
 i {
@@ -223,6 +244,10 @@ input[type="checkbox"] {
 
 .filter-option > input {
     display: none;
+}
+
+.keep-ratio{
+    aspect-ratio: 1/1;
 }
 
 /************************* Animations **************************/

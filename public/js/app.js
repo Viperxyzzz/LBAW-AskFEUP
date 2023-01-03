@@ -232,6 +232,20 @@ function addEventListeners() {
       button.addEventListener('click', sendUnFollowTagRequest)
     }
   )
+  
+  let markValidAnswer = document.querySelectorAll('.mark-valid-answer')
+  markValidAnswer.forEach(
+    button => {
+      button.addEventListener('click', sendMarkValidAnswerRequest)
+    }
+  )
+
+  let markInvalidAnswer = document.querySelectorAll('.mark-invalid-answer')
+  markInvalidAnswer.forEach(
+    button => {
+      button.addEventListener('click', sendMarkInvalidAnswerRequest)
+    }
+  )
 
   let followQuestion = document.querySelectorAll('.follow-question')
   followQuestion.forEach(
@@ -253,6 +267,13 @@ function addEventListeners() {
       btn => btn.addEventListener('click', sendUpdateNotificationRequest)
       );
   }
+
+  let badgeButton = document.querySelectorAll('.badge-button');
+  badgeButton.forEach(
+    button => {
+      button.addEventListener('click', badgeButtonClick);
+    }
+  )
 
   let updateVotes = document.querySelectorAll('.update-votes');
   if (updateVotes != null) {
@@ -351,6 +372,18 @@ function answerAddedHandler() {
 
 function createAnswer(answer) {
   let new_answer = document.createElement('div');
+  let question_author_id = answer.question_author_id;
+  let markValidQuestionHtml = "";
+  if(question_author_id == answer.user_id){
+    markValidQuestionHtml =
+    `
+    <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-${answer.answer_id}" type="submit" onclick="sendMarkValidAnswerRequest(event)">
+    <input type="hidden" name="answer_id" value="${answer.answer_id}">
+    <i id="mark-valid-button" width="16" height="16" class="material-symbols-outlined">check</i>
+    </button>
+    `;
+  }
+
   new_answer.className = 'card'
   new_answer.classList.add('mt-5')
   new_answer.classList.add('answer')
@@ -379,7 +412,7 @@ function createAnswer(answer) {
   <div class="card-body d-flex justify-content-between">
       <div class="flex-fill">
           <p class="m-0">
-              <img src="/storage/${answer.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
+              <img src="/storage/${answer.author.picture_path}.jpeg" class="img-fluid rounded-circle keep-ratio" alt="user image" width="25px">
               <a class="font-weight-bold" href="/users/${answer.user_id}"> ${answer.author.name}</a>
           </p>
           <div class="answer-full-text">
@@ -423,7 +456,11 @@ function createAnswer(answer) {
           </button>
           <button class="button-clear m-0 px-1" type="button">
               <i width="12" height="12" class="material-symbols-outlined" onclick=answerCommentForm(event)>chat_bubble</i>
-          </button>
+          </button>`
+          +
+          markValidQuestionHtml
+          +
+          `
       </div>
       <p class="m-0">${answer.date}</p>
   </div>
@@ -483,7 +520,7 @@ function createUser(user) {
   new_user.innerHTML = `
   <div class="card d-flex flex-row m-3 p-2 bg-light" style="width: 250px;">
       <div class="align-self-center">
-        <img src="/storage/${user.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="60px">
+        <img src="/storage/${user.picture_path}.jpeg" class="img-fluid rounded-circle keep-ratio" alt="user image" width="60px">
       </div>
       <div class="card-body mx-2 p-2">
           <h4 class="card-title m-0 p-0">
@@ -1188,6 +1225,62 @@ function tagUnFollowHandler() {
   button.querySelector('p').innerHTML = 'Follow'
 }
 
+function sendMarkValidAnswerRequest(event){
+  let answer_id = event.currentTarget.querySelector('input').value;
+
+  if (answer_id != '')
+    sendAjaxRequest('post', `/api/answer/valid/${answer_id}`, {}, markValidAnswerHandler);
+  
+  event.preventDefault();
+}
+
+function markValidAnswerHandler() {
+  let answer = JSON.parse(this.responseText);
+  let answer_id = answer['answer_id'];
+
+  let button = document.getElementById(`valid-answer-tag-${answer_id}`)
+  button.removeEventListener('click', sendMarkValidAnswerRequest);
+  button.id = `invalid-answer-tag-${answer_id}`;
+  button.classList.remove('valid-answer-tag');
+  button.classList.add('invalid-answer-tag');
+  button.onclick = sendMarkInvalidAnswerRequest;
+  button.querySelector('i').classList.add('c-primary');
+  button.querySelector('i').classList.add('b-accent');
+  button.querySelector('i').classList.add('rounded-circle');
+
+  //find answer 
+  let answer_element = document.querySelector(`#answer_${answer_id}`);
+}
+
+function sendMarkInvalidAnswerRequest(event){
+  let answer_id = event.currentTarget.querySelector('input').value;
+
+  if (answer_id != '')
+    sendAjaxRequest('post', `/api/answer/invalid/${answer_id}`, {}, markInvalidAnswerHandler);
+  
+  event.preventDefault();
+}
+
+function markInvalidAnswerHandler() {
+  let answer = JSON.parse(this.responseText);
+  let answer_id = answer['answer_id'];
+
+  let button = document.getElementById(`invalid-answer-tag-${answer_id}`)
+  button.removeEventListener('click', sendMarkInvalidAnswerRequest);
+  button.id = `valid-answer-tag-${answer_id}`;
+  button.classList.remove('invalid-answer-tag');
+  button.classList.add('valid-answer-tag');
+  button.onclick = sendMarkValidAnswerRequest;
+  button.querySelector('i').classList.remove('c-primary');
+  button.querySelector('i').classList.remove('b-accent');
+  button.querySelector('i').classList.remove('rounded-circle');	
+
+
+  //find answer
+  let answer_element = document.querySelector(`#answer_${answer_id}`);
+}
+
+
 /* Follow and un-follow questions */
 
 function sendFollowQuestionRequest(event) {
@@ -1399,8 +1492,8 @@ function createComment(comment) {
   </div>
   <div class="pt-3 flex-fill">
       <p class="m-0">
-          <img src="/storage/${comment.author.picture_path}.jpeg" class="img-fluid rounded-circle" alt="user image" width="25px">
-          <a href="url("/users/${comment.user_id}")">${comment.author.name}</a>
+          <img src="/storage/${comment.author.picture_path}.jpeg" class="img-fluid rounded-circle keep-ratio" alt="user image" width="25px">
+          <a href="/users/${comment.user_id}">${comment.author.name}</a>
           ${comment.date}
       </p>
   <p class="card-text py-2">${comment.full_text}</p>
@@ -1870,7 +1963,36 @@ function logout(){
   window.location.href = "/";
 }
 
-/***********  ***********/
+/*********** support badges ***********/
+
+function badgeButtonClick(event) {
+  let button = event.currentTarget
+  console.log(button)
+  let badge_id = button.querySelector('input[name=badge_id]').value
+  let user_id = button.querySelector('input[name=user_id]').value
+  let num = button.parentElement.querySelector('.num-supports')
+
+  if (button.querySelector('.material-icons') == null) {
+    sendSupportBadgeRequest(badge_id, user_id);
+    num.innerText = parseInt(num.innerText) + 1
+  }
+  else {
+    sendUnSupportBadgeRequest(badge_id, user_id);
+    num.innerText = parseInt(num.innerText) - 1
+  }
+  button.firstElementChild.classList.toggle('material-symbols-outlined');
+  button.firstElementChild.classList.toggle('material-icons');
+  event.stopPropagation()
+}
+
+function sendSupportBadgeRequest(badge_id, user_id) {
+  sendAjaxRequest('post', '/api/badge/support/', {badge_id : badge_id, user_id : user_id}, () => {} );
+}
+
+function sendUnSupportBadgeRequest(badge_id, user_id) {
+  sendAjaxRequest('post', '/api/badge/unsupport/', {badge_id : badge_id, user_id : user_id}, () => {} );
+}
+
 
 
 

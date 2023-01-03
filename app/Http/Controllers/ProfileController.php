@@ -49,35 +49,51 @@ class ProfileController extends Controller
     public function updateUser(Request $request, $user_id){
       $user = User::find($user_id);
       $this->authorize('edit', $user);
-
+    
       $valid_settings = $request->validate([
         'username' => 'required|string|max:255',
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255',
         'new_password' => 'string|min:8',
         'confirm_pass' => 'same:new_password',
+        'picture_path' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
       ]);
       
+    
       if(DB::table('users')->where('username', $request->username)->count() !== 0 && 
         $user->username !== $request->username
       ){
         return back()->with("alert", "This username already exists!");
       }
-
+    
       if(DB::table('users')->where('email', $request->email)->count() !== 0 &&
          $user->email !== $request->email
         ){
         return back()->with("alert", "This email already exists!");
       }
+    
+      // Handle profile picture update
+      if($request->hasFile('picture_path')){
+        // Get file extension
+        $extension = $request->file('picture_path')->getClientOriginalExtension();
+        // Generate a unique file name
+        $fileName = time();
 
+        // Save the file to the public/storage/profile_pictures directory
+        $request->file('picture_path')->storeAs('public/', $fileName.'.jpeg');
+        // Update the picture_path field in the database
+        $user->picture_path = $fileName;
+        $user->save();
+      }
+    
       if($request->new_password === NULL){
         $user->update([
           'name' => $request->name,
           'username' => $request->username,
-          'email' => $request->email,
+          'email' => $request->email
         ]);
       }
-
+    
       else {
         $user->update([
           'name' => $request->name,

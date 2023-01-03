@@ -1,8 +1,6 @@
 <div>
     <div class="d-flex">
         <div class="d-flex flex-column">
-            <!-- <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
-                {{ csrf_field() }} -->
                 <button class="button-clear p-1 mr-2 update-votes" type="submit">
                 <input type="hidden" name="vote" value="1"></input>
                 <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
@@ -12,9 +10,6 @@
                 <i width="16" height="16" id="up-question-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_up</i>
                 @endif
                 </button>
-            <!-- </form> -->
-            <!-- <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
-                {{ csrf_field() }} -->
                 <button class="button-clear p-1 mr-2 update-votes" type="submit">
                 <input type="hidden" name="vote" value="-1"></input>
                 <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
@@ -24,7 +19,6 @@
                 <i width="16" height="16" id="down-question-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_down</i>
                 @endif
                 </button>
-            <!-- </form> -->
         </div>
         <div class="d-flex flex-fill justify-content-between">
             <div>
@@ -47,8 +41,8 @@
         </div>
     </div>
     <hr class="mx-0 my-2">
-    <div class=" d-flex mx-2 justify-content-between">
-        <div class="row">
+    <div class="row d-flex justify-content-between">
+        <div class="d-flex">
             <button class="add-comment-question-form-button button button-clear m-0 px-1" type="button">
             <i width="12" height="12" class="material-symbols-outlined ">chat_bubble</i>
             </button>
@@ -59,7 +53,7 @@
                 @endif
             </p>
         </div>
-        <div class="row justify-self-end">
+        <div class="d-flex">
             <p class="m-0">
                 <em>by</em>
                 @if($question->is_accessible_user())

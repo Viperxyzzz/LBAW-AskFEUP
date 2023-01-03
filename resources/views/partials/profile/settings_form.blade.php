@@ -1,4 +1,5 @@
-<form id="edit-user-form" action="{{ route('update_user_api', ['id' => $user->user_id]) }}" method="POST">
+@include('partials.messages.feedback')
+<form id="edit-user-form" action="{{ route('update_user_api', ['id' => $user->user_id]) }}" method="POST" enctype="multipart/form-data">>
     @method('PUT')
     @csrf
     <div class="card m-5 p-5">
@@ -13,6 +14,10 @@
         <div class="form-group">
             <label>Email</label>
             <input type="email" id="edit-email" name="email" value="{{$user->email}}">
+        </div>
+        <div class="form-group">
+            <label>Profile Picture</label>
+            <input type="file" id="edit-picture-path" name="picture_path">
         </div>
 
         <div id="edit-pass-div"></div>

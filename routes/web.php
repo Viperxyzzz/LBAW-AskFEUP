@@ -68,6 +68,8 @@ Route::post('api/answer/{id}', 'AnswerController@create');
 Route::delete('api/answer/delete/{id}', 'AnswerController@delete')->name('answer_delete_api');
 Route::get('api/answer/edit/{id}', 'AnswerController@edit_view')->name('edit_answer_form');
 Route::put('api/answer/update/{id}','AnswerController@update')->name('update_answer');
+Route::post('api/answer/valid/{id}', 'AnswerController@make_valid')->name('valid_answer');
+Route::post('api/answer/invalid/{id}', 'AnswerController@make_invalid')->name('invalid_answer');
 Route::post('api/answer/{id}/vote', 'AnswerController@vote')->name('vote_answer');
 
 // Notifications
@@ -95,3 +97,7 @@ Route::delete('api/comment/delete/{id}', 'CommentController@delete')->name('comm
 Route::get('api/comment/edit/{id}', 'CommentController@edit_view')->name('edit_comment_form');
 Route::put('api/comment/update/{id}', 'CommentController@update')->name('update_comment');
 Route::post('api/comment/{id}/vote', 'CommentController@vote')->name('vote_comment');
+
+// Badges 
+Route::post('api/badge/support', 'BadgeController@support');
+Route::post('api/badge/unsupport', 'BadgeController@unsupport');
