@@ -114,6 +114,6 @@ class AnswerController extends Controller
       }
       if($answer->num_votes < 0) $answer->num_votes = 0;
       $answer->save();
-      return ['num_votes' => $answer->num_votes, 'answer_id' => $request->answer_id];
+      return ['num_votes' => $answer->num_votes, 'answer_id' => $request->answer_id, 'vote' => $request->vote];
     }
 }

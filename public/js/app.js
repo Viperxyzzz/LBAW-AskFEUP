@@ -1665,8 +1665,17 @@ function redirect_notification(notification_id){
 
 function sendUpdateVotesRequest(event) {
   id = event.currentTarget.querySelectorAll('input')[1].value;
-  value = event.currentTarget.querySelectorAll('input')[0].value;
-
+  let value = event.currentTarget.querySelectorAll('input')[0].value;
+  if(value==1){
+    document.querySelector('#up-question-vote').classList.toggle('voted')
+    if(document.querySelector('#down-question-vote').classList.contains('voted'))
+      document.querySelector('#down-question-vote').classList.toggle('voted')
+  }
+  if(value==-1){
+    document.querySelector('#down-question-vote').classList.toggle('voted')
+    if(document.querySelector('#up-question-vote').classList.contains('voted'))
+    document.querySelector('#up-question-vote').classList.toggle('voted')
+  }
   if (id != '')
     sendAjaxRequest('post', `/api/question/${id}/vote`, {question_id : id, vote: value}, sendUpdateVotesHandler);
   event.preventDefault();
@@ -1674,7 +1683,6 @@ function sendUpdateVotesRequest(event) {
 
 function sendUpdateVotesHandler() {
   let response = JSON.parse(this.responseText);
-  console.log(response);
   let votes = response.num_votes;
   let question_id = response.question_id;
   let votesHTML = document.getElementById('num-votes-' + question_id);
@@ -1683,9 +1691,21 @@ function sendUpdateVotesHandler() {
 }
 
 function sendUpdateVotesAnswerHandler() {
-  console.log(this.responseText);
   let response = JSON.parse(this.responseText);
-  console.log(response);
+
+  value = response.vote;
+
+  if(value==1){
+    document.querySelector(`#up-answer-${id}-vote`).classList.toggle('voted')
+    if(document.querySelector(`#down-answer-${id}-vote`).classList.contains('voted'))
+      document.querySelector(`#down-answer-${id}-vote`).classList.toggle('voted')
+  }
+  if(value==-1){
+    document.querySelector(`#down-answer-${id}-vote`).classList.toggle('voted')
+    if(document.querySelector(`#up-answer-${id}-vote`).classList.contains('voted'))
+    document.querySelector(`#up-answer-${id}-vote`).classList.toggle('voted')
+  }
+
   let votes = response.num_votes;
   let answer_id = response.answer_id;
   let votesHTML = document.getElementById('num-votes-answer-' + answer_id);
@@ -1696,17 +1716,26 @@ function sendUpdateVotesAnswerHandler() {
 function sendUpdateVotesAnswerRequest(event) {
   id = event.currentTarget.querySelectorAll('input')[1].value;
   value = event.currentTarget.querySelectorAll('input')[0].value;
-  console.log(id);
-  console.log(value);
   if (id != '')
     sendAjaxRequest('post', `/api/answer/${id}/vote`, {answer_id : id, vote: value}, sendUpdateVotesAnswerHandler);
   event.preventDefault();
 }
 
 function sendUpdateVotesCommentHandler() {
-  console.log(this.responseText);
   let response = JSON.parse(this.responseText);
-  console.log(response);
+
+  value = response.vote;
+  if(value==1){
+    document.querySelector(`#up-comment-${id}-vote`).classList.toggle('voted')
+    if(document.querySelector(`#down-comment-${id}-vote`).classList.contains('voted'))
+      document.querySelector(`#down-comment-${id}-vote`).classList.toggle('voted')
+  }
+  if(value==-1){
+    document.querySelector(`#down-comment-${id}-vote`).classList.toggle('voted')
+    if(document.querySelector(`#up-comment-${id}-vote`).classList.contains('voted'))
+    document.querySelector(`#up-comment-${id}-vote`).classList.toggle('voted')
+  }
+
   let votes = response.num_votes;
   let comment_id = response.comment_id;
   let votesHTML = document.getElementById('num-votes-comment-' + comment_id);
@@ -1717,8 +1746,6 @@ function sendUpdateVotesCommentHandler() {
 function sendUpdateVotesCommentRequest(event) {
   id = event.currentTarget.querySelectorAll('input')[1].value;
   value = event.currentTarget.querySelectorAll('input')[0].value;
-  console.log(id);
-  console.log(value);
   if (id != '')
     sendAjaxRequest('post', `/api/comment/${id}/vote`, {comment_id : id, vote: value}, sendUpdateVotesCommentHandler);
   event.preventDefault();

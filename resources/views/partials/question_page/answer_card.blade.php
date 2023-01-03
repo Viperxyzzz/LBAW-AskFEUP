@@ -49,9 +49,9 @@
                 <input type="hidden" name="vote" value="1"></input>
                 <input type="hidden" name="answer_id" value="{{$answer->answer_id}}"></input>
                 @if($answer->vote()!=null && $answer->vote()==1)
-                <i width="16" height="16" class="material-symbols-outlined voted rounded-circle">arrow_upward</i>
+                <i width="16" height="16" id="up-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined voted rounded-circle">arrow_upward</i>
                 @else
-                <i width="16" height="16" class="material-symbols-outlined rounded-circle">arrow_upward</i>
+                <i width="16" height="16" id="up-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined rounded-circle">arrow_upward</i>
                 @endif
             </button>
             <p class="m-0 px-1 pt-1" id="num-votes-answer-{{$answer->answer_id}}">{{ $answer->num_votes }}</p>
@@ -59,9 +59,9 @@
                 <input type="hidden" name="vote" value="-1"></input>
                 <input type="hidden" name="answer_id" value="{{$answer->answer_id}}"></input>
                 @if($answer->vote()!=null && $answer->vote()==-1)
-                <i width="16" height="16" class="material-symbols-outlined voted rounded-circle">arrow_downward</i>
+                <i width="16" height="16" id="down-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined voted rounded-circle">arrow_downward</i>
                 @else
-                <i width="16" height="16" class="material-symbols-outlined rounded-circle">arrow_downward</i>
+                <i width="16" height="16" id="down-answer-{{$answer->answer_id}}-vote" class="material-symbols-outlined rounded-circle">arrow_downward</i>
                 @endif
             </button>
             <button class="add-comment-answer-form-button button button-clear m-0 px-1" type="button">

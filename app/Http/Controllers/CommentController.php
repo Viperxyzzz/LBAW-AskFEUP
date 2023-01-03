@@ -115,7 +115,7 @@ class CommentController extends Controller
       }
       if($comment->num_votes < 0) $comment->num_votes = 0;
       $comment->save();
-      return ['num_votes' => $comment->num_votes, 'comment_id' => $request->comment_id];
+      return ['num_votes' => $comment->num_votes, 'comment_id' => $request->comment_id, 'vote' => $request->vote];
 
       return $comment;
     }
