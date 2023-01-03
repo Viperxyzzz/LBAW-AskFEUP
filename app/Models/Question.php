@@ -112,9 +112,12 @@ class Question extends Model
      * @return mixed Returns the object of the vote.
      */
     public function vote(){
+        $questionVote = null;
+        if(Auth::user()!=null){        
         $questionVote = QuestionVotes::where('question_id', $this->question_id)
         ->where('user_id', Auth::user()->user_id)
         ->first();
+        }
         if ($questionVote != null)
             return $questionVote->value;
         return $questionVote;

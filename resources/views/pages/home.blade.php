@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+
+@include('partials.messages.feedback')
+
 <div class="text-center m-5">
     <h1 class="fade-1">Welcome to <span class="c-primary">AskFeup</span></h1>
     <h4 class="fade-2">Ask any question you want!</h4>

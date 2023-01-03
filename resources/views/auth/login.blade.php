@@ -2,6 +2,8 @@
 
 @section('content')
 
+@include('partials.messages.feedback')
+
 <div class="col-md-4 mx-auto my-5 border rounded bg-light p-5">
     <form method="POST" action="{{ route('login') }}">
         {{ csrf_field() }}
@@ -20,19 +22,9 @@
         <h2>Login</h2>
         <label for="email">E-mail</label>
         <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus>
-        @if ($errors->has('email'))
-            <span class="error">
-            {{ $errors->first('email') }}
-            </span>
-        @endif
 
         <label for="password" >Password</label>
         <input id="password" type="password" name="password" required>
-        @if ($errors->has('password'))
-            <span class="error">
-                {{ $errors->first('password') }}
-            </span>
-        @endif
         <div class="d-flex justify-content-between align-items-center flex-wrap">
             <label>
                 <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me

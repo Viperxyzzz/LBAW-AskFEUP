@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@include('partials.messages.feedback')
+
 @section('content')
 <div class="row">
     @include('partials.browse.filter')

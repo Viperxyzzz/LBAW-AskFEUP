@@ -349,12 +349,15 @@ function sendCreateAnswerRequest(event) {
 
   if (answer != '')
     sendAjaxRequest('post', '/api/answer/' + question_id, { answer: answer }, answerAddedHandler);
+  else 
+    createMessage('Answer is empty', 'danger');
 
   event.preventDefault();
 }
 
 function answerAddedHandler() {
-  if (this.status != 200) window.location = '/login';
+  if (this.status != 200) 
+    createMessage('An error occurred', 'danger');
   let answer = JSON.parse(this.responseText);
 
   document.querySelector('#answer').value = "";
@@ -480,7 +483,8 @@ function sendSearchUsersRequest(event) {
 }
 
 function userSearchHandler() {
-  //if (this.status != 201) window.location = '/';
+  if (this.status != 200) 
+    createMessage('An error occurred', 'danger');
   let users = JSON.parse(this.responseText);
 
 
@@ -547,7 +551,8 @@ function sendSearchTagsRequest(event) {
 }
 
 function tagsSearchHandler() {
-  //if (this.status != 201) window.location = '/';
+  if (this.status != 200) 
+    createMessage('An error occurred', 'danger');
   let response = JSON.parse(this.responseText);
 
 
@@ -568,8 +573,25 @@ function sendCreateTagRequest(event) {
   let body = event.target.parentElement.parentElement.querySelector('.modal-body')
   let name = body.querySelector('input[name=name]').value
   let description = body.querySelector('input[name=description]').value
-  let topic = body.querySelector('#topics > option:checked').value
-  let data = {name : name, description : description, topic : topic}
+  let topic = body.querySelector('#topics > option:checked')
+
+  if (name == '') {
+    createMessage('Please provide a tag name', 'danger');
+    return
+  }
+
+  if (description == '') {
+    createMessage('Please provide a tag description', 'danger');
+    return
+  }
+
+  if (topic == null) {
+    createMessage('Please provide a tag topic', 'danger');
+    return
+  }
+
+  let data = {name : name, description : description, topic : topic.value}
+
 
   if (name != null)
     sendAjaxRequest('post', `/api/tag/create`, data, tagCreatedHandler);
@@ -578,12 +600,17 @@ function sendCreateTagRequest(event) {
 }
 
 function tagCreatedHandler() {
-  //if (this.status != 201) window.location = '/';
+  if (this.status != 200) {
+    createMessage('An error occurred', 'danger');
+    return;
+  }
+
   let response = JSON.parse(this.responseText);
 
   let tag_element = createTag(response.tag, response.topics)
 
   document.querySelector('#tags-list').prepend(tag_element)
+  createMessage(`Tag ${response.tag.tag_name} created`, 'success');
 }
 
 /*********** edit tags ***********/
@@ -593,8 +620,24 @@ function sendEditTagRequest(event) {
   let id = body.querySelector('input[name=id]').value
   let name = body.querySelector('input[name=name]').value
   let description = body.querySelector('input[name=description]').value
-  let topic = body.querySelector('#topics > option:checked').value
-  let data = {name : name, description : description, topic : topic}
+  let topic = body.querySelector('#topics > option:checked')
+
+  if (name == '') {
+    createMessage('Please provide a tag name', 'danger');
+    return
+  }
+
+  if (description == '') {
+    createMessage('Please provide a tag description', 'danger');
+    return
+  }
+
+  if (topic == null) {
+    createMessage('Please provide a tag topic', 'danger');
+    return
+  }
+
+  let data = {name : name, description : description, topic : topic.value}
 
   if (id != null)
     sendAjaxRequest('put', `/api/tag/edit/${id}`, data, tagEditedHandler);
@@ -603,11 +646,17 @@ function sendEditTagRequest(event) {
 }
 
 function tagEditedHandler() {
+  if (this.status != 200) {
+    createMessage('An error occurred', 'danger');
+    return
+  }
+
   let tag = JSON.parse(this.responseText);
 
   let tag_element = document.getElementById(`tag-${tag.tag_id}`)
   tag_element.querySelector('.card-body > p').innerHTML = tag.tag_description
   tag_element.querySelector('.card-header > a').innerHTML = tag.tag_name
+  createMessage('Tag updated', 'success');
 }
 
 /*********** remove tags ***********/
@@ -622,12 +671,14 @@ function sendRemoveTagsRequest(event) {
 }
 
 function tagDeletedHandler() {
-  //if (this.status != 201) window.location = '/';
+  if (this.status != 200)
+    createMessage('An error occurred', 'danger');
   let tag = JSON.parse(this.responseText);
 
   let tag_element = document.getElementById(`tag-${tag.tag_id}`)
   tag_element.remove()
   document.querySelector('.modal-backdrop').remove()
+  createMessage('Tag deleted', 'success');
 }
 
 function createTags(response) {
@@ -783,13 +834,13 @@ function createTagModals(tag, topics) {
 function sendDeleteAnswerRequest(event) {
   let answer_id = event.target.parentElement.children[0].value;
 
-  if (answer != '')
-    sendAjaxRequest('delete', '/api/answer/delete/' + answer_id, {}, answerDeletedHandler);
+  sendAjaxRequest('delete', '/api/answer/delete/' + answer_id, {}, answerDeletedHandler);
   event.preventDefault();
 }
 
 function answerDeletedHandler() {
-  //if (this.status != 202) window.location = '/';
+  if (this.status != 200)
+    createMessage('An error occurred', 'danger')
   let deletedAnswer = JSON.parse(this.responseText);
 
   document.querySelector('#answer').value="";
@@ -809,7 +860,8 @@ function sendDeleteReportRequest(event) {
 }
 
 function reportDeletedHandler() {
-  //if (this.status != 202) window.location = '/';
+  if (this.status != 200)
+    createMessage('An error occurred', 'danger')
   let deletedReport = JSON.parse(this.responseText);
 
   let deletedReportElement = document.getElementById("report_" + deletedReport.report_id)
@@ -823,6 +875,11 @@ function sendCreateBlockRequest(event) {
   let user_id = body.querySelector('input[name=user_id]').value
   let reason = body.querySelector('input[name=reason]').value
 
+  if (reason == '') {
+    createMessage('Please provide a reason', 'danger')
+    return
+  }
+
   if (user_id != null)
     sendAjaxRequest('post', `/api/blocks/add/${user_id}`, {reason : reason}, blockCreatedHandler);
 
@@ -830,7 +887,10 @@ function sendCreateBlockRequest(event) {
 }
 
 function blockCreatedHandler() {
-  if (this.status != 201) return;
+  if (this.status != 201) {
+    createMessage('An error occurred', 'danger')
+    return
+  }
 
   info = document.querySelector('.profile-info')
 
@@ -863,7 +923,10 @@ function sendRemoveBlockRequest(event) {
 }
 
 function blockRemovedHandler() {
-  if (this.status != 200) return;
+  if (this.status != 200) {
+    createMessage('An error occurred', 'danger')
+    return
+  }
 
   document.querySelector('.warning-blocked').remove()
 
@@ -881,10 +944,20 @@ function sendCreateReportRequest(event) {
   let question_id = body.querySelector('input[name=question_id]').value
   let answer_id = body.querySelector('input[name=answer_id]').value
   let comment_id = body.querySelector('input[name=comment_id]').value
+
+  if (reason == '') {
+    createMessage('Please provide a reason', 'danger')
+    return
+  }
+
   data = {reason: reason, question_id : question_id, answer_id : answer_id, comment_id : comment_id}
 
   if (body != null)
-    sendAjaxRequest('post', '/api/report/create', data, () => {});
+    sendAjaxRequest('post', '/api/report/create', data,
+     () => createMessage('The report was sent, thank you', 'success'));
+
+  
+
   event.preventDefault();
 }
 
@@ -980,7 +1053,7 @@ function editPass(){
   editButton.setAttribute("class", "hide")
 
   let divPass = document.getElementById("edit-pass-div")
-  divPass.setAttribute("class", "form-gorup")
+  divPass.setAttribute("class", "form-group")
   divPass.innerHTML =
   `
     <label>New Password</label>
@@ -988,7 +1061,7 @@ function editPass(){
   `
 
   let divPassConfirm = document.getElementById("edit-pass-div-conf")
-  divPassConfirm.setAttribute("class", "form-gorup")
+  divPassConfirm.setAttribute("class", "form-group")
   divPassConfirm.innerHTML =
   `
     <label>Confirm Password</label>
@@ -1348,6 +1421,9 @@ function sendCreateAnswerCommentRequest(answer_id) {
   let question_id = document.querySelector('#question_id').value;
   let comment = document.querySelector('#comment').value;
 
+  if (comment == '')
+    createMessage('Please provide a comment', 'danger')
+
   if (comment != '')
     sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id, answer_id: answer_id }, answerCommentAddedHandler);
 
@@ -1492,6 +1568,9 @@ function createQuestionCommentForm(question_id) {
 function sendCreateQuestionCommentRequest() {
   let question_id = document.querySelector('#question_id').value;
   let comment = document.querySelector('#comment').value;
+  
+  if (comment == '')
+    createMessage('Please provide a comment', 'danger')
 
   if (comment != '')
     sendAjaxRequest('post', `/api/comment/` + question_id, { full_text: comment, question_id: question_id}, questionCommentAddedHandler);
@@ -1759,6 +1838,16 @@ function redirect_notification(notification_id){
 function sendUpdateVotesRequest(event) {
   id = event.currentTarget.querySelectorAll('input')[1].value;
   let value = event.currentTarget.querySelectorAll('input')[0].value;
+  if (id != '')
+    sendAjaxRequest('post', `/api/question/${id}/vote`, {question_id : id, vote: value}, sendUpdateVotesHandler);
+  event.preventDefault();
+}
+
+function sendUpdateVotesHandler() {
+  let response = JSON.parse(this.responseText);
+
+  value = response.vote;
+
   if(value==1){
     document.querySelector('#up-question-vote').classList.toggle('voted')
     if(document.querySelector('#down-question-vote').classList.contains('voted'))
@@ -1769,13 +1858,7 @@ function sendUpdateVotesRequest(event) {
     if(document.querySelector('#up-question-vote').classList.contains('voted'))
     document.querySelector('#up-question-vote').classList.toggle('voted')
   }
-  if (id != '')
-    sendAjaxRequest('post', `/api/question/${id}/vote`, {question_id : id, vote: value}, sendUpdateVotesHandler);
-  event.preventDefault();
-}
 
-function sendUpdateVotesHandler() {
-  let response = JSON.parse(this.responseText);
   let votes = response.num_votes;
   let question_id = response.question_id;
   let votesHTML = document.getElementById('num-votes-' + question_id);
@@ -1915,4 +1998,43 @@ function sendUnSupportBadgeRequest(badge_id, user_id) {
 }
 
 
+
+
+/*********** alert messages ***********/
+
+function createMessage(message, type) {
+  let m = document.createElement('div')
+  m.classList.add('alert', 'alert-' + type, 'alert-dismissible', 'fade', 'show')
+  m.innerHTML = `
+    ${ message }
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+  `
+
+  document.querySelector('body').appendChild(m)
+  messageTimeout()
+}
+
+const fadeOut = [
+  { transform: 'rotate(0) scale(1)' },
+  { transform: 'rotate(360deg) scale(0)' }
+];
+
+function messageTimeout() {
+  setTimeout(function() {
+    let alerts = document.querySelectorAll('.alert')
+    alerts.forEach(
+      alert => {
+        alert.style["animation"] = "fadeOut 2.5s"
+        setTimeout(function () {
+          alert.remove()
+        }, 2500);
+      }
+      );
+
+  }, 3000)
+}
+
+messageTimeout();
 addEventListeners();

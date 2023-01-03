@@ -58,24 +58,25 @@ class ProfileController extends Controller
       $this->authorize('edit', $user);
     
       $valid_settings = $request->validate([
-        'username' => 'required|string|max:255',
+        'username' => 'required|string|alpha_dash|max:255',
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255',
         'new_password' => 'string|min:8',
         'confirm_pass' => 'same:new_password',
         'picture_path' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
       ]);
+      
     
       if(DB::table('users')->where('username', $request->username)->count() !== 0 && 
         $user->username !== $request->username
       ){
-        return back()->with("error", "This username already exists!");
+        return back()->with("alert", "This username already exists!");
       }
     
       if(DB::table('users')->where('email', $request->email)->count() !== 0 &&
          $user->email !== $request->email
         ){
-        return back()->with("error", "This email already exists!");
+        return back()->with("alert", "This email already exists!");
       }
     
       // Handle profile picture update
@@ -108,7 +109,8 @@ class ProfileController extends Controller
           'password' => Hash::make($request->new_password)
         ]);
       }
-      return redirect('users/'.$user->user_id);
+
+      return redirect('users/'.$user->user_id)->with('message', 'Changed profile information successfully!');
     }
 
     /**

@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+
+@include('partials.messages.feedback')
+
 <div class="row justify-content-md-center m-3">
     <div class="col-lg-6">
         <div class="mt-5 p-3">

@@ -2,6 +2,8 @@
 @section('content')
 <!-- <h2>This is a question page</h2>  --> 
 
+@include('partials.messages.feedback')
+
 <div data-id="{{$question->question_id}}" class="row">
     @include('partials.feed.left_nav')
 

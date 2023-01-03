@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 use App\Models\Question;
 use App\Models\QuestionTag;
@@ -20,7 +21,7 @@ class QuestionController extends Controller
      */
     public function home($question_id)
     {
-      //$this->authorize('list', Question::class);
+      if(!Auth::check()) return redirect('/login');
       $question = Question::find($question_id);
       $answers = $question->answers();
       $comments = $question->comments();
@@ -57,7 +58,7 @@ class QuestionController extends Controller
 
       $tags = $request->tags;
       if($tags === null)
-        return redirect('/question/'.$question->question_id);
+        return redirect('/question/'.$question->question_id)->with('message', 'Created question successfully!');
       for($i = 0; $i < count($tags); $i++){
         $question_tag = new QuestionTag;
         $question_tag->question_id = $question->question_id;
@@ -65,7 +66,7 @@ class QuestionController extends Controller
         $question_tag->save();
       }
 
-      return redirect('/question/'.$question->question_id);
+      return redirect('/question/'.$question->question_id)->with('message', 'Created question successfully!');
     }
 
     /**
@@ -112,7 +113,7 @@ class QuestionController extends Controller
         $question_tag->save();
       }
 
-      return redirect('/question/'.$question->question_id);
+      return redirect('/question/'.$question->question_id)->with('message', 'Changed question successfully!');
     }
 
     /**
@@ -126,7 +127,7 @@ class QuestionController extends Controller
       $question = Question::find($request->question_id);
       $this->authorize('delete', $question);
       $question->delete();
-      return redirect('/feed');
+      return redirect('/feed')->with('message', 'Deleted question successfully!');
     }
 
     /**
@@ -186,7 +187,7 @@ class QuestionController extends Controller
       }
       if($question->num_votes < 0) $question->num_votes = 0;
       $question->save();
-      return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id];
+      return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id, 'vote' => $request->vote];
     }
 
     /**

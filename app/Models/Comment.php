@@ -54,9 +54,12 @@ class Comment extends Model
      * @return mixed Returns the object of the vote.
      */
     public function vote(){
+        $commentVote = null;
+        if(Auth::user()!=null){        
         $commentVote = CommentVotes::where('comment_id', $this->comment_id)
         ->where('user_id', Auth::user()->user_id)
         ->first();
+        }
         if ($commentVote != null)
             return $commentVote->value;
         return $commentVote;
