@@ -59,9 +59,12 @@ class Answer extends Model
         return true;
     }
     public function vote(){
+        $answerVote = null;
+        if(Auth::user()!=null){        
         $answerVote = AnswerVotes::where('answer_id', $this->answer_id)
         ->where('user_id', Auth::user()->user_id)
         ->first();
+        }
         if ($answerVote != null)
             return $answerVote->value;
         return $answerVote;

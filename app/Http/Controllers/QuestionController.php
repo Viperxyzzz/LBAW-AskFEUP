@@ -164,7 +164,7 @@ class QuestionController extends Controller
       }
       if($question->num_votes < 0) $question->num_votes = 0;
       $question->save();
-      return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id];
+      return ['num_votes' => $question->num_votes, 'question_id' => $request->question_id, 'vote' => $request->vote];
     }
 
 
