@@ -41,7 +41,8 @@ class User extends Authenticatable
      * Perform an exact search match for usernames.
      */
     public static function search(string $query) {
-      return User::where('username', 'like', "%$query%")->orderBy('username')->get();
+      return User::where('username', 'ilike', "%$query%")
+        ->orWhere('name', 'ilike', "%$query%")->orderBy('username')->get();
     }
 
     public function get_n_answered()
