@@ -5,7 +5,11 @@
         <div class="flex-fill">
             <p class="m-0">
                 <img src="{{asset('storage/'.($answer->author->picture_path).'.jpeg')}}" class="img-fluid rounded-circle" alt="user image" width="25px">
-                <a class="font-weight-bold" href="{{url("/users/$answer->user_id")}}"> {{ $answer->author->name }}</a>
+                @if($answer->is_accessible_user())
+                <a href="{{ url("/users/$answer->user_id") }}"> {{ $answer->author->name }}</a>
+                @else
+                <a> {{ $answer->author->name }}</a>
+                @endif
             </p>
             <div class="answer-full-text">
                 <p class="card-text pb-5 pt-2">{{ $answer->full_text }}</p>

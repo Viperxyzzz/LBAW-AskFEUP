@@ -90,4 +90,20 @@ class ProfileController extends Controller
       return redirect('users/'.$user->user_id);
     }
 
+    /**
+     * Delete an account
+     */
+    public function delete($user_id)
+    {
+      // account updates
+      $user = User::find($user_id);
+      $this->authorize('delete', $user);
+
+      $user->name = 'anonymous';
+      $user->picture_path = 'guest';
+
+      $user->save();
+
+    return $user;
+    }
 }

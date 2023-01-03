@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class Question extends Model
 {
@@ -71,5 +72,14 @@ class Question extends Model
     /**
      */
     public function __construct() {
+    }
+
+    public function is_accessible_user(){
+        $author = User::find($this->author_id);
+        if (Auth::user()!=null && Auth::user()->is_admin)
+            return true;
+        if ($author->is_disable())
+            return false;
+        return true;
     }
 }

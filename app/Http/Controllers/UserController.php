@@ -19,7 +19,10 @@ class UserController extends Controller
     public function home()
     {
       $users = User::all()->sortBy('username');
-      return view('pages.users', ['users' => $users]);
+      $filtered_user = $users->filter(function ($item) {
+        return (!$item->is_disable());
+      });
+        return view('pages.users', ['users' => $filtered_user]);
     }
 
     /**

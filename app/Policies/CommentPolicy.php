@@ -33,7 +33,7 @@ class CommentPolicy
     public function delete(User $user, Comment $comment)
     {
       // Only a comment's author or admin can delete it
-      return $user->user_id == $comment->author_id || $user->is_admin;
+      return $user->user_id == $comment->user_id || $user->is_admin;
     }
 
     public function vote(User $user, Comment $comment)
