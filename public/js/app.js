@@ -410,13 +410,13 @@ function createAnswer(answer) {
           <button class="button-clear m-0 px-1 update-votes-answer" type="button" onclick=sendUpdateVotesAnswerRequest(event)>
               <input type="hidden" name="vote" value="1"></input>
               <input type="hidden" name="answer_id" value="${answer.answer_id}"></input>
-              <i width="16" height="16" class="material-symbols-outlined ">arrow_upward</i>
+              <i id="up-answer-${answer.answer_id}-vote" width="16" height="16" class="material-symbols-outlined rounded-circle ">arrow_upward</i>
           </button>
           <p class="m-0 px-1 pt-1" id="num-votes-answer-${answer.answer_id}">${answer.num_votes}</p>
           <button class="button-clear m-0 px-1 update-votes-answer" type="button" onclick=sendUpdateVotesAnswerRequest(event)>
               <input type="hidden" name="vote" value="-1"></input>
               <input type="hidden" name="answer_id" value="${answer.answer_id}"></input>
-              <i width="16" height="16" class="material-symbols-outlined ">arrow_downward</i>
+              <i id="down-answer-${answer.answer_id}-vote" width="16" height="16" class="material-symbols-outlined rounded-circle">arrow_downward</i>
           </button>
           <button class="button-clear m-0 px-1" type="button">
               <i width="12" height="12" class="material-symbols-outlined" onclick=answerCommentForm(event)>chat_bubble</i>
@@ -1309,16 +1309,16 @@ function createComment(comment) {
   </div>
   <div class="d-flex flex-fill">
   <div class="d-flex align-items-center flex-column p-1">
-      <button class="button-clear p-0 m-0 mr-2 update-votes-comment" type="button" onclick="sendUpdateVotesCommentRequest(event)">
+      <button class="button-clear p-0 m-0 mr-2 update-votes-comment" type="button" onclick=sendUpdateVotesCommentRequest(event)>
           <input type="hidden" name="vote" value="1"></input>
           <input type="hidden" name="comment_id" value="${comment.comment_id}"></input>
-          <i class="material-symbols-outlined">keyboard_arrow_up</i>
+          <i id="up-comment-${comment.comment_id}-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_up</i>
       </button>
       <p class="m-0 pr-2 text-nowrap" id="num-votes-comment-${comment.comment_id}">${comment.num_votes}</p>
-      <button class="button-clear p-0 m-0 mr-2 update-votes-comment" type="button" onclick="sendUpdateVotesCommentRequest(event)">
+      <button id="down-comment-${comment.comment_id}-vote"class="button-clear p-0 m-0 mr-2 update-votes-comment" type="button" onclick=sendUpdateVotesCommentRequest(event)>
           <input type="hidden" name="vote" value="-1"></input>
           <input type="hidden" name="comment_id" value="${comment.comment_id}"></input>
-          <i class="material-symbols-outlined">keyboard_arrow_down</i>
+          <i id="down-comment-${comment.comment_id}-vote" class="material-symbols-outlined rounded-circle ">keyboard_arrow_down</i>
       </button>
   </div>
   <div class="pt-3 flex-fill">
