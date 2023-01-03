@@ -33,8 +33,14 @@ class QuestionController extends Controller
     {
       if(!Auth::check()) return redirect('/login');
       $question = new Question;
-      $question->title = $request->title;
-      $question->full_text = $request->full_text;
+
+      $request->validate([
+        'title' => 'required|string|max:100',
+        'full_text' => 'required|string|max:1000',
+      ]);
+
+      $question->title = $request->input('title');
+      $question->full_text = $request->input('full_text');
       $question->author_id = Auth::user()->user_id;
 
       $question->num_votes = 0;
@@ -63,14 +69,14 @@ class QuestionController extends Controller
       if(!Auth::check()) return redirect('/login');
     
       $request->validate([
-        'title' => 'required',
-        'full_text' => 'required',
+        'title' => 'required|string|max:100',
+        'full_text' => 'required|string|max:1000',
       ]);
       
       $question = Question::find($id);
       $this->authorize('edit', $question);
-      $question->title = $request->get('title');
-      $question->full_text = $request->full_text;
+      $question->title = $request->input('title');
+      $question->full_text = $request->input('full_text');
 
       $question->date = date('Y-m-d H:i:s');
       $question->was_edited = true;
