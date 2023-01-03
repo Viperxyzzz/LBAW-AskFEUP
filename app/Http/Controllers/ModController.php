@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\Report;
+use App\Models\Block;
 
 class ModController extends Controller
 {
@@ -20,7 +21,8 @@ class ModController extends Controller
         if (!Auth::check()) return redirect('/login');
         if (!Auth::user()->is_mod()) return redirect('/');
         $reports = Report::all();
-        return view('pages.dashboard', ['reports' => $reports]);
+        $blocks = Block::all();
+        return view('pages.dashboard', ['reports' => $reports, 'blocks' => $blocks]);
     }
 
     /**
@@ -50,11 +52,11 @@ class ModController extends Controller
         if (!Auth::check()) return redirect('/login');
 
         $request->validate([
-            'reason' => 'required|string'
+            'reason' => 'required|string|max:500'
         ]);
 
         $report = new Report;
-        $report->reason = $request->reason;
+        $report->reason = $request->input('reason');
         $report->date = date('Y-m-d H:i:s');
         $report->question_id = $request->question_id;
         $report->answer_id = $request->answer_id;

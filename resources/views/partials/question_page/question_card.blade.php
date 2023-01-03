@@ -44,7 +44,11 @@
         <div class="row justify-self-end">
             <p class="m-0">
                 <em>by</em>
+                @if($question->is_accessible_user())
                 <a href="{{ url("/users/$question->author_id") }}"> {{ $question->author->name }}</a>
+                @else
+                <a> {{ $question->author->name }}</a>
+                @endif
             </p>
         </div>
     </div>

@@ -71,9 +71,9 @@ class TagController extends Controller
         ]);
 
         $tag = new Tag;
-        $tag->tag_name = $request->name;
-        $tag->tag_description = $request->description;
-        $tag->topic_id = $request->topic;
+        $tag->tag_name = $request->input('name');
+        $tag->tag_description = $request->input('description');
+        $tag->topic_id = $request->input('topic');
 
         $tag->save();
 
@@ -123,9 +123,9 @@ class TagController extends Controller
         ]);
         
         $tag = Tag::find($id);
-        $tag->tag_name = $request->name;
-        $tag->tag_description = $request->description;
-        $tag->topic_id = $request->topic;
+        $tag->tag_name = $request->input('name');
+        $tag->tag_description = $request->input('description');
+        $tag->topic_id = $request->input('topic');
 
         $tag->save();
 

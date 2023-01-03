@@ -1,29 +1,29 @@
 <div class="row">
     <ul class="d-flex list-unstyled">
-    <li class="mr-4 text-center col-lg-3">
-        <div class="d-flex flex-column">
-        <strong>Nº asked<br>questions</strong>
-        <h3>{{$user->get_n_asked();}}</h3>
-        </div>
-    </li>
-    <li class="mr-4 text-center col-lg-5">
-        <div class="d-flex flex-column">
-        <strong>Nº answered<br>questions</strong>
-        <h3>{{$user->get_n_answered();}}</h3>
-        </div>
-    </li>
-    <li class="mr-4 text-center col-lg-4">
-        <div class="d-flex flex-column">
-        <strong>Nº badges<br>achieved</strong>
-        <h3>{{$user->get_n_badges();}}</h3>
-        </div>
-    </li>
-    <li class="mr-4 text-center col-lg-3">
-        <div class="d-flex flex-column">
-        <strong>Nº followed<br>tags</strong>
-        <h3>{{$user->get_n_ftags();}}</h3>
-        </div>
-    </li>
+        <li class="text-center col-lg-3">
+            <div class="d-flex flex-column">
+            <strong>Nº asked<br>questions</strong>
+            <h3>{{$user->get_n_asked();}}</h3>
+            </div>
+        </li>
+        <li class="text-center col-lg-5">
+            <div class="d-flex flex-column">
+            <strong>Nº answered<br>questions</strong>
+            <h3>{{$user->get_n_answered();}}</h3>
+            </div>
+        </li>
+        <li class="mr-4 text-center col-lg-4">
+            <div class="d-flex flex-column">
+            <strong>Nº badges<br>achieved</strong>
+            <h3>{{$user->get_n_badges();}}</h3>
+            </div>
+        </li>
+        <li class="text-center col-lg-3">
+            <div class="d-flex flex-column">
+            <strong>Nº followed<br>tags</strong>
+            <h3>{{$user->get_n_ftags();}}</h3>
+            </div>
+        </li>
     </ul>
 </div>
 
