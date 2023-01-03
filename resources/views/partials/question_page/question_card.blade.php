@@ -1,8 +1,6 @@
 <div>
     <div class="d-flex">
         <div class="d-flex flex-column">
-            <!-- <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
-                {{ csrf_field() }} -->
                 <button class="button-clear p-1 mr-2 update-votes" type="submit">
                 <input type="hidden" name="vote" value="1"></input>
                 <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
@@ -12,9 +10,6 @@
                 <i width="16" height="16" id="up-question-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_up</i>
                 @endif
                 </button>
-            <!-- </form> -->
-            <!-- <form method="POST" action="{{ route('vote_question', $question->question_id) }}">
-                {{ csrf_field() }} -->
                 <button class="button-clear p-1 mr-2 update-votes" type="submit">
                 <input type="hidden" name="vote" value="-1"></input>
                 <input type="hidden" name="question_id" value="{{$question->question_id}}"></input>
@@ -24,7 +19,6 @@
                 <i width="16" height="16" id="down-question-vote" class="material-symbols-outlined rounded-circle">keyboard_arrow_down</i>
                 @endif
                 </button>
-            <!-- </form> -->
         </div>
         <div class="d-flex flex-fill justify-content-between">
             <div>

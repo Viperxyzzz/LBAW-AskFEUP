@@ -361,13 +361,12 @@ function answerAddedHandler() {
 }
 
 function createAnswer(answer) {
-  //verify if answer is from the guy creating the question
   let new_answer = document.createElement('div');
   let question_author_id = answer.question_author_id;
   let markValidQuestionHtml = "";
   if(question_author_id == answer.user_id){
-    markValidQuestionHtml = 
-    `                        
+    markValidQuestionHtml =
+    `
     <button class="button-clear m-0 px-1 mark-valid-answer" id="valid-answer-tag-${answer.answer_id}" type="submit" onclick="sendMarkValidAnswerRequest(event)">
     <input type="hidden" name="answer_id" value="${answer.answer_id}">
     <i id="mark-valid-button" width="16" height="16" class="material-symbols-outlined">check</i>
@@ -1171,7 +1170,6 @@ function markValidAnswerHandler() {
 
   //find answer 
   let answer_element = document.querySelector(`#answer_${answer_id}`);
-  answer_element.classList.add('border-success');
 }
 
 function sendMarkInvalidAnswerRequest(event){
@@ -1200,7 +1198,6 @@ function markInvalidAnswerHandler() {
 
   //find answer
   let answer_element = document.querySelector(`#answer_${answer_id}`);
-  answer_element.classList.remove('border-success');
 }
 
 

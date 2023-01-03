@@ -1,5 +1,5 @@
 @if ($answer->is_correct)
-    <div class="card my-5 answer border-success" id="answer_{{$answer->answer_id}}">
+    <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
 @else
     <div class="card my-5 answer" id="answer_{{$answer->answer_id}}">
 @endif
